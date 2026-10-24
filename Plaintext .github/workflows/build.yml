@@ -1,0 +1,491 @@
+name: Android APK Olustur
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dosyalari Cek
+        uses: actions/checkout@v4
+
+      - name: Java 17 Kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Gradle Kur
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
+
+      - name: Android Projesini ve Bluetooth HID Kodunu Hazirla
+        run: |
+          mkdir -p app/src/main/assets
+          mkdir -p app/src/main/java/com/kumanda/bt
+
+          if [ -f "index.html" ]; then
+            cp index.html app/src/main/assets/index.html
+          else
+            echo "<h1>index.html bulunamadi</h1>" > app/src/main/assets/index.html
+          fi
+
+          cat << 'EOF' > settings.gradle
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "ProjeksiyonKumanda"
+          include ':app'
+          EOF
+
+          cat << 'EOF' > gradle.properties
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          kotlin.code.style=official
+          EOF
+
+          cat << 'EOF' > build.gradle
+          plugins {
+              id 'com.android.application' version '8.2.2' apply false
+              id 'org.jetbrains.kotlin.android' version '1.9.22' apply false
+          }
+          EOF
+
+          cat << 'EOF' > app/build.gradle
+          plugins {
+              id 'com.android.application'
+              id 'org.jetbrains.kotlin.android'
+          }
+
+          android {
+              namespace 'com.kumanda.bt'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId "com.kumanda.bt"
+                  minSdk 28
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0"
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+
+              kotlinOptions {
+                  jvmTarget = '17'
+              }
+
+              lint {
+                  abortOnError false
+                  checkReleaseBuilds false
+              }
+          }
+          EOF
+
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <uses-permission android:name="android.permission.BLUETOOTH" />
+              <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+              <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+              <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+              <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+              <uses-permission android:name="android.permission.VIBRATE" />
+              <uses-permission android:name="android.permission.INTERNET" />
+
+              <application
+                  android:allowBackup="true"
+                  android:icon="@android:drawable/stat_sys_data_bluetooth"
+                  android:label="BT Projeksiyon Kumanda"
+                  android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize|keyboardHidden">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat << 'EOF' > app/src/main/java/com/kumanda/bt/MainActivity.kt
+          package com.kumanda.bt
+
+          import android.Manifest
+          import android.annotation.SuppressLint
+          import android.app.Activity
+          import android.app.AlertDialog
+          import android.bluetooth.*
+          import android.content.Context
+          import android.content.Intent
+          import android.content.pm.PackageManager
+          import android.os.Build
+          import android.os.Bundle
+          import android.speech.RecognizerIntent
+          import android.webkit.*
+          import android.widget.Toast
+          import org.json.JSONArray
+          import java.util.concurrent.Executors
+          import kotlin.math.max
+          import kotlin.math.min
+
+          @SuppressLint("MissingPermission", "SetJavaScriptEnabled")
+          class MainActivity : Activity() {
+
+              private lateinit var webView: WebView
+              private var hidDevice: BluetoothHidDevice? = null
+              private var connectedDevice: BluetoothDevice? = null
+              private val executor = Executors.newSingleThreadExecutor()
+              private val REQ_SPEECH = 1001
+              private val REQ_PERMS = 1002
+
+              // Birlesik HID Descriptor: ID 1 = Klavye, ID 2 = Multimedya Kumanda, ID 3 = Fare (Touchpad)
+              private val HID_DESCRIPTOR = intArrayOf(
+                  // Report ID 1: Keyboard
+                  0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x85, 0x01,
+                  0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00,
+                  0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02,
+                  0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x95, 0x06,
+                  0x75, 0x08, 0x15, 0x00, 0x25, 0x65, 0x05, 0x07,
+                  0x19, 0x00, 0x29, 0x65, 0x81, 0x00, 0xC0,
+                  // Report ID 2: Consumer Control (Smart TV / Media)
+                  0x05, 0x0C, 0x09, 0x01, 0xA1, 0x01, 0x85, 0x02,
+                  0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
+                  0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
+                  0xC0,
+                  // Report ID 3: Mouse (Touchpad)
+                  0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x85, 0x03,
+                  0x09, 0x01, 0xA1, 0x00, 0x05, 0x09, 0x19, 0x01,
+                  0x29, 0x03, 0x15, 0x00, 0x25, 0x01, 0x95, 0x03,
+                  0x75, 0x01, 0x81, 0x02, 0x95, 0x01, 0x75, 0x05,
+                  0x81, 0x01, 0x05, 0x01, 0x09, 0x30, 0x09, 0x31,
+                  0x09, 0x38, 0x15, 0x81, 0x25, 0x7F, 0x75, 0x08,
+                  0x95, 0x03, 0x81, 0x06, 0xC0, 0xC0
+              ).map { it.toByte() }.toByteArray()
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  webView = WebView(this)
+                  setContentView(webView)
+
+                  checkPermissionsAndInit()
+
+                  webView.settings.apply {
+                      javaScriptEnabled = true
+                      domStorageEnabled = true
+                      mediaPlaybackRequiresUserGesture = false
+                  }
+
+                  webView.webChromeClient = object : WebChromeClient() {
+                      override fun onPermissionRequest(request: PermissionRequest?) {
+                          request?.grant(request.resources)
+                      }
+                  }
+
+                  webView.addJavascriptInterface(NativeBridge(), "NativeHidBridge")
+                  webView.addJavascriptInterface(NativeBridge(), "AndroidBridge")
+
+                  webView.webViewClient = object : WebViewClient() {
+                      override fun onPageFinished(view: WebView?, url: String?) {
+                          super.onPageFinished(view, url)
+                          injectUniversalBridge()
+                      }
+                  }
+
+                  webView.loadUrl("file:///android_asset/index.html")
+              }
+
+              private fun checkPermissionsAndInit() {
+                  val perms = mutableListOf(Manifest.permission.RECORD_AUDIO)
+                  if (Build.VERSION.SDK_INT >= 31) {
+                      perms.add(Manifest.permission.BLUETOOTH_CONNECT)
+                      perms.add(Manifest.permission.BLUETOOTH_SCAN)
+                      perms.add(Manifest.permission.BLUETOOTH_ADVERTISE)
+                  }
+                  val missing = perms.filter { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }
+                  if (missing.isNotEmpty()) {
+                      requestPermissions(missing.toTypedArray(), REQ_PERMS)
+                  } else {
+                      initBluetoothHid()
+                  }
+              }
+
+              override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+                  super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+                  initBluetoothHid()
+              }
+
+              private fun initBluetoothHid() {
+                  val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+                  val adapter = btManager?.adapter ?: return
+                  adapter.getProfileProxy(this, object : BluetoothProfile.ServiceListener {
+                      override fun onServiceConnected(profile: Int, proxy: BluetoothProfile?) {
+                          if (profile == BluetoothProfile.HID_DEVICE) {
+                              hidDevice = proxy as BluetoothHidDevice
+                              val sdp = BluetoothHidDeviceAppSdpSettings(
+                                  "Smart TV & Projeksiyon Kumanda",
+                                  "Bluetooth HID Klavye Fare Kumanda",
+                                  "Android",
+                                  BluetoothHidDevice.SUBCLASS1_COMBO,
+                                  HID_DESCRIPTOR
+                              )
+                              hidDevice?.registerApp(sdp, null, null, executor, object : BluetoothHidDevice.Callback() {
+                                  override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
+                                      if (state == BluetoothProfile.STATE_CONNECTED) {
+                                          connectedDevice = device
+                                          notifyWebStatus(true, device?.name ?: "Baglandi")
+                                      } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
+                                          connectedDevice = null
+                                          notifyWebStatus(false, "Baglanti Kesildi")
+                                      }
+                                  }
+                              })
+                          }
+                      }
+                      override fun onServiceDisconnected(profile: Int) {
+                          hidDevice = null
+                      }
+                  }, BluetoothProfile.HID_DEVICE)
+              }
+
+              private fun notifyWebStatus(connected: Boolean, name: String) {
+                  runOnUiThread {
+                      Toast.makeText(this, "BT: $name", Toast.LENGTH_SHORT).show()
+                      webView.evaluateJavascript(
+                          "if(window.onBluetoothStateChanged) window.onBluetoothStateChanged($connected, '$name');",
+                          null
+                      )
+                  }
+              }
+
+              private fun showDevicePickerDialog() {
+                  runOnUiThread {
+                      val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+                      val paired = btManager?.adapter?.bondedDevices?.toList() ?: emptyList()
+                      if (paired.isEmpty()) {
+                          Toast.makeText(this, "Once telefonun Bluetooth ayarlarindan projeksiyonu eslestirin!", Toast.LENGTH_LONG).show()
+                          startActivity(Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
+                          return@runOnUiThread
+                      }
+                      val names = paired.map { "${it.name ?: "Cihaz"} (${it.address})" }.toTypedArray()
+                      AlertDialog.Builder(this)
+                          .setTitle("Projeksiyon / Smart TV Secin")
+                          .setItems(names) { _, which ->
+                              val target = paired[which]
+                              hidDevice?.connect(target)
+                              Toast.makeText(this, "${target.name} baglaniyor...", Toast.LENGTH_SHORT).show()
+                          }
+                          .setNeutralButton("BT Ayarlari") { _, _ ->
+                              startActivity(Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
+                          }
+                          .show()
+                  }
+              }
+
+              private fun startNativeVoiceInput() {
+                  runOnUiThread {
+                      try {
+                          val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                              putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                              putExtra(RecognizerIntent.EXTRA_LANGUAGE, "tr-TR")
+                              putExtra(RecognizerIntent.EXTRA_PROMPT, "Projeksiyona yazmak icin konusun...")
+                          }
+                          startActivityForResult(intent, REQ_SPEECH)
+                      } catch (e: Exception) {
+                          Toast.makeText(this, "Sesli yazma servisi bulunamadi", Toast.LENGTH_SHORT).show()
+                      }
+                  }
+              }
+
+              override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+                  super.onActivityResult(requestCode, resultCode, data)
+                  if (requestCode == REQ_SPEECH && resultCode == RESULT_OK) {
+                      val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                      val spokenText = matches?.firstOrNull() ?: return
+                      sendTextViaHid(spokenText)
+                      val safeText = spokenText.replace("'", "\\'")
+                      webView.evaluateJavascript("if(window.onNativeSpeechResult) window.onNativeSpeechResult('$safeText');", null)
+                  }
+              }
+
+              private fun sendKeyboardKey(modifier: Int, keyCode: Int) {
+                  val dev = connectedDevice ?: return
+                  executor.execute {
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(modifier.toByte(), 0, keyCode.toByte(), 0, 0, 0, 0, 0))
+                      Thread.sleep(22)
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+                      Thread.sleep(18)
+                  }
+              }
+
+              private fun sendConsumerUsage(usage: Int) {
+                  val dev = connectedDevice ?: return
+                  executor.execute {
+                      val low = (usage and 0xFF).toByte()
+                      val high = ((usage shr 8) and 0xFF).toByte()
+                      hidDevice?.sendReport(dev, 2, byteArrayOf(low, high))
+                      Thread.sleep(25)
+                      hidDevice?.sendReport(dev, 2, byteArrayOf(0, 0))
+                  }
+              }
+
+              private fun sendMouseReport(buttons: Int, dx: Int, dy: Int, wheel: Int) {
+                  val dev = connectedDevice ?: return
+                  executor.execute {
+                      val clampedX = max(-127, min(127, dx)).toByte()
+                      val clampedY = max(-127, min(127, dy)).toByte()
+                      val clampedW = max(-127, min(127, wheel)).toByte()
+                      hidDevice?.sendReport(dev, 3, byteArrayOf(buttons.toByte(), clampedX, clampedY, clampedW))
+                      if (buttons != 0) {
+                          Thread.sleep(25)
+                          hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                      }
+                  }
+              }
+
+              private fun sendTextViaHid(rawText: String) {
+                  val trMap = mapOf(
+                      'ç' to 'c', 'Ç' to 'C', 'ğ' to 'g', 'Ğ' to 'G',
+                      'ı' to 'i', 'İ' to 'I', 'ö' to 'o', 'Ö' to 'O',
+                      'ş' to 's', 'Ş' to 'S', 'ü' to 'u', 'Ü' to 'U'
+                  )
+                  val normalized = rawText.map { trMap[it] ?: it }.joinToString("")
+                  for (ch in normalized) {
+                      val pair = charToHid(ch)
+                      if (pair != null) {
+                          sendKeyboardKey(pair.first, pair.second)
+                      }
+                  }
+              }
+
+              private fun charToHid(c: Char): Pair<Int, Int>? {
+                  return when (c) {
+                      in 'a'..'z' -> Pair(0, (c - 'a') + 4)
+                      in 'A'..'Z' -> Pair(2, (c - 'A') + 4)
+                      in '1'..'9' -> Pair(0, (c - '1') + 30)
+                      '0' -> Pair(0, 39)
+                      ' ' -> Pair(0, 44)
+                      '\n' -> Pair(0, 40)
+                      '.' -> Pair(0, 55)
+                      ',' -> Pair(0, 54)
+                      '-' -> Pair(0, 45)
+                      '?' -> Pair(2, 56)
+                      '!' -> Pair(2, 30)
+                      else -> null
+                  }
+              }
+
+              private fun injectUniversalBridge() {
+                  val js = """
+                      (function() {
+                          window.AndroidBridge = new Proxy({}, {
+                              get: function(target, prop) {
+                                  return function(...args) {
+                                      return window.NativeHidBridge.invoke(String(prop), JSON.stringify(args));
+                                  };
+                              }
+                          });
+                      })();
+                  """.trimIndent()
+                  webView.evaluateJavascript(js, null)
+              }
+
+              inner class NativeBridge {
+                  @JavascriptInterface
+                  fun connect() = showDevicePickerDialog()
+
+                  @JavascriptInterface
+                  fun selectDevice() = showDevicePickerDialog()
+
+                  @JavascriptInterface
+                  fun startVoice() = startNativeVoiceInput()
+
+                  @JavascriptInterface
+                  fun sendText(text: String) = sendTextViaHid(text)
+
+                  @JavascriptInterface
+                  fun sendKey(keyCode: Int) = sendKeyboardKey(0, keyCode)
+
+                  @JavascriptInterface
+                  fun sendKeyReport(modifier: Int, keyCode: Int) = sendKeyboardKey(modifier, keyCode)
+
+                  @JavascriptInterface
+                  fun sendConsumer(usage: Int) = sendConsumerUsage(usage)
+
+                  @JavascriptInterface
+                  fun sendMouse(dx: Int, dy: Int, wheel: Int, buttons: Int) = sendMouseReport(buttons, dx, dy, wheel)
+
+                  @JavascriptInterface
+                  fun invoke(method: String, argsJson: String): String {
+                      try {
+                          val arr = JSONArray(argsJson)
+                          val m = method.lowercase()
+                          when {
+                              m.contains("connect") || m.contains("scan") || m.contains("pair") || m.contains("device") -> showDevicePickerDialog()
+                              m.contains("voice") || m.contains("speech") || m.contains("mic") -> startNativeVoiceInput()
+                              m.contains("text") || m.contains("string") || m.contains("type") -> {
+                                  if (arr.length() > 0) sendTextViaHid(arr.optString(0))
+                              }
+                              m.contains("mouse") || m.contains("move") || m.contains("touchpad") -> {
+                                  if (arr.length() >= 4) {
+                                      sendMouseReport(arr.optInt(3), arr.optInt(0), arr.optInt(1), arr.optInt(2))
+                                  } else if (arr.length() >= 2) {
+                                      sendMouseReport(0, arr.optInt(0), arr.optInt(1), 0)
+                                  }
+                              }
+                              m.contains("click") -> {
+                                  val btn = if (arr.length() > 0) arr.optInt(0, 1) else 1
+                                  sendMouseReport(btn, 0, 0, 0)
+                              }
+                              m.contains("consumer") || m.contains("media") -> {
+                                  if (arr.length() > 0) sendConsumerUsage(arr.optInt(0))
+                              }
+                              m.contains("key") || m.contains("hid") || m.contains("packet") || m.contains("report") -> {
+                                  if (arr.length() >= 2) {
+                                      sendKeyboardKey(arr.optInt(0), arr.optInt(1))
+                                  } else if (arr.length() == 1) {
+                                      sendKeyboardKey(0, arr.optInt(0))
+                                  }
+                              }
+                          }
+                      } catch (e: Exception) {
+                          e.printStackTrace()
+                      }
+                      return "OK"
+                  }
+              }
+          }
+          EOF
+
+      - name: APK Derle (Build)
+        run: gradle assembleDebug --no-daemon
+
+      - name: APK Dosyasini Yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Projeksiyon-Kumanda-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
