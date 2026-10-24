@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Projeksiyon & Smart TV Bluetooth Kumanda</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        remote: {
+                            bg: '#090b10',
+                            body: '#121620',
+                            surface: '#191f2e',
+                            elevated: '#222a3d',
+                            border: '#2d374f',
+                            accent: '#3b82f6',
+                            glow: '#60a5fa'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        input, textarea, pre, code {
+            user-select: text;
+            -webkit-user-select: text;
+        }
+        body {
+            background-color: #06080c;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.14) 0%, transparent 55%),
+                radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.10) 0%, transparent 45%);
+            overscroll-behavior-y: contain;
+        }
+
+        /* Tactile Remote Button Styling */
+        .remote-btn {
+            background: linear-gradient(145deg, #21283b, #161b28);
+            box-shadow: 
+                4px 4px 10px rgba(0, 0, 0, 0.55),
+                -2px -2px 6px rgba(255, 255, 255, 0.03),
+                inset 0 1px 1px rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .remote-btn:active, .remote-btn.pressed {
+            transform: scale(0.95) translateY(1px);
+            background: linear-gradient(145deg, #151a26, #1d2436);
+            box-shadow: 
+                inset 3px 3px 7px rgba(0, 0, 0, 0.7),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.02);
+            border-color: rgba(96, 165, 250, 0.45);
+        }
+
+        /* Power Button Special Glow */
+        .power-btn {
+            background: linear-gradient(145deg, #2b161c, #1c0f13);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            box-shadow: 
+                0 0 15px rgba(239, 68, 68, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        .power-btn:active {
+            box-shadow: 
+                0 0 25px rgba(239, 68, 68, 0.55),
+                inset 2px 2px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Circular Ergonomic D-Pad */
+        .dpad-ring {
+            background: radial-gradient(circle at center, #1e2638 0%, #121722 70%, #0d111a 100%);
+            box-shadow: 
+                0 12px 30px rgba(0, 0, 0, 0.75),
+                inset 0 2px 3px rgba(255, 255, 255, 0.08),
+                inset 0 -3px 8px rgba(0, 0, 0, 0.8);
+            border: 2px solid #263047;
+        }
+        .dpad-ok {
+            background: radial-gradient(circle at 35% 30%, #3b82f6, #1d4ed8 70%, #1e3a8a 100%);
+            box-shadow: 
+                0 6px 20px rgba(37, 99, 235, 0.45),
+                inset 0 2px 3px rgba(255, 255, 255, 0.35);
+            border: 2px solid rgba(147, 197, 253, 0.4);
+            transition: all 0.12s ease;
+        }
+        .dpad-ok:active, .dpad-ok.pressed {
+            transform: scale(0.93);
+            background: radial-gradient(circle at 50% 50%, #2563eb, #1e40af);
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.7), inset 0 3px 8px rgba(0,0,0,0.6);
+        }
+
+        .dpad-sector {
+            transition: all 0.12s ease;
+        }
+        .dpad-sector:active, .dpad-sector.pressed {
+            background-color: rgba(59, 130, 246, 0.22);
+            color: #60a5fa;
+        }
+
+        /* Voice Mic Pulse Animation */
+        @keyframes micPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 16px rgba(239, 68, 68, 0), 0 0 30px rgba(239, 68, 68, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 0 20px rgba(239, 68, 68, 0.5);
+            }
+        }
+        .mic-listening {
+            animation: micPulse 1.4s infinite;
+            background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+            border-color: #fca5a5 !important;
+            color: white !important;
+        }
+
+        /* Rocker Pill Container */
+        .rocker-pill {
+            background: linear-gradient(180deg, #1d2436 0%, #131824 50%, #1d2436 100%);
+            box-shadow: 
+                inset 0 2px 4px rgba(255,255,255,0.06),
+                0 8px 18px rgba(0,0,0,0.6);
+            border: 1px solid #2b354d;
+        }
+
+        /* Trackpad Grid Pattern */
+        .trackpad-surface {
+            background-color: #0e131d;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+            box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.85);
+            touch-action: none;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d111a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d374f;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col items-center justify-start py-2 px-2 sm:py-5">
+
+    <!-- Outer Mobile Remote Chassis -->
+    <main class="w-full max-w-[430px] bg-remote-body border border-slate-800/90 rounded-[36px] shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col relative">
+        
+        <!-- Top Infrared / Bluetooth Signal LED Indicator Bar -->
+        <div class="w-full flex justify-center items-center pt-2 pb-1 relative">
+            <div class="w-16 h-1.5 rounded-full bg-slate-800 overflow-hidden flex items-center justify-center">
+                <div id="irSignalLed" class="w-full h-full bg-blue-500 opacity-0 transition-opacity duration-100 shadow-[0_0_10px_#3b82f6]"></div>
+            </div>
+            <span id="lastKeyBadge" class="absolute right-5 top-1.5 text-[10px] font-mono text-blue-400/80 opacity-0 transition-opacity duration-200">
+                HID: 0x00
+            </span>
+        </div>
+
+        <!-- 1. TOP STATUS BAR & QUICK ACTIONS -->
+        <header class="px-4 pt-1 pb-3 border-b border-slate-800/80">
+            <!-- Row A: Bluetooth Status Pill + Top Action Buttons -->
+            <div class="flex items-center justify-between gap-2 mb-3">
+                
+                <!-- Bluetooth Status & Device Selector Trigger -->
+                <button id="btStatusBtn" onclick="openDeviceModal()" class="flex-1 flex items-center gap-2.5 bg-remote-surface hover:bg-remote-elevated border border-slate-700/70 rounded-2xl px-3 py-2 text-left transition-all active:scale-98">
+                    <div id="btIconWrapper" class="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 relative">
+                        <i class="fa-brands fa-bluetooth-b text-sm"></i>
+                        <span id="btDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 ring-2 ring-remote-surface"></span>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1.5">
+                            <span id="btStateLabel" class="text-[10px] font-semibold uppercase tracking-wider text-emerald-400">HID Bağlı</span>
+                            <span class="text-[10px] text-slate-500">•</span>
+                            <span id="bridgeModeBadge" class="text-[10px] font-mono text-slate-400">BT-HID</span>
+                        </div>
+                        <p id="btDeviceName" class="text-xs font-bold text-slate-100 truncate">Akıllı Projeksiyon / TV</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                </button>
+
+                <!-- Top Quick Action Buttons: Source, Settings, Power -->
+                <div class="flex items-center gap-2">
+                    <button onclick="triggerRemoteKey('INPUT_SOURCE', 'Kaynak (Source)', 0x02, [0x89, 0x00])" title="Kaynak / HDMI Seçimi" class="remote-btn w-10 h-10 rounded-2xl flex flex-col items-center justify-center text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-right-to-bracket text-xs"></i>
+                        <span class="text-[8px] font-semibold mt-0.5 text-slate-400">Kaynak</span>
+                    </button>
+                    <button onclick="triggerRemoteKey('SETTINGS', 'Projeksiyon Ayarları', 0x02, [0x40, 0x00])" title="Menü / Ayarlar" class="remote-btn w-10 h-10 rounded-2xl flex flex-col items-center justify-center text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-sliders text-xs"></i>
+                        <span class="text-[8px] font-semibold mt-0.5 text-slate-400">Menü</span>
+                    </button>
+                    <button onclick="triggerRemoteKey('POWER', 'Güç (Power)', 0x02, [0x30, 0x00])" title="Güç Aç/Kapat" class="remote-btn power-btn w-10 h-10 rounded-2xl flex flex-col items-center justify-center text-red-400 hover:text-red-300">
+                        <i class="fa-solid fa-power-off text-sm"></i>
+                        <span class="text-[8px] font-bold mt-0.5 text-red-400/90">Güç</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row B: Mode Switcher Tabs -->
+            <div class="grid grid-cols-3 gap-1.5 bg-remote-bg p-1 rounded-2xl border border-slate-800/90">
+                <button id="tab-dpad" onclick="switchMode('dpad')" class="mode-tab flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all bg-blue-600 text-white shadow-md">
+                    <i class="fa-solid fa-arrows-up-down-left-right text-xs"></i>
+                    <span>Kumanda</span>
+                </button>
+                <button id="tab-touchpad" onclick="switchMode('touchpad')" class="mode-tab flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-computer-mouse text-xs"></i>
+                    <span>Touchpad</span>
+                </button>
+                <button id="tab-keyboard" onclick="switchMode('keyboard')" class="mode-tab flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-keyboard text-xs"></i>
+                    <span>Klavye & Ses</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 2. VOICE TYPING & SMART TEXT BAR (Sesli Yazma & Metin Gönderimi) -->
+        <section class="px-4 py-3 bg-remote-surface/60 border-b border-slate-800/80">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-microphone-lines text-blue-400 text-xs"></i>
+                    <span class="text-[11px] font-bold text-slate-200">Sesli Yazma & Akıllı Metin (tr-TR)</span>
+                </div>
+                <span id="voiceStatusBadge" class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                    Hazır
+                </span>
+            </div>
+
+            <!-- Input + Mic Row -->
+            <div class="flex items-stretch gap-2">
+                <!-- Prominent Pulsing Microphone Button -->
+                <button id="voiceMicBtn" onclick="toggleSpeechRecognition()" class="remote-btn w-12 rounded-2xl flex flex-col items-center justify-center text-blue-400 hover:text-blue-300 shrink-0 border border-blue-500/30" title="Sesli Yazmayı Başlat/Durdur">
+                    <i id="voiceMicIcon" class="fa-solid fa-microphone text-base"></i>
+                    <span id="voiceMicLabel" class="text-[8px] font-bold mt-0.5 uppercase">Konuş</span>
+                </button>
+
+                <!-- Editable Speech/Text Input Box -->
+                <div class="flex-1 relative">
+                    <input 
+                        id="smartTextInput" 
+                        type="text" 
+                        placeholder="Mikrofona konuşun veya metin yazın..." 
+                        class="w-full h-full min-h-[44px] bg-remote-bg border border-slate-700/80 focus:border-blue-500 rounded-2xl pl-3 pr-8 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
+                        onkeydown="if(event.key === 'Enter'){ event.preventDefault(); sendSmartText(true); }"
+                    >
+                    <button onclick="clearSmartText()" title="Metni Temizle" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-1">
+                        <i class="fa-solid fa-circle-xmark text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Send Text Button -->
+                <button onclick="sendSmartText(false)" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold px-3.5 rounded-2xl text-xs flex flex-col items-center justify-center shrink-0 shadow-lg shadow-blue-600/30 transition-all">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <span class="text-[9px] mt-0.5 font-bold">Yazdır</span>
+                </button>
+            </div>
+
+            <!-- ASCII Toggle & Quick Text Actions Row -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mt-2.5 pt-2 border-t border-slate-800/70">
+                <!-- Toggle: Türkçe Karakterleri Uyumlu Gönder (ASCII) -->
+                <label class="flex items-center gap-2 cursor-pointer select-none">
+                    <input id="asciiToggle" type="checkbox" checked class="sr-only peer">
+                    <div class="w-7 h-4 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all relative peer-checked:bg-blue-600"></div>
+                    <span class="text-[10px] font-medium text-slate-300" title="Projeksiyonlarda İngilizce HID klavye düzeni hatasını önlemek için ç->c, ğ->g, ı->i, ö->o, ş->s, ü->u dönüştürür">
+                        TR Karakter Uyumlu (ASCII)
+                    </span>
+                </label>
+
+                <!-- Quick Backspace, Enter & Demo Voice Buttons -->
+                <div class="flex items-center gap-1.5">
+                    <button onclick="simulateVoiceSample()" title="Örnek Sesli Komut Testi" class="px-2 py-1 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-[10px] text-amber-300 flex items-center gap-1 border border-amber-500/20">
+                        <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i>
+                        <span>Örnek Ses</span>
+                    </button>
+                    <button onclick="triggerRemoteKey('BACKSPACE', 'Sil (Backspace)', 0x01, [0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00])" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-[10px] font-medium text-slate-200 flex items-center gap-1 border border-slate-700">
+                        <i class="fa-solid fa-delete-left text-[10px] text-rose-400"></i>
+                        <span>Sil</span>
+                    </button>
+                    <button onclick="triggerRemoteKey('ENTER', 'Ara / Enter', 0x01, [0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00])" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-[10px] font-medium text-emerald-400 flex items-center gap-1 border border-emerald-500/20">
+                        <i class="fa-solid fa-level-down-alt fa-rotate-90 text-[9px]"></i>
+                        <span>Ara</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visual Character-by-Character HID Transmission Progress Bar -->
+            <div id="txProgressContainer" class="hidden mt-2.5 bg-remote-bg/95 border border-blue-500/30 rounded-xl p-2">
+                <div class="flex items-center justify-between text-[10px] mb-1">
+                    <span class="text-blue-400 font-semibold flex items-center gap-1.5">
+                        <i class="fa-solid fa-satellite-dish animate-pulse"></i>
+                        <span id="txStatusLabel">HID Klavye Paketleri Gönderiliyor...</span>
+                    </span>
+                    <span id="txCharCounter" class="font-mono text-slate-300">0/0</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1.5">
+                    <div id="txProgressBar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 w-0 transition-all duration-75"></div>
+                </div>
+                <div id="txCharPreview" class="flex items-center gap-1 overflow-x-auto py-0.5 text-[10px] font-mono"></div>
+            </div>
+        </section>
+
+        <!-- 3. MAIN NAVIGATION AREA (SWITCHES BY MODE) -->
+        <section class="px-4 py-3 flex-1 flex flex-col justify-center min-h-[265px] relative">
+            
+            <!-- MODE 1: CIRCULAR ERGONOMIC D-PAD -->
+            <div id="mode-dpad" class="mode-panel flex flex-col items-center justify-center relative py-1">
+                
+                <!-- Corner Projector Hardware Shortcuts -->
+                <div class="w-full flex justify-between items-center px-1 mb-1">
+                    <button onclick="triggerRemoteKey('FOCUS_MINUS', 'Netlik - (Focus -)', 0x02, [0x9D, 0x00])" class="remote-btn px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-[10px] font-semibold text-slate-300">
+                        <i class="fa-solid fa-magnifying-glass-minus text-blue-400"></i>
+                        <span>Netlik -</span>
+                    </button>
+                    <span class="text-[10px] font-mono uppercase tracking-widest text-slate-500">Yön & Seçim</span>
+                    <button onclick="triggerRemoteKey('FOCUS_PLUS', 'Netlik + (Focus +)', 0x02, [0x9C, 0x00])" class="remote-btn px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-[10px] font-semibold text-slate-300">
+                        <i class="fa-solid fa-magnifying-glass-plus text-blue-400"></i>
+                        <span>Netlik +</span>
+                    </button>
+                </div>
+
+                <!-- Circular D-Pad Assembly -->
+                <div class="relative w-56 h-56 rounded-full dpad-ring flex items-center justify-center my-1 select-none">
+                    
+                    <!-- UP Button -->
+                    <button id="dpad-up" onclick="triggerRemoteKey('DPAD_UP', 'Yukarı (Up)', 0x01, [0x00, 0x00, 0x52, 0x00, 0x00, 0x00, 0x00, 0x00])" 
+                        class="dpad-sector absolute top-1 left-1/2 -translate-x-1/2 w-24 h-16 rounded-t-full flex flex-col items-center justify-start pt-3 text-slate-200 hover:text-white" aria-label="Yukarı">
+                        <i class="fa-solid fa-chevron-up text-lg"></i>
+                        <span class="text-[8px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">Yukarı</span>
+                    </button>
+
+                    <!-- DOWN Button -->
+                    <button id="dpad-down" onclick="triggerRemoteKey('DPAD_DOWN', 'Aşağı (Down)', 0x01, [0x00, 0x00, 0x51, 0x00, 0x00, 0x00, 0x00, 0x00])" 
+                        class="dpad-sector absolute bottom-1 left-1/2 -translate-x-1/2 w-24 h-16 rounded-b-full flex flex-col items-center justify-end pb-3 text-slate-200 hover:text-white" aria-label="Aşağı">
+                        <span class="text-[8px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Aşağı</span>
+                        <i class="fa-solid fa-chevron-down text-lg"></i>
+                    </button>
+
+                    <!-- LEFT Button -->
+                    <button id="dpad-left" onclick="triggerRemoteKey('DPAD_LEFT', 'Sol (Left)', 0x01, [0x00, 0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00])" 
+                        class="dpad-sector absolute left-1 top-1/2 -translate-y-1/2 w-16 h-24 rounded-l-full flex items-center justify-start pl-3.5 text-slate-200 hover:text-white" aria-label="Sol">
+                        <i class="fa-solid fa-chevron-left text-lg"></i>
+                    </button>
+
+                    <!-- RIGHT Button -->
+                    <button id="dpad-right" onclick="triggerRemoteKey('DPAD_RIGHT', 'Sağ (Right)', 0x01, [0x00, 0x00, 0x4F, 0x00, 0x00, 0x00, 0x00, 0x00])" 
+                        class="dpad-sector absolute right-1 top-1/2 -translate-y-1/2 w-16 h-24 rounded-r-full flex items-center justify-end pr-3.5 text-slate-200 hover:text-white" aria-label="Sağ">
+                        <i class="fa-solid fa-chevron-right text-lg"></i>
+                    </button>
+
+                    <!-- Decorative Subtle Crosshair Lines -->
+                    <div class="w-40 h-40 rounded-full border border-slate-700/30 pointer-events-none"></div>
+
+                    <!-- Center OK Button -->
+                    <button id="dpad-ok" onclick="triggerRemoteKey('DPAD_CENTER', 'OK / Seç (Enter)', 0x01, [0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00])" 
+                        class="dpad-ok w-20 h-20 rounded-full flex flex-col items-center justify-center text-white z-10">
+                        <span class="text-base font-extrabold tracking-wider">OK</span>
+                        <span class="text-[8px] font-medium text-blue-100/80 uppercase">Seç</span>
+                    </button>
+                </div>
+
+                <!-- Bottom Corner Projector Helpers -->
+                <div class="w-full flex justify-between items-center px-1 mt-1">
+                    <button onclick="triggerRemoteKey('KEYSTONE', 'Keystone (Köşe Düzeltme)', 0x02, [0x8A, 0x00])" class="remote-btn px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-[10px] font-semibold text-slate-300">
+                        <i class="fa-solid fa-vector-square text-purple-400"></i>
+                        <span>Keystone</span>
+                    </button>
+                    <span class="text-[9px] text-slate-500">Klavye yön tuşları aktif</span>
+                    <button onclick="switchMode('touchpad')" class="remote-btn px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-[10px] font-semibold text-cyan-300">
+                        <i class="fa-solid fa-arrow-pointer text-cyan-400"></i>
+                        <span>Fare Aç</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MODE 2: MULTI-TOUCH TRACKPAD / MOUSE SURFACE -->
+            <div id="mode-touchpad" class="mode-panel hidden flex-col h-full justify-between">
+                <div class="flex items-center justify-between mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                        <span class="text-xs font-bold text-slate-200">Projeksiyon Fare Modu (HID Mouse)</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[10px] text-slate-400">Hassasiyet:</span>
+                        <input id="mouseSensitivity" type="range" min="1" max="5" step="0.5" value="2.5" class="w-16 accent-blue-500 h-1 bg-slate-700 rounded-lg cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Trackpad Surface + Vertical Scroll Bar -->
+                <div class="flex gap-2 h-48">
+                    <!-- Interactive Canvas Trackpad -->
+                    <div id="trackpadContainer" class="trackpad-surface flex-1 rounded-2xl border border-slate-700/80 relative overflow-hidden cursor-crosshair">
+                        <canvas id="trackpadCanvas" class="w-full h-full block"></canvas>
+                        <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-25">
+                            <i class="fa-solid fa-hand-pointer text-2xl text-blue-400 mb-1"></i>
+                            <span class="text-[10px] font-semibold text-slate-300">İmleci hareket ettirmek için kaydırın</span>
+                            <span class="text-[9px] text-slate-400">Tek dokunuş = Sol Tık</span>
+                        </div>
+                        <div id="mouseCoordsBadge" class="absolute bottom-2 left-2.5 text-[10px] font-mono text-cyan-400/90 bg-slate-900/80 px-2 py-0.5 rounded-md border border-cyan-500/20">
+                            dx: 0, dy: 0
+                        </div>
+                    </div>
+
+                    <!-- Dedicated Vertical Scroll Slider (Tekerlek) -->
+                    <div id="scrollStrip" class="w-10 rounded-2xl bg-remote-bg border border-slate-700/80 flex flex-col items-center justify-between py-2.5 select-none touch-none cursor-ns-resize relative overflow-hidden">
+                        <button onclick="sendMousePacket(0, 0, 0, 1, 'Yukarı Kaydır (Scroll Up)')" class="text-slate-400 hover:text-white p-1">
+                            <i class="fa-solid fa-angles-up text-xs"></i>
+                        </button>
+                        <div class="flex flex-col items-center gap-1 pointer-events-none">
+                            <i class="fa-solid fa-arrows-up-down text-xs text-blue-400"></i>
+                            <span class="text-[8px] font-bold uppercase tracking-tighter text-slate-400 [writing-mode:vertical-lr]">KAYDIR</span>
+                        </div>
+                        <button onclick="sendMousePacket(0, 0, 0, -1, 'Aşağı Kaydır (Scroll Down)')" class="text-slate-400 hover:text-white p-1">
+                            <i class="fa-solid fa-angles-down text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mouse Click Buttons Row -->
+                <div class="grid grid-cols-3 gap-2 mt-2.5">
+                    <button onclick="sendMousePacket(1, 0, 0, 0, 'Sol Tık (Left Click)')" class="remote-btn py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-slate-200 active:text-blue-400">
+                        <i class="fa-solid fa-computer-mouse text-blue-400"></i>
+                        <span>Sol Tık</span>
+                    </button>
+                    <button onclick="sendMousePacket(4, 0, 0, 0, 'Orta Tık (Middle Click)')" class="remote-btn py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-[11px] font-semibold text-slate-300">
+                        <i class="fa-solid fa-up-down text-cyan-400"></i>
+                        <span>Orta Tık</span>
+                    </button>
+                    <button onclick="sendMousePacket(2, 0, 0, 0, 'Sağ Tık / Geri (Right Click)')" class="remote-btn py-2.5 rounded-xl flex items-center justify-center gap-1.5 text-xs font-bold text-slate-200 active:text-blue-400">
+                        <span>Sağ Tık</span>
+                        <i class="fa-solid fa-bars-staggered text-purple-400"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- MODE 3: QUICK APP LAUNCHERS & VIRTUAL KEYBOARD SHORTCUTS -->
+            <div id="mode-keyboard" class="mode-panel hidden flex-col justify-between space-y-2.5">
+                <!-- Quick App Launchers Grid -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-[11px] font-bold text-slate-300">Hızlı Uygulama & Giriş Kısayolları</span>
+                        <span class="text-[9px] text-slate-400">HID Kısayol Komutları</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="launchAppShortcut('YouTube', 0x02, [0x77, 0x00])" class="remote-btn p-2.5 rounded-xl flex items-center gap-2 text-left hover:border-red-500/40">
+                            <div class="w-7 h-7 rounded-lg bg-red-500/20 flex items-center justify-center text-red-500 shrink-0">
+                                <i class="fa-brands fa-youtube text-sm"></i>
+                            </div>
+                            <span class="text-xs font-bold text-slate-200 truncate">YouTube</span>
+                        </button>
+                        <button onclick="launchAppShortcut('Netflix', 0x02, [0x78, 0x00])" class="remote-btn p-2.5 rounded-xl flex items-center gap-2 text-left hover:border-rose-500/40">
+                            <div class="w-7 h-7 rounded-lg bg-rose-600/20 flex items-center justify-center text-rose-500 shrink-0 font-extrabold text-xs">
+                                N
+                            </div>
+                            <span class="text-xs font-bold text-slate-200 truncate">Netflix</span>
+                        </button>
+                        <button onclick="launchAppShortcut('Prime Video', 0x02, [0x79, 0x00])" class="remote-btn p-2.5 rounded-xl flex items-center gap-2 text-left hover:border-sky-500/40">
+                            <div class="w-7 h-7 rounded-lg bg-sky-500/20 flex items-center justify-center text-sky-400 shrink-0">
+                                <i class="fa-brands fa-amazon text-sm"></i>
+                            </div>
+                            <span class="text-xs font-bold text-slate-200 truncate">Prime</span>
+                        </button>
+                        <button onclick="launchAppShortcut('Tarayıcı (Browser)', 0x02, [0x96, 0x02])" class="remote-btn p-2.5 rounded-xl flex items-center gap-2 text-left">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                                <i class="fa-brands fa-chrome text-sm"></i>
+                            </div>
+                            <span class="text-xs font-bold text-slate-200 truncate">Tarayıcı</span>
+                        </button>
+                        <button onclick="launchAppShortcut('HDMI 1 Girişi', 0x02, [0x89, 0x01])" class="remote-btn p-2.5 rounded-xl flex items-center gap-2 text-left">
+                            <div class="w-7 h-7 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
+                                <i class="fa-solid fa-plug text-xs"></i>
+                            </div>
+                            <span class="text-xs font-bold text-slate-200 truncate">HDMI 1</span>
+                        </button>
+                        <button onclick="launchAppShortcut('Ekran Yansıtma (Miracast)', 0x02, [0x8B, 0x00])" class="remote-btn p-2.5 rounded-xl flex items-center gap-2 text-left">
+                            <div class="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                                <i class="fa-solid fa-cast text-xs"></i>
+                            </div>
+                            <span class="text-xs font-bold text-slate-200 truncate">Yansıtma</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Virtual Quick Keys (Space, Enter, Backspace, ESC, Tab, F11) -->
+                <div>
+                    <span class="text-[11px] font-bold text-slate-300 block mb-1.5">Sanal Klavye Hızlı Tuşlar</span>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button onclick="triggerRemoteKey('KEY_ESC', 'ESC (Çıkış)', 0x01, [0x00, 0x00, 0x29, 0x00, 0x00, 0x00, 0x00, 0x00])" class="remote-btn py-2 rounded-xl text-[11px] font-mono font-bold text-amber-400">
+                            ESC
+                        </button>
+                        <button onclick="triggerRemoteKey('KEY_TAB', 'TAB (Sonraki Alan)', 0x01, [0x00, 0x00, 0x2B, 0x00, 0x00, 0x00, 0x00, 0x00])" class="remote-btn py-2 rounded-xl text-[11px] font-mono font-bold text-slate-200">
+                            TAB ⇥
+                        </button>
+                        <button onclick="triggerRemoteKey('KEY_FULLSCREEN', 'F11 (Tam Ekran)', 0x01, [0x00, 0x00, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00])" class="remote-btn py-2 rounded-xl text-[11px] font-mono font-bold text-cyan-400">
+                            F11
+                        </button>
+                        <button onclick="triggerRemoteKey('BACKSPACE', 'Sil (Backspace)', 0x01, [0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00])" class="remote-btn py-2 rounded-xl text-[11px] font-bold text-rose-400">
+                            <i class="fa-solid fa-delete-left mr-1"></i>Sil
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5 mt-1.5">
+                        <button onclick="sendQuickString('.com')" class="remote-btn py-2 rounded-xl text-xs font-mono font-semibold text-slate-300">
+                            .com
+                        </button>
+                        <button onclick="triggerRemoteKey('KEY_SPACE', 'Boşluk (Space)', 0x01, [0x00, 0x00, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x00])" class="remote-btn py-2 rounded-xl text-xs font-bold text-slate-100">
+                            ␣ Boşluk
+                        </button>
+                        <button onclick="triggerRemoteKey('KEY_ENTER', 'Enter (Onayla)', 0x01, [0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00])" class="remote-btn py-2 rounded-xl text-xs font-bold text-emerald-400">
+                            Enter ↵
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. NAVIGATION & MULTIMEDIA CONTROL DECK (ALWAYS ACCESSIBLE) -->
+        <section class="px-4 pt-2 pb-3 bg-remote-surface/80 border-t border-slate-800/90 space-y-3">
+            
+            <!-- Row 1: Geri (Back), Ana Ekran (Home), Menü (Menu) -->
+            <div class="grid grid-cols-3 gap-2.5">
+                <button onclick="triggerRemoteKey('NAV_BACK', 'Geri (Back)', 0x02, [0x24, 0x02])" class="remote-btn py-2.5 rounded-2xl flex items-center justify-center gap-2 text-slate-200 hover:text-white">
+                    <i class="fa-solid fa-arrow-left text-sm text-blue-400"></i>
+                    <span class="text-xs font-bold">Geri</span>
+                </button>
+                <button onclick="triggerRemoteKey('NAV_HOME', 'Ana Ekran (Home)', 0x02, [0x23, 0x02])" class="remote-btn py-2.5 rounded-2xl flex items-center justify-center gap-2 text-slate-100 border-blue-500/30">
+                    <i class="fa-solid fa-house text-sm text-emerald-400"></i>
+                    <span class="text-xs font-bold">Ana Ekran</span>
+                </button>
+                <button onclick="triggerRemoteKey('NAV_MENU', 'Menü (Context Menu)', 0x01, [0x00, 0x00, 0x65, 0x00, 0x00, 0x00, 0x00, 0x00])" class="remote-btn py-2.5 rounded-2xl flex items-center justify-center gap-2 text-slate-200 hover:text-white">
+                    <i class="fa-solid fa-bars text-sm text-purple-400"></i>
+                    <span class="text-xs font-bold">Menü</span>
+                </button>
+            </div>
+
+            <!-- Row 2: Volume Pill (Left), Center Quick Mic & Info, Channel/Page Pill (Right) -->
+            <div class="grid grid-cols-3 gap-3 items-center">
+                
+                <!-- Left Pill: Ses + / Sessiz / Ses - -->
+                <div class="rocker-pill rounded-3xl p-1.5 flex flex-col items-center justify-between h-36">
+                    <button onclick="triggerRemoteKey('VOL_UP', 'Ses + (Vol Up)', 0x02, [0xE9, 0x00])" class="w-full flex-1 rounded-2xl hover:bg-white/5 active:bg-blue-500/20 flex flex-col items-center justify-center text-slate-100 transition-colors">
+                        <i class="fa-solid fa-plus text-sm text-blue-400"></i>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">Ses +</span>
+                    </button>
+                    
+                    <button onclick="triggerRemoteKey('VOL_MUTE', 'Sessiz (Mute)', 0x02, [0xE2, 0x00])" class="w-full py-1.5 my-0.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 flex items-center justify-center gap-1 text-rose-400 border border-slate-800">
+                        <i class="fa-solid fa-volume-xmark text-xs"></i>
+                        <span class="text-[9px] font-bold">Sessiz</span>
+                    </button>
+
+                    <button onclick="triggerRemoteKey('VOL_DOWN', 'Ses - (Vol Down)', 0x02, [0xEA, 0x00])" class="w-full flex-1 rounded-2xl hover:bg-white/5 active:bg-blue-500/20 flex flex-col items-center justify-center text-slate-100 transition-colors">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Ses -</span>
+                        <i class="fa-solid fa-minus text-sm text-blue-400"></i>
+                    </button>
+                </div>
+
+                <!-- Center Column: Quick Voice Trigger + APK/Bridge Guide -->
+                <div class="flex flex-col items-center justify-between h-36 py-0.5">
+                    <button id="deckMicBtn" onclick="toggleSpeechRecognition()" class="remote-btn w-16 h-16 rounded-full flex flex-col items-center justify-center text-white border-2 border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.25)]">
+                        <i class="fa-solid fa-microphone text-lg text-blue-400"></i>
+                        <span class="text-[8px] font-extrabold uppercase tracking-wider text-slate-300 mt-0.5">Sesli Yaz</span>
+                    </button>
+
+                    <button onclick="openAndroidCodeModal()" class="remote-btn w-full py-2 px-2 rounded-2xl flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/25">
+                        <i class="fa-brands fa-android text-sm"></i>
+                        <span>Android Köprü</span>
+                    </button>
+                </div>
+
+                <!-- Right Pill: Kanal/Sayfa + & - -->
+                <div class="rocker-pill rounded-3xl p-1.5 flex flex-col items-center justify-between h-36">
+                    <button onclick="triggerRemoteKey('CH_PAGE_UP', 'Kanal / Sayfa + (PG Up)', 0x01, [0x00, 0x00, 0x4B, 0x00, 0x00, 0x00, 0x00, 0x00])" class="w-full flex-1 rounded-2xl hover:bg-white/5 active:bg-purple-500/20 flex flex-col items-center justify-center text-slate-100 transition-colors">
+                        <i class="fa-solid fa-chevron-up text-sm text-purple-400"></i>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mt-0.5">CH / SYF</span>
+                    </button>
+
+                    <div class="w-10 h-[1px] bg-slate-700/70 my-0.5"></div>
+
+                    <button onclick="triggerRemoteKey('CH_PAGE_DOWN', 'Kanal / Sayfa - (PG Down)', 0x01, [0x00, 0x00, 0x4E, 0x00, 0x00, 0x00, 0x00, 0x00])" class="w-full flex-1 rounded-2xl hover:bg-white/5 active:bg-purple-500/20 flex flex-col items-center justify-center text-slate-100 transition-colors">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">CH / SYF</span>
+                        <i class="fa-solid fa-chevron-down text-sm text-purple-400"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 3: Multimedia Transport Bar (Prev, Rewind, Play/Pause, Fast Forward, Next) -->
+            <div class="grid grid-cols-5 gap-1.5 pt-1">
+                <button onclick="triggerRemoteKey('MEDIA_PREV', 'Önceki (Prev)', 0x02, [0xB6, 0x00])" title="Önceki Video/Parça" class="remote-btn py-2.5 rounded-xl flex flex-col items-center justify-center text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-backward-step text-xs"></i>
+                    <span class="text-[8px] font-semibold text-slate-400 mt-0.5">Önceki</span>
+                </button>
+                <button onclick="triggerRemoteKey('MEDIA_REWIND', 'Geri Sar (-10sn)', 0x02, [0xB4, 0x00])" title="Geri Sar" class="remote-btn py-2.5 rounded-xl flex flex-col items-center justify-center text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-backward text-xs"></i>
+                    <span class="text-[8px] font-semibold text-slate-400 mt-0.5">Geri Sar</span>
+                </button>
+                <button onclick="triggerRemoteKey('MEDIA_PLAY_PAUSE', 'Oynat / Duraklat', 0x02, [0xCD, 0x00])" title="Oynat / Duraklat" class="remote-btn py-2.5 rounded-xl flex flex-col items-center justify-center text-blue-400 border-blue-500/30">
+                    <div class="flex items-center gap-1 text-xs">
+                        <i class="fa-solid fa-play"></i>
+                        <i class="fa-solid fa-pause text-[10px]"></i>
+                    </div>
+                    <span class="text-[8px] font-bold text-blue-300 mt-0.5">Oynat</span>
+                </button>
+                <button onclick="triggerRemoteKey('MEDIA_FF', 'İleri Sar (+10sn)', 0x02, [0xB3, 0x00])" title="İleri Sar" class="remote-btn py-2.5 rounded-xl flex flex-col items-center justify-center text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-forward text-xs"></i>
+                    <span class="text-[8px] font-semibold text-slate-400 mt-0.5">İleri Sar</span>
+                </button>
+                <button onclick="triggerRemoteKey('MEDIA_NEXT', 'Sonraki (Next)', 0x02, [0xB5, 0x00])" title="Sonraki Video/Parça" class="remote-btn py-2.5 rounded-xl flex flex-col items-center justify-center text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-forward-step text-xs"></i>
+                    <span class="text-[8px] font-semibold text-slate-400 mt-0.5">Sonraki</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. LIVE HID PACKET LOGGER / DEBUG DRAWER (COLLAPSIBLE AT BOTTOM) -->
+        <footer class="bg-remote-bg border-t border-slate-800">
+            <button onclick="toggleDebugDrawer()" class="w-full px-4 py-2 flex items-center justify-between text-[11px] font-mono text-slate-400 hover:text-slate-200 transition-colors">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Canlı Bluetooth HID Paket Günlüğü</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="packetCountBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-blue-400">0 paket</span>
+                    <i id="debugChevron" class="fa-solid fa-chevron-up text-[10px] transition-transform"></i>
+                </div>
+            </button>
+
+            <div id="debugDrawerContent" class="hidden px-3 pb-3 border-t border-slate-800/70">
+                <div class="flex items-center justify-between py-1.5 text-[10px] text-slate-400">
+                    <span>Hedef: <code class="text-emerald-400">window.AndroidBridge</code> / HID</span>
+                    <button onclick="clearHidLogs()" class="text-rose-400 hover:underline">Günlüğü Temizle</button>
+                </div>
+                <div id="hidLogList" class="h-32 overflow-y-auto bg-black/70 rounded-xl p-2 font-mono text-[10px] space-y-1 border border-slate-800">
+                    <!-- Dynamic HID logs appear here -->
+                </div>
+            </div>
+        </footer>
+
+        <!-- MODAL 1: BLUETOOTH DEVICE SELECTOR & PAIRING -->
+        <div id="deviceModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="w-full max-w-sm bg-remote-body border border-slate-700 rounded-3xl p-4 shadow-2xl">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-brands fa-bluetooth text-blue-400 text-lg"></i>
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Bluetooth HID Cihaz Seçimi</h3>
+                            <p class="text-[10px] text-slate-400">Projeksiyon veya Smart TV'nize bağlanın</p>
+                        </div>
+                    </div>
+                    <button onclick="closeDeviceModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Scan Actions -->
+                <div class="flex items-center justify-between my-3">
+                    <button onclick="scanBluetoothDevices()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 text-xs font-semibold hover:bg-blue-600/30">
+                        <i id="scanSpinner" class="fa-solid fa-rotate"></i>
+                        <span>Cihazları Tara</span>
+                    </button>
+                    <button onclick="requestRealWebBluetooth()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-600/30">
+                        <i class="fa-solid fa-tower-broadcast"></i>
+                        <span>Tarayıcı BT Eşle</span>
+                    </button>
+                </div>
+
+                <!-- Device List -->
+                <div id="btDeviceList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <!-- Populated via JS -->
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] text-slate-400">
+                    <span>HID Profili: Klavye (0x01) + Tüketici (0x02) + Fare (0x03)</span>
+                    <button onclick="closeDeviceModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 font-semibold">Kapat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 2: ANDROID STUDIO WEBVIEW BRIDGE CODE (KOTLIN) -->
+        <div id="androidCodeModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="w-full max-w-md bg-remote-body border border-slate-700 rounded-3xl p-4 shadow-2xl flex flex-col max-h-[85vh]">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-brands fa-android text-emerald-400 text-lg"></i>
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Android Studio Bluetooth HID Köprüsü</h3>
+                            <p class="text-[10px] text-slate-400">Bu arayüzü doğrudan APK içinde çalıştırın</p>
+                        </div>
+                    </div>
+                    <button onclick="closeAndroidCodeModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="my-3 text-xs text-slate-300 space-y-1.5">
+                    <p>Bu HTML dosyası her tuş basımında otomatik olarak <code class="text-emerald-400 font-mono">window.AndroidBridge</code> ve <code class="text-emerald-400 font-mono">window.AndroidHidBridge</code> metodlarını tetikler.</p>
+                    <p class="text-[11px] text-slate-400">Android Studio'da bir <code class="text-blue-300">WebView</code> oluşturup aşağıdaki <code class="text-amber-300">JavascriptInterface</code> sınıfını bağlayarak telefonunuzu gerçek bir Bluetooth HID Kumandaya dönüştürebilirsiniz:</p>
+                </div>
+
+                <div class="relative flex-1 overflow-hidden rounded-2xl border border-slate-800 bg-black/90">
+                    <button onclick="copyKotlinCode()" id="copyCodeBtn" class="absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-semibold flex items-center gap-1 z-10">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Kodu Kopyala</span>
+                    </button>
+                    <pre id="kotlinBridgeCode" class="p-3 text-[10px] font-mono text-emerald-300 overflow-auto h-64 leading-relaxed">
+// Android Studio -> MainActivity.kt (BluetoothHidDevice Köprüsü)
+class AndroidHidBridge(
+    private val context: Context,
+    private val hidDevice: BluetoothHidDevice?,
+    private val hostDevice: BluetoothDevice?
+) {
+    // 1. Klavye (0x01) veya Multimedya Consumer (0x02) Tuşu Gönder
+    @JavascriptInterface
+    fun sendKey(reportId: Int, hexBytesJson: String, keyName: String) {
+        val bytes = parseJsonBytes(hexBytesJson)
+        hidDevice?.sendReport(hostDevice, reportId, bytes)
+        // Tuş bırakma (Release) raporu
+        val releaseBytes = ByteArray(bytes.size) { 0 }
+        hidDevice?.sendReport(hostDevice, reportId, releaseBytes)
+    }
+
+    // 2. Sesli Yazılan Metni Karakter Karakter Gönder
+    @JavascriptInterface
+    fun sendText(text: String, asciiMode: Boolean) {
+        // Her karakter için HID Keyboard (Report ID 1) gönderilir
+    }
+
+    // 3. Projeksiyon Touchpad Fare Hareketi Gönder (Report ID 3)
+    @JavascriptInterface
+    fun sendMouse(buttons: Int, dx: Int, dy: Int, wheel: Int) {
+        val report = byteArrayOf(
+            buttons.toByte(),
+            dx.coerceIn(-127, 127).toByte(),
+            dy.coerceIn(-127, 127).toByte(),
+            wheel.coerceIn(-127, 127).toByte()
+        )
+        hidDevice?.sendReport(hostDevice, 3, report)
+    }
+}
+
+// WebView Bağlantısı:
+webView.settings.javaScriptEnabled = true
+webView.addJavascriptInterface(AndroidHidBridge(this, hid, host), "AndroidBridge")
+webView.loadUrl("file:///android_asset/index.html")</pre>
+                </div>
+
+                <div class="mt-3 flex justify-end">
+                    <button onclick="closeAndroidCodeModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-semibold">Tamam</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Feedback Banner -->
+        <div id="toastBanner" class="pointer-events-none fixed bottom-5 left-1/2 -translate-x-1/2 z-50 opacity-0 transition-all duration-200 translate-y-2 bg-slate-900/95 border border-blue-500/40 text-white px-4 py-2 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-medium">
+            <i class="fa-solid fa-circle-check text-blue-400"></i>
+            <span id="toastText">Komut gönderildi</span>
+        </div>
+
+    </main>
+
+    <!-- APPLICATION JAVASCRIPT -->
+    <script>
+        /********************************************************************
+         * 1. STATE & BLUETOOTH DEVICE MANAGEMENT
+         ********************************************************************/
+        const appState = {
+            btState: 'CONNECTED', // 'DISCONNECTED' | 'SCANNING' | 'CONNECTED'
+            connectedDevice: {
+                id: 'proj-wanbo-01',
+                name: 'Akıllı Projeksiyon (Android TV)',
+                mac: 'A4:C1:38:9F:22:1B',
+                type: 'Projeksiyon • HID Klavye & Fare'
+            },
+            devices: [
+                { id: 'proj-wanbo-01', name: 'Akıllı Projeksiyon (Android TV)', mac: 'A4:C1:38:9F:22:1B', type: 'Projeksiyon • HID Destekli', rssi: -46 },
+                { id: 'proj-xgimi-02', name: 'Salondaki Smart TV (Google TV)', mac: '58:24:29:11:8C:04', type: 'Smart TV • HID Destekli', rssi: -58 },
+                { id: 'proj-anker-03', name: 'Sinema Projeksiyonu (Nebula)', mac: 'D0:49:7C:3E:91:55', type: 'Taşınabilir Projeksiyon', rssi: -64 },
+                { id: 'tv-mibux-04', name: 'Xiaomi Mi Box S 4K', mac: '7C:A1:AE:60:19:F2', type: 'Medya Oynatıcı', rssi: -71 }
+            ],
+            currentMode: 'dpad',
+            packetCounter: 0,
+            isListeningSpeech: false,
+            isSendingText: false
+        };
+
+        // Turkish to ASCII character map for projectors with English US HID layout
+        const trAsciiMap = {
+            'ç': 'c', 'Ç': 'C',
+            'ğ': 'g', 'Ğ': 'G',
+            'ı': 'i', 'İ': 'I',
+            'ö': 'o', 'Ö': 'O',
+            'ş': 's', 'Ş': 'S',
+            'ü': 'u', 'Ü': 'U'
+        };
+
+        // Standard USB/Bluetooth HID Keyboard Usage IDs (US QWERTY mapping)
+        function charToHidKeycode(char) {
+            const code = char.charCodeAt(0);
+            // a-z -> 0x04 - 0x1D
+            if (code >= 97 && code <= 122) {
+                return { mod: 0x00, key: 0x04 + (code - 97) };
+            }
+            // A-Z -> Shift (0x02) + 0x04 - 0x1D
+            if (code >= 65 && code <= 90) {
+                return { mod: 0x02, key: 0x04 + (code - 65) };
+            }
+            // 1-9 -> 0x1E - 0x26
+            if (code >= 49 && code <= 57) {
+                return { mod: 0x00, key: 0x1E + (code - 49) };
+            }
+            // 0 -> 0x27
+            if (code === 48) return { mod: 0x00, key: 0x27 };
+            if (char === ' ') return { mod: 0x00, key: 0x2C };
+            if (char === '.') return { mod: 0x00, key: 0x37 };
+            if (char === ',') return { mod: 0x00, key: 0x36 };
+            if (char === '-') return { mod: 0x00, key: 0x2D };
+            if (char === '?') return { mod: 0x02, key: 0x38 };
+            if (char === '!') return { mod: 0x02, key: 0x1E };
+            if (char === '@') return { mod: 0x02, key: 0x1F };
+            return { mod: 0x00, key: 0x2C }; // fallback Space
+        }
+
+        function convertTurkishToAscii(str) {
+            return str.replace(/[çÇğĞıİöÖşŞüÜ]/g, match => trAsciiMap[match] || match);
+        }
+
+        function vibrateFeedback(ms = 30) {
+            try {
+                if (navigator.vibrate) {
+                    navigator.vibrate(ms);
+                }
+            } catch (e) {
+                // Ignore vibration errors on unsupported browsers
+            }
+        }
+
+        function flashTopLed(hexCodeStr) {
+            const led = document.getElementById('irSignalLed');
+            const badge = document.getElementById('lastKeyBadge');
+            led.classList.remove('opacity-0');
+            badge.textContent = hexCodeStr;
+            badge.classList.remove('opacity-0');
+
+            clearTimeout(window._ledTimer);
+            window._ledTimer = setTimeout(() => {
+                led.classList.add('opacity-0');
+                badge.classList.add('opacity-0');
+            }, 320);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastBanner');
+            const text = document.getElementById('toastText');
+            text.textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 1900);
+        }
+
+        /********************************************************************
+         * 2. ANDROID WEBVIEW BRIDGE & HID PACKET DISPATCHER
+         ********************************************************************/
+        function formatHexBytes(bytes) {
+            return '[' + bytes.map(b => '0x' + (b & 0xFF).toString(16).toUpperCase().padStart(2, '0')).join(', ') + ']';
+        }
+
+        function appendHidLog(typeLabel, reportId, bytesDesc, humanLabel) {
+            appState.packetCounter++;
+            document.getElementById('packetCountBadge').textContent = `${appState.packetCounter} paket`;
+
+            const list = document.getElementById('hidLogList');
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
+
+            const row = document.createElement('div');
+            row.className = 'flex items-start justify-between gap-2 border-b border-slate-800/70 pb-1 text-[10px]';
+            row.innerHTML = `
+                <div class="truncate">
+                    <span class="text-slate-500">${timeStr}</span>
+                    <span class="text-blue-400 font-semibold ml-1">${typeLabel} [0x0${reportId}]:</span>
+                    <span class="text-emerald-300 ml-1">${bytesDesc}</span>
+                </div>
+                <span class="text-slate-300 shrink-0 bg-slate-800/90 px-1.5 rounded">${humanLabel}</span>
+            `;
+            list.prepend(row);
+
+            // Keep max 40 log entries
+            while (list.children.length > 40) {
+                list.removeChild(list.lastChild);
+            }
+        }
+
+        function clearHidLogs() {
+            appState.packetCounter = 0;
+            document.getElementById('packetCountBadge').textContent = '0 paket';
+            document.getElementById('hidLogList').innerHTML = '';
+        }
+
+        function triggerRemoteKey(actionCode, humanLabel, reportId, reportBytes) {
+            vibrateFeedback(30);
+
+            const hexStr = formatHexBytes(reportBytes);
+            const reportType = reportId === 0x01 ? 'HID Keyboard' : 'HID Consumer';
+            const primaryHex = '0x' + (reportBytes[2] || reportBytes[0] || 0).toString(16).toUpperCase().padStart(2, '0');
+
+            flashTopLed(`HID: ${primaryHex}`);
+            appendHidLog(reportType, reportId, hexStr, humanLabel);
+
+            // Call Native Android WebView Bridge if available
+            try {
+                if (window.AndroidBridge && typeof window.AndroidBridge.sendKey === 'function') {
+                    window.AndroidBridge.sendKey(reportId, JSON.stringify(reportBytes), actionCode);
+                } else if (window.AndroidHidBridge && typeof window.AndroidHidBridge.sendKey === 'function') {
+                    window.AndroidHidBridge.sendKey(reportId, JSON.stringify(reportBytes), actionCode);
+                }
+            } catch (err) {
+                console.warn('AndroidBridge hatası:', err);
+            }
+        }
+
+        function launchAppShortcut(appName, reportId, reportBytes) {
+            triggerRemoteKey('APP_' + appName.toUpperCase(), `${appName} Başlat`, reportId, reportBytes);
+            showToast(`${appName} komutu projeksiyona gönderildi`);
+        }
+
+        /********************************************************************
+         * 3. MODE SWITCHER (KUMANDA / TOUCHPAD / KLAVYE & SES)
+         ********************************************************************/
+        function switchMode(mode) {
+            vibrateFeedback(20);
+            appState.currentMode = mode;
+
+            const modes = ['dpad', 'touchpad', 'keyboard'];
+            modes.forEach(m => {
+                const panel = document.getElementById(`mode-${m}`);
+                const tab = document.getElementById(`tab-${m}`);
+                if (m === mode) {
+                    panel.classList.remove('hidden');
+                    panel.classList.add('flex');
+                    tab.className = 'mode-tab flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all bg-blue-600 text-white shadow-md';
+                } else {
+                    panel.classList.add('hidden');
+                    panel.classList.remove('flex');
+                    tab.className = 'mode-tab flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-slate-200';
+                }
+            });
+
+            if (mode === 'touchpad') {
+                setTimeout(resizeTrackpadCanvas, 30);
+            }
+        }
+
+        /********************************************************************
+         * 4. TURKISH VOICE TYPING (SpeechRecognition) & SMART HID TEXT SENDER
+         ********************************************************************/
+        let recognition = null;
+
+        function initSpeechRecognition() {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) return null;
+
+            const rec = new SpeechRec();
+            rec.lang = 'tr-TR';
+            rec.continuous = false;
+            rec.interimResults = true;
+
+            rec.onstart = () => {
+                appState.isListeningSpeech = true;
+                updateMicUI(true, 'Dinleniyor (tr-TR)...');
+                vibrateFeedback(40);
+            };
+
+            rec.onresult = (event) => {
+                let transcript = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                const input = document.getElementById('smartTextInput');
+                input.value = transcript;
+            };
+
+            rec.onerror = (event) => {
+                appState.isListeningSpeech = false;
+                updateMicUI(false, 'Ses Alınamadı');
+                showToast('Mikrofon izni gerekli veya ortamda ses algılanmadı. "Örnek Ses" butonunu deneyebilirsiniz.');
+            };
+
+            rec.onend = () => {
+                appState.isListeningSpeech = false;
+                updateMicUI(false, 'Hazır');
+            };
+
+            return rec;
+        }
+
+        function updateMicUI(listening, badgeText) {
+            const micBtn = document.getElementById('voiceMicBtn');
+            const deckMicBtn = document.getElementById('deckMicBtn');
+            const micLabel = document.getElementById('voiceMicLabel');
+            const statusBadge = document.getElementById('voiceStatusBadge');
+
+            statusBadge.textContent = badgeText;
+
+            if (listening) {
+                micBtn.classList.add('mic-listening');
+                deckMicBtn.classList.add('mic-listening');
+                micLabel.textContent = 'Dinliyor';
+                statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse';
+            } else {
+                micBtn.classList.remove('mic-listening');
+                deckMicBtn.classList.remove('mic-listening');
+                micLabel.textContent = 'Konuş';
+                statusBadge.className = 'text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700';
+            }
+        }
+
+        function toggleSpeechRecognition() {
+            vibrateFeedback(35);
+            if (!recognition) {
+                recognition = initSpeechRecognition();
+            }
+
+            if (!recognition) {
+                simulateVoiceSample();
+                showToast('Tarayıcı Speech API desteklemiyor, örnek Türkçe sesli metin yüklendi.');
+                return;
+            }
+
+            if (appState.isListeningSpeech) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    recognition.stop();
+                }
+            }
+        }
+
+        const sampleTurkishPhrases = [
+            'Kemal Sunal filmleri full izle',
+            '4K doğa belgeseli Türkçe dublaj',
+            'Şampiyonlar Ligi özetleri',
+            'Barış Manço Gülpembe konser kaydı',
+            'Bilim kurgu uzay filmleri 2026'
+        ];
+        let sampleIndex = 0;
+
+        function simulateVoiceSample() {
+            vibrateFeedback(25);
+            const phrase = sampleTurkishPhrases[sampleIndex % sampleTurkishPhrases.length];
+            sampleIndex++;
+            const input = document.getElementById('smartTextInput');
+            input.value = phrase;
+            updateMicUI(false, 'Ses Algılandı ✓');
+            showToast(`Sesli metin algılandı: "${phrase}"`);
+        }
+
+        function clearSmartText() {
+            vibrateFeedback(15);
+            document.getElementById('smartTextInput').value = '';
+            document.getElementById('txProgressContainer').classList.add('hidden');
+        }
+
+        function sendQuickString(str) {
+            document.getElementById('smartTextInput').value = str;
+            sendSmartText(false);
+        }
+
+        async function sendSmartText(pressEnterAfter = false) {
+            if (appState.isSendingText) return;
+            const rawInput = document.getElementById('smartTextInput').value;
+            if (!rawInput || rawInput.trim().length === 0) {
+                showToast('Lütfen önce sesli konuşun veya bir metin yazın.');
+                return;
+            }
+
+            vibrateFeedback(40);
+            const useAscii = document.getElementById('asciiToggle').checked;
+            const finalString = useAscii ? convertTurkishToAscii(rawInput) : rawInput;
+
+            // Notify Android Native Bridge if running inside Android WebView
+            try {
+                if (window.AndroidBridge && typeof window.AndroidBridge.sendText === 'function') {
+                    window.AndroidBridge.sendText(finalString, useAscii);
+                } else if (window.AndroidHidBridge && typeof window.AndroidHidBridge.sendText === 'function') {
+                    window.AndroidHidBridge.sendText(finalString, useAscii);
+                }
+            } catch (e) {
+                console.warn('AndroidBridge.sendText hatası:', e);
+            }
+
+            // Visual Character-by-Character HID Transmission Progress
+            appState.isSendingText = true;
+            const container = document.getElementById('txProgressContainer');
+            const bar = document.getElementById('txProgressBar');
+            const counter = document.getElementById('txCharCounter');
+            const preview = document.getElementById('txCharPreview');
+            const statusLabel = document.getElementById('txStatusLabel');
+
+            container.classList.remove('hidden');
+            preview.innerHTML = '';
+            statusLabel.textContent = useAscii
+                ? 'HID Klavye (ASCII Uyumlu) Gönderiliyor...'
+                : 'HID Klavye Paketleri Gönderiliyor...';
+
+            const chars = Array.from(finalString);
+            const total = chars.length;
+
+            for (let i = 0; i < total; i++) {
+                const ch = chars[i];
+                const hid = charToHidKeycode(ch);
+                const packet = [hid.mod, 0x00, hid.key, 0x00, 0x00, 0x00, 0x00, 0x00];
+
+                const pct = Math.round(((i + 1) / total) * 100);
+                bar.style.width = `${pct}%`;
+                counter.textContent = `${i + 1}/${total}`;
+
+                const chip = document.createElement('span');
+                chip.className = 'px-1.5 py-0.5 rounded bg-blue-500/20 border border-blue-500/40 text-cyan-300 shrink-0';
+                chip.textContent = ch === ' ' ? '␣' : ch;
+                preview.appendChild(chip);
+                preview.scrollLeft = preview.scrollWidth;
+
+                appendHidLog('HID Keyboard', 0x01, formatHexBytes(packet), `Harf: '${ch}'`);
+                flashTopLed(`KEY: '${ch}'`);
+
+                await new Promise(r => setTimeout(r, 45));
+            }
+
+            if (pressEnterAfter) {
+                triggerRemoteKey('KEY_ENTER', 'Enter (Ara)', 0x01, [0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00]);
+            }
+
+            statusLabel.textContent = 'Metin Projeksiyona Yazdırıldı ✓';
+            appState.isSendingText = false;
+        }
+
+        /********************************************************************
+         * 5. MULTI-TOUCH TRACKPAD & MOUSE ENGINE (HID REPORT 0x03)
+         ********************************************************************/
+        const trackpadCanvas = document.getElementById('trackpadCanvas');
+        const ctx = trackpadCanvas.getContext('2d');
+        let trailPoints = [];
+        let isDraggingPad = false;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let touchStartTime = 0;
+        let totalTouchMove = 0;
+
+        function resizeTrackpadCanvas() {
+            const container = document.getElementById('trackpadContainer');
+            if (!container) return;
+            const rect = container.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+                trackpadCanvas.width = rect.width;
+                trackpadCanvas.height = rect.height;
+            }
+        }
+
+        function sendMousePacket(buttons, dx, dy, wheel, label = 'Fare Hareketi') {
+            const clampedDx = Math.max(-127, Math.min(127, Math.round(dx)));
+            const clampedDy = Math.max(-127, Math.min(127, Math.round(dy)));
+            const clampedWheel = Math.max(-127, Math.min(127, Math.round(wheel)));
+
+            document.getElementById('mouseCoordsBadge').textContent = `dx: ${clampedDx}, dy: ${clampedDy}`;
+            flashTopLed(`M: ${clampedDx},${clampedDy}`);
+
+            const desc = `btn=${buttons}, dx=${clampedDx}, dy=${clampedDy}, wheel=${clampedWheel}`;
+            appendHidLog('HID Mouse', 0x03, desc, label);
+
+            if (buttons > 0 || wheel !== 0) {
+                vibrateFeedback(20);
+            }
+
+            try {
+                if (window.AndroidBridge && typeof window.AndroidBridge.sendMouse === 'function') {
+                    window.AndroidBridge.sendMouse(buttons, clampedDx, clampedDy, clampedWheel);
+                } else if (window.AndroidHidBridge && typeof window.AndroidHidBridge.sendMouse === 'function') {
+                    window.AndroidHidBridge.sendMouse(buttons, clampedDx, clampedDy, clampedWheel);
+                }
+            } catch (e) {
+                console.warn('AndroidBridge.sendMouse hatası:', e);
+            }
+        }
+
+        function addTrailPoint(x, y) {
+            trailPoints.push({ x, y, alpha: 1.0, radius: 7 });
+            if (trailPoints.length > 22) trailPoints.shift();
+        }
+
+        function renderTrackpadLoop() {
+            if (trackpadCanvas.width > 0) {
+                ctx.clearRect(0, 0, trackpadCanvas.width, trackpadCanvas.height);
+
+                for (let i = 0; i < trailPoints.length; i++) {
+                    const p = trailPoints[i];
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha * 0.55})`;
+                    ctx.fill();
+
+                    if (i > 0) {
+                        const prev = trailPoints[i - 1];
+                        ctx.beginPath();
+                        ctx.moveTo(prev.x, prev.y);
+                        ctx.lineTo(p.x, p.y);
+                        ctx.strokeStyle = `rgba(96, 165, 250, ${p.alpha * 0.7})`;
+                        ctx.lineWidth = 3;
+                        ctx.lineCap = 'round';
+                        ctx.stroke();
+                    }
+
+                    p.alpha *= 0.88;
+                    p.radius *= 0.96;
+                }
+                trailPoints = trailPoints.filter(p => p.alpha > 0.05);
+            }
+            requestAnimationFrame(renderTrackpadLoop);
+        }
+
+        function setupTrackpadEvents() {
+            const pad = document.getElementById('trackpadContainer');
+
+            const handleStart = (clientX, clientY) => {
+                const rect = pad.getBoundingClientRect();
+                isDraggingPad = true;
+                lastTouchX = clientX;
+                lastTouchY = clientY;
+                touchStartTime = Date.now();
+                totalTouchMove = 0;
+                addTrailPoint(clientX - rect.left, clientY - rect.top);
+            };
+
+            const handleMove = (clientX, clientY) => {
+                if (!isDraggingPad) return;
+                const rect = pad.getBoundingClientRect();
+                const sens = parseFloat(document.getElementById('mouseSensitivity').value) || 2.5;
+                const dx = (clientX - lastTouchX) * sens;
+                const dy = (clientY - lastTouchY) * sens;
+
+                lastTouchX = clientX;
+                lastTouchY = clientY;
+                totalTouchMove += Math.abs(dx) + Math.abs(dy);
+
+                addTrailPoint(clientX - rect.left, clientY - rect.top);
+                if (Math.abs(dx) >= 1 || Math.abs(dy) >= 1) {
+                    sendMousePacket(0, dx, dy, 0, 'İmleç Hareket');
+                }
+            };
+
+            const handleEnd = () => {
+                if (!isDraggingPad) return;
+                isDraggingPad = false;
+                const elapsed = Date.now() - touchStartTime;
+                // Tap-to-click detection
+                if (elapsed < 230 && totalTouchMove < 10) {
+                    sendMousePacket(1, 0, 0, 0, 'Dokunmatik Sol Tık');
+                }
+            };
+
+            pad.addEventListener('mousedown', e => handleStart(e.clientX, e.clientY));
+            window.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', handleEnd);
+
+            pad.addEventListener('touchstart', e => {
+                if (e.touches.length === 1) {
+                    handleStart(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: true });
+
+            pad.addEventListener('touchmove', e => {
+                if (e.touches.length === 1) {
+                    handleMove(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: true });
+
+            pad.addEventListener('touchend', handleEnd);
+
+            // Vertical Scroll Strip touch handling
+            const scrollStrip = document.getElementById('scrollStrip');
+            let lastScrollY = null;
+            scrollStrip.addEventListener('touchstart', e => {
+                lastScrollY = e.touches[0].clientY;
+            }, { passive: true });
+            scrollStrip.addEventListener('touchmove', e => {
+                if (lastScrollY === null) return;
+                const dy = e.touches[0].clientY - lastScrollY;
+                if (Math.abs(dy) > 12) {
+                    const wheel = dy > 0 ? -1 : 1;
+                    sendMousePacket(0, 0, 0, wheel, wheel > 0 ? 'Yukarı Kaydır' : 'Aşağı Kaydır');
+                    lastScrollY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+        }
+
+        /********************************************************************
+         * 6. BLUETOOTH MODAL, SCANNING & REAL WEB BLUETOOTH PAIRING
+         ********************************************************************/
+        function renderDeviceList() {
+            const listEl = document.getElementById('btDeviceList');
+            listEl.innerHTML = '';
+
+            appState.devices.forEach(dev => {
+                const isSelected = appState.btState === 'CONNECTED' && appState.connectedDevice.id === dev.id;
+                const item = document.createElement('div');
+                item.className = `p-3 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
+                    isSelected 
+                        ? 'bg-blue-600/20 border-blue-500/60' 
+                        : 'bg-remote-surface hover:bg-remote-elevated border-slate-700/70'
+                }`;
+                item.onclick = () => selectBluetoothDevice(dev);
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl ${isSelected ? 'bg-blue-500 text-white' : 'bg-slate-800 text-blue-400'} flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-tv text-sm"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-1.5">
+                                <p class="text-xs font-bold text-white truncate">${dev.name}</p>
+                                ${isSelected ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold">Aktif</span>' : ''}
+                            </div>
+                            <p class="text-[10px] text-slate-400 font-mono">${dev.mac} • ${dev.type}</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid ${isSelected ? 'fa-circle-check text-emerald-400' : 'fa-link text-slate-500'} text-sm ml-2"></i>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function updateTopBtStatusUI() {
+            const stateLabel = document.getElementById('btStateLabel');
+            const devName = document.getElementById('btDeviceName');
+            const dot = document.getElementById('btDot');
+
+            if (appState.btState === 'CONNECTED') {
+                stateLabel.textContent = 'HID Bağlı';
+                stateLabel.className = 'text-[10px] font-semibold uppercase tracking-wider text-emerald-400';
+                devName.textContent = appState.connectedDevice.name;
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 ring-2 ring-remote-surface';
+            } else if (appState.btState === 'SCANNING') {
+                stateLabel.textContent = 'Taranıyor...';
+                stateLabel.className = 'text-[10px] font-semibold uppercase tracking-wider text-amber-400 animate-pulse';
+                devName.textContent = 'Yakındaki Projeksiyonlar Aranıyor';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping absolute -top-0.5 -right-0.5';
+            } else {
+                stateLabel.textContent = 'Bağlı Değil';
+                stateLabel.className = 'text-[10px] font-semibold uppercase tracking-wider text-rose-400';
+                devName.textContent = 'Cihaz Seçmek İçin Dokunun';
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 absolute -top-0.5 -right-0.5 ring-2 ring-remote-surface';
+            }
+        }
+
+        function selectBluetoothDevice(dev) {
+            vibrateFeedback(35);
+            appState.btState = 'SCANNING';
+            updateTopBtStatusUI();
+
+            setTimeout(() => {
+                appState.connectedDevice = dev;
+                appState.btState = 'CONNECTED';
+                updateTopBtStatusUI();
+                renderDeviceList();
+                appendHidLog('BT-HID Host', 0x00, `[BAĞLANDI: ${dev.mac}]`, dev.name);
+                showToast(`${dev.name} ile Bluetooth HID bağlantısı kuruldu`);
+                closeDeviceModal();
+            }, 450);
+        }
+
+        function scanBluetoothDevices() {
+            vibrateFeedback(25);
+            const spinner = document.getElementById('scanSpinner');
+            spinner.classList.add('fa-spin');
+            appState.btState = 'SCANNING';
+            updateTopBtStatusUI();
+
+            setTimeout(() => {
+                spinner.classList.remove('fa-spin');
+                appState.btState = 'CONNECTED';
+                updateTopBtStatusUI();
+                renderDeviceList();
+                showToast('Bluetooth HID cihaz listesi güncellendi');
+            }, 900);
+        }
+
+        async function requestRealWebBluetooth() {
+            if (!navigator.bluetooth) {
+                showToast('Bu tarayıcıda Web Bluetooth kapalı veya Android WebView içindesiniz.');
+                return;
+            }
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true
+                });
+                if (device) {
+                    const customDev = {
+                        id: device.id || 'web-bt-dev',
+                        name: device.name || 'Bluetooth Projeksiyon',
+                        mac: 'BLE-GATT-HID',
+                        type: 'Gerçek Tarayıcı Eşleşmesi'
+                    };
+                    appState.devices.unshift(customDev);
+                    selectBluetoothDevice(customDev);
+                }
+            } catch (err) {
+                showToast('Bluetooth eşleme penceresi kapatıldı.');
+            }
+        }
+
+        function openDeviceModal() {
+            vibrateFeedback(20);
+            renderDeviceList();
+            document.getElementById('deviceModal').classList.remove('hidden');
+        }
+
+        function closeDeviceModal() {
+            document.getElementById('deviceModal').classList.add('hidden');
+        }
+
+        function openAndroidCodeModal() {
+            vibrateFeedback(20);
+            document.getElementById('androidCodeModal').classList.remove('hidden');
+        }
+
+        function closeAndroidCodeModal() {
+            document.getElementById('androidCodeModal').classList.add('hidden');
+        }
+
+        function copyKotlinCode() {
+            const codeText = document.getElementById('kotlinBridgeCode').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = codeText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            const btn = document.getElementById('copyCodeBtn');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i><span>Kopyalandı!</span>';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-regular fa-copy"></i><span>Kodu Kopyala</span>';
+            }, 1800);
+        }
+
+        function toggleDebugDrawer() {
+            const drawer = document.getElementById('debugDrawerContent');
+            const chevron = document.getElementById('debugChevron');
+            const isHidden = drawer.classList.contains('hidden');
+            if (isHidden) {
+                drawer.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                drawer.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        /********************************************************************
+         * 7. PHYSICAL KEYBOARD SUPPORT FOR D-PAD TESTING
+         ********************************************************************/
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement && document.activeElement.id === 'smartTextInput') return;
+
+            const keyMap = {
+                'ArrowUp': { id: 'dpad-up', fn: () => triggerRemoteKey('DPAD_UP', 'Yukarı (Up)', 0x01, [0x00, 0x00, 0x52, 0x00, 0x00, 0x00, 0x00, 0x00]) },
+                'ArrowDown': { id: 'dpad-down', fn: () => triggerRemoteKey('DPAD_DOWN', 'Aşağı (Down)', 0x01, [0x00, 0x00, 0x51, 0x00, 0x00, 0x00, 0x00, 0x00]) },
+                'ArrowLeft': { id: 'dpad-left', fn: () => triggerRemoteKey('DPAD_LEFT', 'Sol (Left)', 0x01, [0x00, 0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00]) },
+                'ArrowRight': { id: 'dpad-right', fn: () => triggerRemoteKey('DPAD_RIGHT', 'Sağ (Right)', 0x01, [0x00, 0x00, 0x4F, 0x00, 0x00, 0x00, 0x00, 0x00]) },
+                'Enter': { id: 'dpad-ok', fn: () => triggerRemoteKey('DPAD_CENTER', 'OK / Seç', 0x01, [0x00, 0x00, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00]) },
+                'Backspace': { id: null, fn: () => triggerRemoteKey('NAV_BACK', 'Geri (Back)', 0x02, [0x24, 0x02]) }
+            };
+
+            if (keyMap[e.key]) {
+                e.preventDefault();
+                const target = keyMap[e.key];
+                target.fn();
+                if (target.id) {
+                    const btnEl = document.getElementById(target.id);
+                    if (btnEl) {
+                        btnEl.classList.add('pressed');
+                        setTimeout(() => btnEl.classList.remove('pressed'), 140);
+                    }
+                }
+            }
+        });
+
+        /********************************************************************
+         * 8. INITIALIZATION ON WINDOW LOAD
+         ********************************************************************/
+        window.onload = function () {
+            // Detect if running inside Android WebView with AndroidBridge attached
+            if (window.AndroidBridge || window.AndroidHidBridge) {
+                document.getElementById('bridgeModeBadge').textContent = 'WebView-HID';
+            }
+
+            setupTrackpadEvents();
+            resizeTrackpadCanvas();
+            window.addEventListener('resize', resizeTrackpadCanvas);
+            renderTrackpadLoop();
+
+            // Initial handshake log entry
+            appendHidLog('BT-HID Host', 0x00, '[0x01 Klavye, 0x02 Medya, 0x03 Fare]', 'HID Hazır');
+        };
+    </script>
+</body>
+</html>
