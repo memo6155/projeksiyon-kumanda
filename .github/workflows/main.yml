@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 4
-                  versionName "4.0"
+                  versionCode 5
+                  versionName "5.0"
               }
 
               compileOptions {
@@ -125,7 +125,7 @@ jobs:
           </vector>
           EOF
 
-          # Özel Kumandarus Logo Ön Planı (Kumanda + Sinyal Dalgaları)
+          # Özel Kumandarus Logo Ön Planı
           cat << 'EOF' > app/src/main/res/drawable/ic_launcher_foreground.xml
           <?xml version="1.0" encoding="utf-8"?>
           <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -133,7 +133,6 @@ jobs:
               android:height="108dp"
               android:viewportWidth="108"
               android:viewportHeight="108">
-              <!-- Sinyal Dalgaları -->
               <path
                   android:fillColor="#00000000"
                   android:strokeColor="#38BDF8"
@@ -146,23 +145,19 @@ jobs:
                   android:strokeWidth="2.4"
                   android:strokeLineCap="round"
                   android:pathData="M37,22 C46,13 62,13 71,22" />
-              <!-- Kumanda Gövdesi -->
               <path
                   android:fillColor="#1E293B"
                   android:strokeColor="#E2E8F0"
                   android:strokeWidth="2.5"
                   android:pathData="M42,32 L66,32 A8,8 0 0,1 74,40 L74,76 A8,8 0 0,1 66,84 L42,84 A8,8 0 0,1 34,76 L34,40 A8,8 0 0,1 42,32 Z" />
-              <!-- D-Pad Çemberi -->
               <path
                   android:fillColor="#0F172A"
                   android:strokeColor="#38BDF8"
                   android:strokeWidth="2.2"
                   android:pathData="M54,42 A11,11 0 1,1 53.9,42 Z" />
-              <!-- OK Noktası -->
               <path
                   android:fillColor="#38BDF8"
                   android:pathData="M54,49 A4,4 0 1,1 53.9,49 Z" />
-              <!-- Alt Tuşlar -->
               <path
                   android:fillColor="#94A3B8"
                   android:pathData="M43,69 A2.5,2.5 0 1,1 42.9,69 Z" />
@@ -196,6 +191,8 @@ jobs:
               <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
               <uses-permission android:name="android.permission.RECORD_AUDIO" />
               <uses-permission android:name="android.permission.VIBRATE" />
+
+              <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
 
               <application
                   android:allowBackup="true"
@@ -243,7 +240,7 @@ jobs:
               display: flex;
               flex-direction: column;
               justify-content: space-between;
-              padding: 14px 16px 16px;
+              padding: 12px 16px 14px;
               overflow: hidden;
             }
             svg {
@@ -257,7 +254,7 @@ jobs:
               flex-shrink: 0;
             }
 
-            /* Üst Durum ve Güç Çubuğu */
+            /* Üst Bar */
             .header {
               display: flex;
               align-items: center;
@@ -325,7 +322,50 @@ jobs:
               text-overflow: ellipsis;
             }
 
-            /* Orta Gövde (Kumanda veya Touchpad) */
+            /* LG Sihirli Kumanda (Jiroskop) Çubuğu */
+            .gyro-bar {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              margin-top: 8px;
+            }
+            .gyro-btn {
+              flex: 1;
+              height: 40px;
+              border-radius: 12px;
+              background: rgba(30, 41, 59, 0.6);
+              border: 1px solid rgba(56, 189, 248, 0.2);
+              color: #cbd5e1;
+              font-size: 13px;
+              font-weight: 600;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+              transition: all 0.18s;
+            }
+            .gyro-btn.active {
+              background: linear-gradient(135deg, rgba(14, 165, 233, 0.28), rgba(37, 99, 235, 0.35));
+              border-color: #38bdf8;
+              color: #38bdf8;
+              box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+            }
+            .sens-pill {
+              height: 40px;
+              padding: 0 12px;
+              border-radius: 12px;
+              background: rgba(30, 41, 59, 0.6);
+              border: 1px solid rgba(255, 255, 255, 0.07);
+              color: #94a3b8;
+              font-size: 12px;
+              font-weight: 700;
+            }
+            .sens-pill:active {
+              background: rgba(51, 65, 85, 0.9);
+              color: #fff;
+            }
+
+            /* Orta Gövde */
             .main-stage {
               flex: 1;
               display: flex;
@@ -333,7 +373,7 @@ jobs:
               justify-content: center;
               align-items: center;
               min-height: 0;
-              margin: 6px 0;
+              margin: 4px 0;
             }
             .stage-panel {
               display: none;
@@ -350,8 +390,8 @@ jobs:
             /* Modern Dairesel D-Pad */
             .dpad-ring {
               position: relative;
-              width: 224px;
-              height: 224px;
+              width: 216px;
+              height: 216px;
               border-radius: 50%;
               background: linear-gradient(145deg, #161e2e, #0f1420);
               border: 1px solid rgba(255, 255, 255, 0.08);
@@ -359,6 +399,11 @@ jobs:
               display: flex;
               align-items: center;
               justify-content: center;
+              transition: border-color 0.2s, box-shadow 0.2s;
+            }
+            .dpad-ring.gyro-on {
+              border-color: rgba(56, 189, 248, 0.45);
+              box-shadow: 0 0 28px rgba(56, 189, 248, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.1);
             }
             .d-btn {
               position: absolute;
@@ -379,21 +424,32 @@ jobs:
               color: #38bdf8;
               background: rgba(56, 189, 248, 0.12);
             }
-            .d-up { top: 6px; left: 62px; width: 100px; height: 64px; border-radius: 36px 36px 12px 12px; }
-            .d-down { bottom: 6px; left: 62px; width: 100px; height: 64px; border-radius: 12px 12px 36px 36px; }
-            .d-left { left: 6px; top: 62px; width: 64px; height: 100px; border-radius: 36px 12px 12px 36px; }
-            .d-right { right: 6px; top: 62px; width: 64px; height: 100px; border-radius: 12px 36px 36px 12px; }
+            .d-up { top: 6px; left: 58px; width: 100px; height: 62px; border-radius: 36px 36px 12px 12px; }
+            .d-down { bottom: 6px; left: 58px; width: 100px; height: 62px; border-radius: 12px 12px 36px 36px; }
+            .d-left { left: 6px; top: 58px; width: 62px; height: 100px; border-radius: 36px 12px 12px 36px; }
+            .d-right { right: 6px; top: 58px; width: 62px; height: 100px; border-radius: 12px 36px 36px 12px; }
             .d-ok {
-              width: 84px;
-              height: 84px;
+              width: 82px;
+              height: 82px;
               border-radius: 50%;
               background: linear-gradient(145deg, #1e293b, #111827);
               border: 1px solid rgba(255, 255, 255, 0.1);
               box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
               color: #f8fafc;
-              font-size: 15px;
+              font-size: 14px;
               font-weight: 700;
-              letter-spacing: 0.6px;
+              letter-spacing: 0.5px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              line-height: 1.15;
+            }
+            .d-ok small {
+              font-size: 9px;
+              font-weight: 500;
+              color: #38bdf8;
+              margin-top: 2px;
             }
             .d-ok.pressed, .d-ok:active {
               transform: scale(0.94);
@@ -402,7 +458,7 @@ jobs:
               border-color: #38bdf8;
             }
 
-            /* Yardımcı Kumanda Tuşları (Geri, Home, Menü & Ses) */
+            /* Yardımcı Kumanda Tuşları */
             .control-rows {
               width: 100%;
               display: flex;
@@ -415,7 +471,7 @@ jobs:
               gap: 10px;
             }
             .soft-btn {
-              height: 46px;
+              height: 44px;
               border-radius: 14px;
               background: rgba(30, 41, 59, 0.55);
               border: 1px solid rgba(255, 255, 255, 0.06);
@@ -442,7 +498,7 @@ jobs:
               display: flex;
               gap: 8px;
               margin-bottom: 8px;
-              min-height: 170px;
+              min-height: 160px;
             }
             .touch-surface {
               flex: 1;
@@ -514,8 +570,8 @@ jobs:
               color: #38bdf8;
             }
             .mic-center-btn {
-              width: 54px;
-              height: 54px;
+              width: 52px;
+              height: 52px;
               border-radius: 50%;
               border: none;
               background: linear-gradient(135deg, #0284c7, #2563eb);
@@ -652,7 +708,7 @@ jobs:
           </head>
           <body>
 
-            <!-- Üst Bar: Güç | Bağlantı Durumu (Dokununca Yeniden Bağlanır) | BT Tara -->
+            <!-- Üst Bar: Güç | Bağlantı Durumu | BT Tara -->
             <div class="header">
               <button class="icon-pill power" onclick="tapConsumer(48)" title="Güç">
                 <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
@@ -668,19 +724,31 @@ jobs:
               </button>
             </div>
 
+            <!-- LG Sihirli Kumanda (Jiroskop Air Mouse) Çubuğu -->
+            <div class="gyro-bar">
+              <button id="gyroBtn" class="gyro-btn" onclick="toggleGyroMouse()">
+                <svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+                <span id="gyroText">Sihirli İmleç (Jiroskop): Kapalı</span>
+              </button>
+              <button id="sensBtn" class="sens-pill" onclick="cycleSensitivity()" title="Jiroskop Hızı">Hız: Orta</button>
+            </div>
+
             <!-- Orta Alan: Kumanda veya Touchpad -->
             <div class="main-stage">
 
               <!-- KUMANDA MODU -->
               <div id="panelRemote" class="stage-panel active">
-                <div class="dpad-ring">
+                <div id="dpadRing" class="dpad-ring">
                   <button class="d-btn d-up" data-hold-key="82">
                     <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
                   </button>
                   <button class="d-btn d-left" data-hold-key="80">
                     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
                   </button>
-                  <button class="d-btn d-ok" data-hold-key="40">OK</button>
+                  <button id="okButton" class="d-btn d-ok">
+                    <span id="okMainLabel">OK</span>
+                    <small id="okSubLabel"></small>
+                  </button>
                   <button class="d-btn d-right" data-hold-key="79">
                     <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
                   </button>
@@ -777,6 +845,13 @@ jobs:
           <script>
             const foundDevices = {};
             let isConnected = false;
+            let gyroEnabled = false;
+            const sensLevels = [
+              { label: 'Yavaş', val: 14 },
+              { label: 'Orta', val: 22 },
+              { label: 'Hızlı', val: 32 }
+            ];
+            let sensIndex = 1;
 
             function vibrate(ms = 14) {
               if (navigator.vibrate) navigator.vibrate(ms);
@@ -788,6 +863,38 @@ jobs:
               document.getElementById('tabTouch').classList.toggle('active', mode === 'touch');
               document.getElementById('panelRemote').classList.toggle('active', mode === 'remote');
               document.getElementById('panelTouch').classList.toggle('active', mode === 'touch');
+            }
+
+            function toggleGyroMouse() {
+              gyroEnabled = !gyroEnabled;
+              vibrate(22);
+              updateGyroUi();
+              if (window.AndroidBridge) {
+                window.AndroidBridge.setGyroEnabled(gyroEnabled);
+              }
+            }
+
+            function updateGyroUi() {
+              const btn = document.getElementById('gyroBtn');
+              const txt = document.getElementById('gyroText');
+              const ring = document.getElementById('dpadRing');
+              const sub = document.getElementById('okSubLabel');
+              btn.classList.toggle('active', gyroEnabled);
+              ring.classList.toggle('gyro-on', gyroEnabled);
+              txt.textContent = gyroEnabled
+                ? 'Sihirli İmleç: Açık (Telefonu Hareket Ettirin)'
+                : 'Sihirli İmleç (Jiroskop): Kapalı';
+              sub.textContent = gyroEnabled ? 'SOL TIK' : '';
+            }
+
+            function cycleSensitivity() {
+              sensIndex = (sensIndex + 1) % sensLevels.length;
+              const item = sensLevels[sensIndex];
+              vibrate(15);
+              document.getElementById('sensBtn').textContent = 'Hız: ' + item.label;
+              if (window.AndroidBridge) {
+                window.AndroidBridge.setGyroSensitivity(item.val);
+              }
             }
 
             function tapKey(code) {
@@ -831,7 +938,7 @@ jobs:
               input.value = '';
             }
 
-            // Yön (OK) Tuşlarında ve Ses Tuşlarında Basılı Tutma (Sürekli Basım) Desteği
+            // Yön Tuşları, OK Tuşu (Jiroskopta Sol Tık) ve Ses Tuşları
             (function initHoldButtons() {
               document.querySelectorAll('[data-hold-key]').forEach((btn) => {
                 const keyCode = parseInt(btn.getAttribute('data-hold-key'), 10);
@@ -846,7 +953,7 @@ jobs:
                   if (window.AndroidBridge) window.AndroidBridge.keyDown(keyCode);
                 };
 
-                const endHold = (e) => {
+                const endHold = () => {
                   if (!active) return;
                   active = false;
                   btn.classList.remove('pressed');
@@ -860,6 +967,35 @@ jobs:
                 btn.addEventListener('mouseup', endHold);
                 btn.addEventListener('mouseleave', endHold);
               });
+
+              // OK Butonu: Jiroskop açıkken Sol Fare Tıkı yapar, kapalıyken OK/Enter gönderir
+              const okBtn = document.getElementById('okButton');
+              let okActive = false;
+              const startOk = (e) => {
+                e.preventDefault();
+                if (okActive) return;
+                okActive = true;
+                okBtn.classList.add('pressed');
+                vibrate(16);
+                if (gyroEnabled) {
+                  clickMouse(1);
+                } else if (window.AndroidBridge) {
+                  window.AndroidBridge.keyDown(40);
+                }
+              };
+              const endOk = () => {
+                if (!okActive) return;
+                okActive = false;
+                okBtn.classList.remove('pressed');
+                if (!gyroEnabled && window.AndroidBridge) {
+                  window.AndroidBridge.keyUp(40);
+                }
+              };
+              okBtn.addEventListener('touchstart', startOk, { passive: false });
+              okBtn.addEventListener('touchend', endOk);
+              okBtn.addEventListener('touchcancel', endOk);
+              okBtn.addEventListener('mousedown', startOk);
+              okBtn.addEventListener('mouseup', endOk);
 
               document.querySelectorAll('[data-hold-consumer]').forEach((btn) => {
                 const usage = parseInt(btn.getAttribute('data-hold-consumer'), 10);
@@ -1038,6 +1174,10 @@ jobs:
           import android.bluetooth.*
           import android.content.*
           import android.content.pm.PackageManager
+          import android.hardware.Sensor
+          import android.hardware.SensorEvent
+          import android.hardware.SensorEventListener
+          import android.hardware.SensorManager
           import android.location.LocationManager
           import android.os.Build
           import android.os.Bundle
@@ -1050,11 +1190,13 @@ jobs:
           import java.util.concurrent.Executors
           import java.util.concurrent.ScheduledFuture
           import java.util.concurrent.TimeUnit
+          import kotlin.math.abs
           import kotlin.math.max
           import kotlin.math.min
+          import kotlin.math.roundToInt
 
           @SuppressLint("MissingPermission", "SetJavaScriptEnabled")
-          class MainActivity : Activity() {
+          class MainActivity : Activity(), SensorEventListener {
 
               private lateinit var webView: WebView
               private lateinit var prefs: SharedPreferences
@@ -1062,6 +1204,14 @@ jobs:
               private var hidDevice: BluetoothHidDevice? = null
               private var connectedDevice: BluetoothDevice? = null
               private var pendingDevice: BluetoothDevice? = null
+
+              // LG Magic Remote Tarzı Jiroskop (Air Mouse) Değişkenleri
+              private var sensorManager: SensorManager? = null
+              private var gyroSensor: Sensor? = null
+              private var isGyroActive = false
+              private var gyroSensitivity = 22.0f
+              private var remX = 0f
+              private var remY = 0f
 
               private val executor = Executors.newSingleThreadScheduledExecutor()
               private var holdRepeatTask: ScheduledFuture<*>? = null
@@ -1085,7 +1235,7 @@ jobs:
                   0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
                   0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
                   0xC0,
-                  // Report ID 3: Mouse (Touchpad)
+                  // Report ID 3: Mouse (Touchpad & Gyro Air Mouse)
                   0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x85, 0x03,
                   0x09, 0x01, 0xA1, 0x00, 0x05, 0x09, 0x19, 0x01,
                   0x29, 0x03, 0x15, 0x00, 0x25, 0x01, 0x95, 0x03,
@@ -1133,6 +1283,9 @@ jobs:
                   val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
                   btAdapter = btManager?.adapter
 
+                  sensorManager = getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+                  gyroSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+
                   val filter = IntentFilter().apply {
                       addAction(BluetoothDevice.ACTION_FOUND)
                       addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
@@ -1161,7 +1314,9 @@ jobs:
               override fun onResume() {
                   super.onResume()
                   isAppInForeground = true
-                  // Ekran açıldığında veya uygulama tekrar öne geldiğinde bağlantıyı kontrol et ve otomatik bağlan
+                  if (isGyroActive) {
+                      registerGyroscope(true)
+                  }
                   if (hasRequiredPermissions()) {
                       ensureHidAndAutoConnect()
                   }
@@ -1171,14 +1326,69 @@ jobs:
                   super.onPause()
                   isAppInForeground = false
                   stopHoldKey()
+                  registerGyroscope(false)
               }
 
               override fun onDestroy() {
                   super.onDestroy()
                   stopHoldKey()
+                  registerGyroscope(false)
                   try { unregisterReceiver(btReceiver) } catch (_: Exception) {}
                   btAdapter?.cancelDiscovery()
               }
+
+              private fun registerGyroscope(enable: Boolean) {
+                  val sm = sensorManager ?: return
+                  val sensor = gyroSensor
+                  if (sensor == null) {
+                      if (enable) {
+                          runOnUiThread {
+                              Toast.makeText(this, "Bu telefonda Jiroskop sensoru bulunamadi", Toast.LENGTH_SHORT).show()
+                          }
+                      }
+                      return
+                  }
+                  if (enable) {
+                      remX = 0f
+                      remY = 0f
+                      sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME)
+                  } else {
+                      sm.unregisterListener(this)
+                  }
+              }
+
+              // LG Magic Remote Jiroskop Hesaplaması:
+              // Z ekseni (Yaw - sağa/sola bilek dönüşü) -> Yatay Fare (dx)
+              // X ekseni (Pitch - yukarı/aşağı eğim) -> Dikey Fare (dy)
+              override fun onSensorChanged(event: SensorEvent?) {
+                  if (!isGyroActive || event?.sensor?.type != Sensor.TYPE_GYROSCOPE) return
+                  if (connectedDevice == null) return
+
+                  val rotX = event.values[0]
+                  val rotZ = event.values[2]
+
+                  // Küçük el titremelerini yok sayan ölü bölge (deadzone)
+                  val deadzone = 0.035f
+                  val cleanZ = if (abs(rotZ) < deadzone) 0f else rotZ
+                  val cleanX = if (abs(rotX) < deadzone) 0f else rotX
+
+                  if (cleanZ == 0f && cleanX == 0f) return
+
+                  val rawDx = (-cleanZ * gyroSensitivity) + remX
+                  val rawDy = (-cleanX * gyroSensitivity) + remY
+
+                  val dx = rawDx.roundToInt()
+                  val dy = rawDy.roundToInt()
+
+                  remX = rawDx - dx
+                  remY = rawDy - dy
+
+                  if (dx != 0 || dy != 0) {
+                      sendMouseReport(0, dx, dy, 0)
+                  }
+              }
+
+              override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
               private fun getRequiredPermissions(): List<String> {
                   val list = mutableListOf(
@@ -1231,7 +1441,6 @@ jobs:
 
                   val proxy = hidDevice
                   if (proxy != null) {
-                      // Zaten bağlı cihaz var mı kontrol et
                       val alreadyConnected = try { proxy.connectedDevices.firstOrNull() } catch (_: Exception) { null }
                       if (alreadyConnected != null) {
                           connectedDevice = alreadyConnected
@@ -1368,7 +1577,6 @@ jobs:
                           return@runOnUiThread
                       }
 
-                      // Önce zaten eşleşmiş cihazları anında listeye ekle
                       adapter.bondedDevices?.forEach { d ->
                           val n = d.name
                           if (!n.isNullOrBlank()) {
@@ -1432,7 +1640,6 @@ jobs:
                   super.onActivityResult(requestCode, resultCode, data)
                   if (requestCode == REQ_SPEECH && resultCode == RESULT_OK) {
                       val spoken = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: return
-                      // Ekran kapandığında/ses penceresi kapandığında kopma olduysa önce bağla sonra gönder
                       executor.execute {
                           if (connectedDevice == null) {
                               runOnUiThread { ensureHidAndAutoConnect() }
@@ -1447,7 +1654,6 @@ jobs:
                   }
               }
 
-              // Gerçek HID Basılı Tutma (Key Down & Seri Tekrar)
               private fun startHoldKey(keyCode: Int) {
                   stopHoldKey()
                   val dev = connectedDevice
@@ -1456,7 +1662,6 @@ jobs:
                       return
                   }
                   val report = byteArrayOf(0, 0, keyCode.toByte(), 0, 0, 0, 0, 0)
-                  // İlk basış anında gönder, ardından basılı tutulduğu sürece 55ms'de bir akıcı tekrarla
                   holdRepeatTask = executor.scheduleWithFixedDelay({
                       val activeDev = connectedDevice ?: return@scheduleWithFixedDelay
                       hidDevice?.sendReport(activeDev, 1, report)
@@ -1561,6 +1766,17 @@ jobs:
 
                   @JavascriptInterface
                   fun reconnectLast() = runOnUiThread { ensureHidAndAutoConnect() }
+
+                  @JavascriptInterface
+                  fun setGyroEnabled(enabled: Boolean) {
+                      isGyroActive = enabled
+                      runOnUiThread { registerGyroscope(enabled) }
+                  }
+
+                  @JavascriptInterface
+                  fun setGyroSensitivity(sens: Float) {
+                      gyroSensitivity = sens
+                  }
 
                   @JavascriptInterface
                   fun startVoice() = startNativeVoiceInput()
