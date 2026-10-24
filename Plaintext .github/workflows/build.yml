@@ -23,17 +23,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
+          cache-disabled: true
 
-      - name: Android Projesini ve Bluetooth HID Kodunu Hazirla
+      - name: Sade Kumanda Projesini Hazirla
         run: |
           mkdir -p app/src/main/assets
           mkdir -p app/src/main/java/com/kumanda/bt
-
-          if [ -f "index.html" ]; then
-            cp index.html app/src/main/assets/index.html
-          else
-            echo "<h1>index.html bulunamadi</h1>" > app/src/main/assets/index.html
-          fi
 
           cat << 'EOF' > settings.gradle
           pluginManagement {
@@ -79,10 +74,10 @@ jobs:
 
               defaultConfig {
                   applicationId "com.kumanda.bt"
-                  minSdk 28
+                  minSdk 26
                   targetSdk 34
-                  versionCode 1
-                  versionName "1.0"
+                  versionCode 2
+                  versionName "2.0"
               }
 
               compileOptions {
@@ -107,21 +102,23 @@ jobs:
 
               <uses-permission android:name="android.permission.BLUETOOTH" />
               <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-              <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
               <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+              <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
               <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
               <uses-permission android:name="android.permission.RECORD_AUDIO" />
               <uses-permission android:name="android.permission.VIBRATE" />
-              <uses-permission android:name="android.permission.INTERNET" />
 
               <application
                   android:allowBackup="true"
                   android:icon="@android:drawable/stat_sys_data_bluetooth"
-                  android:label="BT Projeksiyon Kumanda"
+                  android:label="BT Kumanda"
                   android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
                   <activity
                       android:name=".MainActivity"
                       android:exported="true"
+                      android:screenOrientation="portrait"
                       android:configChanges="orientation|screenSize|keyboardHidden">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
@@ -132,23 +129,628 @@ jobs:
           </manifest>
           EOF
 
+          cat << 'EOF' > app/src/main/assets/index.html
+          <!DOCTYPE html>
+          <html lang="tr">
+          <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <title>BT Kumanda</title>
+          <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              background: #121418;
+              color: #f1f5f9;
+              height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              padding: 12px 14px 16px;
+              overflow: hidden;
+            }
+            /* Üst Çubuk */
+            .top-bar {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              background: #1e2229;
+              padding: 10px 14px;
+              border-radius: 14px;
+              border: 1px solid #2d333f;
+            }
+            .status-wrap {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              font-size: 14px;
+              font-weight: 600;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+            .dot {
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+              background: #ef4444;
+              flex-shrink: 0;
+            }
+            .dot.connected { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+            .scan-btn {
+              background: #2563eb;
+              color: #fff;
+              border: none;
+              padding: 8px 14px;
+              border-radius: 10px;
+              font-size: 13px;
+              font-weight: 600;
+              flex-shrink: 0;
+            }
+            .scan-btn:active { transform: scale(0.96); background: #1d4ed8; }
+
+            /* Üst Aksiyon Tuşları: Güç, Sesli Yaz, Sessiz */
+            .quick-row {
+              display: grid;
+              grid-template-columns: 1fr 1.5fr 1fr;
+              gap: 10px;
+              margin-top: 10px;
+            }
+            .btn {
+              background: #1e2229;
+              color: #e2e8f0;
+              border: 1px solid #2d333f;
+              border-radius: 14px;
+              padding: 13px 10px;
+              font-size: 14px;
+              font-weight: 600;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 6px;
+              transition: transform 0.08s, background 0.1s;
+            }
+            .btn:active { transform: scale(0.95); background: #2d3440; }
+            .btn-power { color: #f87171; border-color: rgba(248,113,113,0.3); }
+            .btn-voice { background: #1d4ed8; border-color: #3b82f6; color: #fff; }
+            .btn-voice:active { background: #1e40af; }
+
+            /* Mod Seçici (Kumanda / Touchpad) */
+            .mode-switch {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              background: #1e2229;
+              padding: 4px;
+              border-radius: 12px;
+              margin-top: 10px;
+              border: 1px solid #2d333f;
+            }
+            .mode-tab {
+              background: transparent;
+              color: #94a3b8;
+              border: none;
+              padding: 9px;
+              border-radius: 9px;
+              font-size: 14px;
+              font-weight: 600;
+            }
+            .mode-tab.active {
+              background: #334155;
+              color: #fff;
+            }
+
+            /* Orta Alan */
+            .center-area {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              margin: 10px 0;
+              min-height: 0;
+            }
+            .view-panel { display: none; height: 100%; flex-direction: column; justify-content: space-between; }
+            .view-panel.active { display: flex; }
+
+            /* D-Pad (Yön Tuşları) */
+            .dpad-wrap {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex: 1;
+            }
+            .dpad {
+              position: relative;
+              width: 230px;
+              height: 230px;
+              background: #1a1d24;
+              border-radius: 50%;
+              border: 2px solid #2d333f;
+              box-shadow: inset 0 4px 15px rgba(0,0,0,0.5);
+            }
+            .dpad-btn {
+              position: absolute;
+              background: #242933;
+              border: 1px solid #363d4a;
+              color: #f8fafc;
+              font-size: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .dpad-btn:active { background: #3b82f6; color: #fff; }
+            .d-up { top: 6px; left: 75px; width: 80px; height: 66px; border-radius: 20px 20px 8px 8px; }
+            .d-down { bottom: 6px; left: 75px; width: 80px; height: 66px; border-radius: 8px 8px 20px 20px; }
+            .d-left { left: 6px; top: 75px; width: 66px; height: 80px; border-radius: 20px 8px 8px 20px; }
+            .d-right { right: 6px; top: 75px; width: 66px; height: 80px; border-radius: 8px 20px 20px 8px; }
+            .d-ok {
+              top: 75px; left: 75px; width: 80px; height: 80px;
+              border-radius: 50%;
+              background: #2563eb;
+              border: 2px solid #60a5fa;
+              font-size: 17px;
+              font-weight: 700;
+            }
+            .d-ok:active { transform: scale(0.94); }
+
+            /* Alt Kumanda Tuşları (Geri, Home, Menü & Ses) */
+            .nav-grid {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 10px;
+              margin-top: 8px;
+            }
+
+            /* Touchpad Alanı */
+            .touchpad-box {
+              flex: 1;
+              display: flex;
+              gap: 8px;
+              min-height: 180px;
+              margin-bottom: 10px;
+            }
+            .touch-surface {
+              flex: 1;
+              background: #1a1d24;
+              border: 1px solid #2d333f;
+              border-radius: 16px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #475569;
+              font-size: 14px;
+              font-weight: 500;
+              text-align: center;
+              padding: 16px;
+              touch-action: none;
+            }
+            .scroll-strip {
+              width: 44px;
+              background: #1e2229;
+              border: 1px solid #2d333f;
+              border-radius: 16px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: space-between;
+              padding: 14px 0;
+              color: #64748b;
+              font-size: 12px;
+              touch-action: none;
+            }
+            .mouse-btns {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+            }
+
+            /* Metin & Sesli Yazma Gönderme Çubuğu */
+            .text-bar {
+              display: flex;
+              gap: 8px;
+              background: #1e2229;
+              padding: 8px;
+              border-radius: 14px;
+              border: 1px solid #2d333f;
+            }
+            .text-input {
+              flex: 1;
+              background: #121418;
+              border: 1px solid #2d333f;
+              border-radius: 10px;
+              padding: 10px 12px;
+              color: #fff;
+              font-size: 14px;
+              outline: none;
+              min-width: 0;
+            }
+            .small-btn {
+              background: #2d3440;
+              color: #fff;
+              border: none;
+              border-radius: 10px;
+              padding: 0 13px;
+              font-size: 14px;
+              font-weight: 600;
+            }
+            .small-btn.send { background: #2563eb; }
+            .small-btn:active { opacity: 0.8; }
+
+            /* Bluetooth Tarama Penceresi (Modal) */
+            .modal-backdrop {
+              position: fixed;
+              inset: 0;
+              background: rgba(0,0,0,0.78);
+              display: none;
+              align-items: center;
+              justify-content: center;
+              padding: 18px;
+              z-index: 99;
+            }
+            .modal-backdrop.open { display: flex; }
+            .modal {
+              width: 100%;
+              max-width: 380px;
+              background: #1e2229;
+              border: 1px solid #334155;
+              border-radius: 18px;
+              padding: 16px;
+              max-height: 82vh;
+              display: flex;
+              flex-direction: column;
+            }
+            .modal-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+            }
+            .modal-title { font-size: 16px; font-weight: 700; }
+            .close-btn {
+              background: #2d3440;
+              color: #cbd5e1;
+              border: none;
+              width: 32px;
+              height: 32px;
+              border-radius: 8px;
+              font-size: 16px;
+            }
+            .scan-status {
+              font-size: 13px;
+              color: #93c5fd;
+              margin-bottom: 10px;
+            }
+            .device-list {
+              flex: 1;
+              overflow-y: auto;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              min-height: 120px;
+              margin-bottom: 12px;
+            }
+            .device-item {
+              background: #121418;
+              border: 1px solid #2d333f;
+              border-radius: 12px;
+              padding: 12px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            .device-item:active { background: #1e3a8a; border-color: #3b82f6; }
+            .dev-name { font-size: 14px; font-weight: 600; color: #f8fafc; }
+            .dev-sub { font-size: 12px; color: #64748b; margin-top: 2px; }
+            .dev-badge {
+              font-size: 11px;
+              background: #1e293b;
+              color: #38bdf8;
+              padding: 4px 8px;
+              border-radius: 6px;
+            }
+            .modal-actions {
+              display: flex;
+              gap: 8px;
+            }
+            .modal-actions button { flex: 1; }
+          </style>
+          </head>
+          <body>
+
+            <!-- Üst Bağlantı Çubuğu -->
+            <div class="top-bar">
+              <div class="status-wrap">
+                <div id="statusDot" class="dot"></div>
+                <span id="statusText">Bağlı Değil</span>
+              </div>
+              <button class="scan-btn" onclick="openScanner()">Cihaz Tara</button>
+            </div>
+
+            <!-- Üst Hızlı Tuşlar -->
+            <div class="quick-row">
+              <button class="btn btn-power" onclick="sendConsumer(48)">⏻ Güç</button>
+              <button class="btn btn-voice" onclick="startVoice()">🎤 Sesli Yaz</button>
+              <button class="btn" onclick="sendConsumer(226)">🔇 Sessiz</button>
+            </div>
+
+            <!-- Kumanda / Touchpad Geçişi -->
+            <div class="mode-switch">
+              <button id="tabRemote" class="mode-tab active" onclick="switchMode('remote')">🎛️ Kumanda</button>
+              <button id="tabTouch" class="mode-tab" onclick="switchMode('touch')">🖱️ Touchpad</button>
+            </div>
+
+            <!-- Orta Bölüm -->
+            <div class="center-area">
+
+              <!-- 1. Normal Kumanda Görünümü -->
+              <div id="viewRemote" class="view-panel active">
+                <div class="dpad-wrap">
+                  <div class="dpad">
+                    <button class="dpad-btn d-up" onclick="sendKey(82)">▲</button>
+                    <button class="dpad-btn d-left" onclick="sendKey(80)">◀</button>
+                    <button class="dpad-btn d-ok" onclick="sendKey(40)">OK</button>
+                    <button class="dpad-btn d-right" onclick="sendKey(79)">▶</button>
+                    <button class="dpad-btn d-down" onclick="sendKey(81)">▼</button>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="nav-grid">
+                    <button class="btn" onclick="sendConsumer(548)">⬅️ Geri</button>
+                    <button class="btn" onclick="sendConsumer(547)">🏠 Ana Ekran</button>
+                    <button class="btn" onclick="sendConsumer(64)">☰ Menü</button>
+                  </div>
+                  <div class="nav-grid">
+                    <button class="btn" onclick="sendConsumer(234)">🔉 Ses -</button>
+                    <button class="btn" onclick="sendConsumer(205)">⏯️ Oynat</button>
+                    <button class="btn" onclick="sendConsumer(233)">🔊 Ses +</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Touchpad (Fare) Görünümü -->
+              <div id="viewTouch" class="view-panel">
+                <div class="touchpad-box">
+                  <div id="touchSurface" class="touch-surface">
+                    İmleci hareket ettirmek için kaydırın<br>(Tıklamak için dokunun)
+                  </div>
+                  <div id="scrollStrip" class="scroll-strip">
+                    <span>▲</span>
+                    <span>KAYDIR</span>
+                    <span>▼</span>
+                  </div>
+                </div>
+                <div class="mouse-btns">
+                  <button class="btn" onclick="clickMouse(1)">Sol Tık</button>
+                  <button class="btn" onclick="clickMouse(2)">Sağ Tık (Geri)</button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Alt Yazı ve Silme Çubuğu -->
+            <div class="text-bar">
+              <input id="manualText" class="text-input" type="text" placeholder="Metin yazın veya 🎤 kullanın..." />
+              <button class="small-btn" onclick="sendKey(42)" title="Sil">⌫</button>
+              <button class="small-btn send" onclick="sendManualText()">Gönder</button>
+            </div>
+
+            <!-- Gerçek Zamanlı Bluetooth Tarama Penceresi -->
+            <div id="scanModal" class="modal-backdrop">
+              <div class="modal">
+                <div class="modal-header">
+                  <span class="modal-title">Çevredeki Bluetooth Cihazlar</span>
+                  <button class="close-btn" onclick="closeScanner()">✕</button>
+                </div>
+                <div id="scanStatus" class="scan-status">Çevredeki cihazlar taranıyor...</div>
+                <div id="deviceList" class="device-list"></div>
+                <div class="modal-actions">
+                  <button class="btn" onclick="rescan()">🔄 Yeniden Tara</button>
+                </div>
+              </div>
+            </div>
+
+          <script>
+            const foundDevices = {};
+
+            function vibrate(ms = 18) {
+              if (navigator.vibrate) navigator.vibrate(ms);
+            }
+
+            function switchMode(mode) {
+              vibrate(15);
+              document.getElementById('tabRemote').classList.toggle('active', mode === 'remote');
+              document.getElementById('tabTouch').classList.toggle('active', mode === 'touch');
+              document.getElementById('viewRemote').classList.toggle('active', mode === 'remote');
+              document.getElementById('viewTouch').classList.toggle('active', mode === 'touch');
+            }
+
+            function sendKey(code) {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendKey(code);
+            }
+
+            function sendConsumer(usage) {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendConsumer(usage);
+            }
+
+            function clickMouse(btn) {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.clickMouse(btn);
+            }
+
+            function startVoice() {
+              vibrate(25);
+              if (window.AndroidBridge) window.AndroidBridge.startVoice();
+            }
+
+            function sendManualText() {
+              const input = document.getElementById('manualText');
+              const val = input.value;
+              if (!val) {
+                sendKey(40); // Boşsa Enter gönder
+                return;
+              }
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendText(val);
+              input.value = '';
+            }
+
+            // Touchpad Hareket ve Tıklama
+            (function initTouchpad() {
+              const surface = document.getElementById('touchSurface');
+              const strip = document.getElementById('scrollStrip');
+              let lastX = 0, lastY = 0, startX = 0, startY = 0, startTime = 0;
+              let accX = 0, accY = 0, timer = null;
+
+              surface.addEventListener('touchstart', (e) => {
+                const t = e.touches[0];
+                lastX = startX = t.clientX;
+                lastY = startY = t.clientY;
+                startTime = Date.now();
+              }, { passive: true });
+
+              surface.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const t = e.touches[0];
+                accX += (t.clientX - lastX) * 1.6;
+                accY += (t.clientY - lastY) * 1.6;
+                lastX = t.clientX;
+                lastY = t.clientY;
+
+                if (!timer) {
+                  timer = setTimeout(() => {
+                    const dx = Math.round(accX);
+                    const dy = Math.round(accY);
+                    accX = 0; accY = 0; timer = null;
+                    if ((dx !== 0 || dy !== 0) && window.AndroidBridge) {
+                      window.AndroidBridge.moveMouse(dx, dy, 0);
+                    }
+                  }, 16);
+                }
+              }, { passive: false });
+
+              surface.addEventListener('touchend', () => {
+                const dist = Math.hypot(lastX - startX, lastY - startY);
+                if (Date.now() - startTime < 220 && dist < 10) {
+                  clickMouse(1);
+                }
+              });
+
+              let lastScrollY = 0;
+              strip.addEventListener('touchstart', (e) => {
+                lastScrollY = e.touches[0].clientY;
+              }, { passive: true });
+
+              strip.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const y = e.touches[0].clientY;
+                const diff = lastScrollY - y;
+                if (Math.abs(diff) > 14) {
+                  const wheel = diff > 0 ? -1 : 1;
+                  lastScrollY = y;
+                  if (window.AndroidBridge) window.AndroidBridge.moveMouse(0, 0, wheel);
+                }
+              }, { passive: false });
+            })();
+
+            // Bluetooth Tarama İşlemleri
+            function openScanner() {
+              vibrate();
+              document.getElementById('scanModal').classList.add('open');
+              rescan();
+            }
+
+            function closeScanner() {
+              document.getElementById('scanModal').classList.remove('open');
+              if (window.AndroidBridge) window.AndroidBridge.stopScan();
+            }
+
+            function rescan() {
+              for (const k in foundDevices) delete foundDevices[k];
+              renderDeviceList();
+              document.getElementById('scanStatus').textContent = 'Çevredeki açık Bluetooth cihazlar aranıyor...';
+              if (window.AndroidBridge) window.AndroidBridge.startScan();
+            }
+
+            function renderDeviceList() {
+              const container = document.getElementById('deviceList');
+              const keys = Object.keys(foundDevices);
+              if (keys.length === 0) {
+                container.innerHTML = '<div style="color:#64748b;font-size:13px;text-align:center;margin-top:32px;">Henüz çevrede cihaz bulunamadı.<br>Projeksiyon/TV Bluetooth ayarının açık olduğundan emin olun.</div>';
+                return;
+              }
+              container.innerHTML = '';
+              keys.forEach((addr) => {
+                const d = foundDevices[addr];
+                const item = document.createElement('div');
+                item.className = 'device-item';
+                item.onclick = () => {
+                  vibrate(25);
+                  document.getElementById('scanStatus').textContent = d.name + ' bağlanıyor...';
+                  if (window.AndroidBridge) window.AndroidBridge.connectDevice(d.address);
+                };
+                item.innerHTML = `
+                  <div>
+                    <div class="dev-name">${d.name}</div>
+                    <div class="dev-sub">${d.address}</div>
+                  </div>
+                  <div class="dev-badge">${d.isPaired ? 'Eşleşmiş' : 'Yeni'} (${d.rssi} dBm)</div>
+                `;
+                container.appendChild(item);
+              });
+            }
+
+            // Kotlin Tarafından Çağrılan Fonksiyonlar
+            window.onDeviceFound = function(address, name, rssi, isPaired) {
+              foundDevices[address] = { address, name, rssi, isPaired };
+              renderDeviceList();
+            };
+
+            window.onScanFinished = function() {
+              const count = Object.keys(foundDevices).length;
+              document.getElementById('scanStatus').textContent = count > 0
+                ? `Tarama tamamlandı (${count} cihaz bulundu). Bağlanmak için dokunun.`
+                : 'Çevrede cihaz bulunamadı. Tekrar tarayabilirsiniz.';
+            };
+
+            window.onBluetoothStateChanged = function(connected, name) {
+              const dot = document.getElementById('statusDot');
+              const txt = document.getElementById('statusText');
+              if (connected) {
+                dot.classList.add('connected');
+                txt.textContent = 'Bağlı: ' + name;
+                closeScanner();
+              } else {
+                dot.classList.remove('connected');
+                txt.textContent = 'Bağlı Değil';
+              }
+            };
+
+            window.onNativeSpeechResult = function(text) {
+              document.getElementById('manualText').value = text;
+            };
+          </script>
+          </body>
+          </html>
+          EOF
+
           cat << 'EOF' > app/src/main/java/com/kumanda/bt/MainActivity.kt
           package com.kumanda.bt
 
           import android.Manifest
           import android.annotation.SuppressLint
           import android.app.Activity
-          import android.app.AlertDialog
           import android.bluetooth.*
-          import android.content.Context
-          import android.content.Intent
+          import android.content.*
           import android.content.pm.PackageManager
+          import android.location.LocationManager
           import android.os.Build
           import android.os.Bundle
+          import android.provider.Settings
           import android.speech.RecognizerIntent
           import android.webkit.*
           import android.widget.Toast
-          import org.json.JSONArray
           import java.util.concurrent.Executors
           import kotlin.math.max
           import kotlin.math.min
@@ -157,13 +759,16 @@ jobs:
           class MainActivity : Activity() {
 
               private lateinit var webView: WebView
+              private var btAdapter: BluetoothAdapter? = null
               private var hidDevice: BluetoothHidDevice? = null
               private var connectedDevice: BluetoothDevice? = null
+              private var pendingDevice: BluetoothDevice? = null
               private val executor = Executors.newSingleThreadExecutor()
+
               private val REQ_SPEECH = 1001
               private val REQ_PERMS = 1002
+              private val REQ_ENABLE_BT = 1003
 
-              // Birlesik HID Descriptor: ID 1 = Klavye, ID 2 = Multimedya Kumanda, ID 3 = Fare (Touchpad)
               private val HID_DESCRIPTOR = intArrayOf(
                   // Report ID 1: Keyboard
                   0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x85, 0x01,
@@ -172,7 +777,7 @@ jobs:
                   0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x95, 0x06,
                   0x75, 0x08, 0x15, 0x00, 0x25, 0x65, 0x05, 0x07,
                   0x19, 0x00, 0x29, 0x65, 0x81, 0x00, 0xC0,
-                  // Report ID 2: Consumer Control (Smart TV / Media)
+                  // Report ID 2: Consumer Control (Smart TV / Kumanda)
                   0x05, 0x0C, 0x09, 0x01, 0xA1, 0x01, 0x85, 0x02,
                   0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
                   0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
@@ -187,50 +792,96 @@ jobs:
                   0x95, 0x03, 0x81, 0x06, 0xC0, 0xC0
               ).map { it.toByte() }.toByteArray()
 
+              private val btReceiver = object : BroadcastReceiver() {
+                  override fun onReceive(context: Context?, intent: Intent?) {
+                      when (intent?.action) {
+                          BluetoothDevice.ACTION_FOUND -> {
+                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE).toInt()
+                              val name = device?.name ?: intent.getStringExtra(BluetoothDevice.EXTRA_NAME)
+                              if (device != null && !name.isNullOrBlank()) {
+                                  val safeName = name.replace("'", "\\'")
+                                  val isPaired = device.bondState == BluetoothDevice.BOND_BONDED
+                                  runOnUiThread {
+                                      webView.evaluateJavascript(
+                                          "if(window.onDeviceFound) window.onDeviceFound('${device.address}', '$safeName', $rssi, $isPaired);",
+                                          null
+                                      )
+                                  }
+                              }
+                          }
+                          BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
+                              runOnUiThread {
+                                  webView.evaluateJavascript("if(window.onScanFinished) window.onScanFinished();", null)
+                              }
+                          }
+                          BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
+                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
+                              if (device != null && device.address == pendingDevice?.address && state == BluetoothDevice.BOND_BONDED) {
+                                  pendingDevice = null
+                                  hidDevice?.connect(device)
+                              }
+                          }
+                      }
+                  }
+              }
+
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   webView = WebView(this)
                   setContentView(webView)
 
-                  checkPermissionsAndInit()
+                  val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+                  btAdapter = btManager?.adapter
+
+                  val filter = IntentFilter().apply {
+                      addAction(BluetoothDevice.ACTION_FOUND)
+                      addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+                      addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+                  }
+                  registerReceiver(btReceiver, filter)
 
                   webView.settings.apply {
                       javaScriptEnabled = true
                       domStorageEnabled = true
-                      mediaPlaybackRequiresUserGesture = false
                   }
-
-                  webView.webChromeClient = object : WebChromeClient() {
-                      override fun onPermissionRequest(request: PermissionRequest?) {
-                          request?.grant(request.resources)
-                      }
-                  }
-
-                  webView.addJavascriptInterface(NativeBridge(), "NativeHidBridge")
-                  webView.addJavascriptInterface(NativeBridge(), "AndroidBridge")
-
-                  webView.webViewClient = object : WebViewClient() {
-                      override fun onPageFinished(view: WebView?, url: String?) {
-                          super.onPageFinished(view, url)
-                          injectUniversalBridge()
-                      }
-                  }
-
+                  webView.addJavascriptInterface(AndroidBridge(), "AndroidBridge")
                   webView.loadUrl("file:///android_asset/index.html")
+
+                  requestNeededPermissions()
               }
 
-              private fun checkPermissionsAndInit() {
-                  val perms = mutableListOf(Manifest.permission.RECORD_AUDIO)
+              override fun onDestroy() {
+                  super.onDestroy()
+                  try { unregisterReceiver(btReceiver) } catch (_: Exception) {}
+                  btAdapter?.cancelDiscovery()
+              }
+
+              private fun getRequiredPermissions(): List<String> {
+                  val list = mutableListOf(
+                      Manifest.permission.ACCESS_FINE_LOCATION,
+                      Manifest.permission.ACCESS_COARSE_LOCATION,
+                      Manifest.permission.RECORD_AUDIO
+                  )
                   if (Build.VERSION.SDK_INT >= 31) {
-                      perms.add(Manifest.permission.BLUETOOTH_CONNECT)
-                      perms.add(Manifest.permission.BLUETOOTH_SCAN)
-                      perms.add(Manifest.permission.BLUETOOTH_ADVERTISE)
+                      list.add(Manifest.permission.BLUETOOTH_SCAN)
+                      list.add(Manifest.permission.BLUETOOTH_CONNECT)
+                      list.add(Manifest.permission.BLUETOOTH_ADVERTISE)
                   }
-                  val missing = perms.filter { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }
-                  if (missing.isNotEmpty()) {
+                  return list
+              }
+
+              private fun requestNeededPermissions(): Boolean {
+                  val missing = getRequiredPermissions().filter {
+                      checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+                  }
+                  return if (missing.isNotEmpty()) {
                       requestPermissions(missing.toTypedArray(), REQ_PERMS)
+                      false
                   } else {
                       initBluetoothHid()
+                      true
                   }
               }
 
@@ -240,15 +891,15 @@ jobs:
               }
 
               private fun initBluetoothHid() {
-                  val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
-                  val adapter = btManager?.adapter ?: return
+                  if (hidDevice != null) return
+                  val adapter = btAdapter ?: return
                   adapter.getProfileProxy(this, object : BluetoothProfile.ServiceListener {
                       override fun onServiceConnected(profile: Int, proxy: BluetoothProfile?) {
                           if (profile == BluetoothProfile.HID_DEVICE) {
                               hidDevice = proxy as BluetoothHidDevice
                               val sdp = BluetoothHidDeviceAppSdpSettings(
-                                  "Smart TV & Projeksiyon Kumanda",
-                                  "Bluetooth HID Klavye Fare Kumanda",
+                                  "BT Kumanda",
+                                  "Smart TV ve Projeksiyon Kumandasi",
                                   "Android",
                                   BluetoothHidDevice.SUBCLASS1_COMBO,
                                   HID_DESCRIPTOR
@@ -257,10 +908,12 @@ jobs:
                                   override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
                                       if (state == BluetoothProfile.STATE_CONNECTED) {
                                           connectedDevice = device
-                                          notifyWebStatus(true, device?.name ?: "Baglandi")
+                                          notifyWebStatus(true, device?.name ?: "Cihaz")
                                       } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
-                                          connectedDevice = null
-                                          notifyWebStatus(false, "Baglanti Kesildi")
+                                          if (connectedDevice?.address == device?.address) {
+                                              connectedDevice = null
+                                          }
+                                          notifyWebStatus(false, "")
                                       }
                                   }
                               })
@@ -273,36 +926,60 @@ jobs:
               }
 
               private fun notifyWebStatus(connected: Boolean, name: String) {
+                  val safeName = name.replace("'", "\\'")
                   runOnUiThread {
-                      Toast.makeText(this, "BT: $name", Toast.LENGTH_SHORT).show()
                       webView.evaluateJavascript(
-                          "if(window.onBluetoothStateChanged) window.onBluetoothStateChanged($connected, '$name');",
+                          "if(window.onBluetoothStateChanged) window.onBluetoothStateChanged($connected, '$safeName');",
                           null
                       )
                   }
               }
 
-              private fun showDevicePickerDialog() {
+              private fun startLiveDiscovery() {
                   runOnUiThread {
-                      val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
-                      val paired = btManager?.adapter?.bondedDevices?.toList() ?: emptyList()
-                      if (paired.isEmpty()) {
-                          Toast.makeText(this, "Once telefonun Bluetooth ayarlarindan projeksiyonu eslestirin!", Toast.LENGTH_LONG).show()
-                          startActivity(Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
+                      if (!requestNeededPermissions()) return@runOnUiThread
+
+                      val adapter = btAdapter ?: return@runOnUiThread
+                      if (!adapter.isEnabled) {
+                          startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), REQ_ENABLE_BT)
                           return@runOnUiThread
                       }
-                      val names = paired.map { "${it.name ?: "Cihaz"} (${it.address})" }.toTypedArray()
-                      AlertDialog.Builder(this)
-                          .setTitle("Projeksiyon / Smart TV Secin")
-                          .setItems(names) { _, which ->
-                              val target = paired[which]
-                              hidDevice?.connect(target)
-                              Toast.makeText(this, "${target.name} baglaniyor...", Toast.LENGTH_SHORT).show()
+
+                      // Android 10/11 cihazlarda Bluetooth taramasi icin Konum (GPS) acik olmalidir
+                      if (Build.VERSION.SDK_INT < 31) {
+                          val lm = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+                          val gpsOn = lm?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
+                                      lm?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+                          if (!gpsOn) {
+                              Toast.makeText(this, "Cevre taramasi icin lutfen Konum (GPS) ayarini acin", Toast.LENGTH_LONG).show()
+                              startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                              return@runOnUiThread
                           }
-                          .setNeutralButton("BT Ayarlari") { _, _ ->
-                              startActivity(Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS))
-                          }
-                          .show()
+                      }
+
+                      if (adapter.isDiscovering) {
+                          adapter.cancelDiscovery()
+                      }
+                      adapter.startDiscovery()
+                  }
+              }
+
+              private fun connectToAddress(address: String) {
+                  runOnUiThread {
+                      val adapter = btAdapter ?: return@runOnUiThread
+                      adapter.cancelDiscovery()
+                      val device = adapter.getRemoteDevice(address) ?: return@runOnUiThread
+                      if (hidDevice == null) {
+                          initBluetoothHid()
+                      }
+                      if (device.bondState != BluetoothDevice.BOND_BONDED) {
+                          pendingDevice = device
+                          device.createBond()
+                          Toast.makeText(this, "${device.name ?: "Cihaz"} ile eslestiriliyor...", Toast.LENGTH_SHORT).show()
+                      } else {
+                          hidDevice?.connect(device)
+                          Toast.makeText(this, "${device.name ?: "Cihaz"} baglaniyor...", Toast.LENGTH_SHORT).show()
+                      }
                   }
               }
 
@@ -312,11 +989,11 @@ jobs:
                           val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                               putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                               putExtra(RecognizerIntent.EXTRA_LANGUAGE, "tr-TR")
-                              putExtra(RecognizerIntent.EXTRA_PROMPT, "Projeksiyona yazmak icin konusun...")
+                              putExtra(RecognizerIntent.EXTRA_PROMPT, "Yazmak istediginizi soyleyin...")
                           }
                           startActivityForResult(intent, REQ_SPEECH)
                       } catch (e: Exception) {
-                          Toast.makeText(this, "Sesli yazma servisi bulunamadi", Toast.LENGTH_SHORT).show()
+                          Toast.makeText(this, "Sesli yazma desteklenmiyor", Toast.LENGTH_SHORT).show()
                       }
                   }
               }
@@ -324,11 +1001,13 @@ jobs:
               override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
                   super.onActivityResult(requestCode, resultCode, data)
                   if (requestCode == REQ_SPEECH && resultCode == RESULT_OK) {
-                      val matches = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                      val spokenText = matches?.firstOrNull() ?: return
-                      sendTextViaHid(spokenText)
-                      val safeText = spokenText.replace("'", "\\'")
-                      webView.evaluateJavascript("if(window.onNativeSpeechResult) window.onNativeSpeechResult('$safeText');", null)
+                      val spoken = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: return
+                      sendTextViaHid(spoken)
+                      val safe = spoken.replace("'", "\\'")
+                      webView.evaluateJavascript("if(window.onNativeSpeechResult) window.onNativeSpeechResult('$safe');", null)
+                  } else if (requestCode == REQ_ENABLE_BT && resultCode == RESULT_OK) {
+                      initBluetoothHid()
+                      startLiveDiscovery()
                   }
               }
 
@@ -336,9 +1015,9 @@ jobs:
                   val dev = connectedDevice ?: return
                   executor.execute {
                       hidDevice?.sendReport(dev, 1, byteArrayOf(modifier.toByte(), 0, keyCode.toByte(), 0, 0, 0, 0, 0))
-                      Thread.sleep(22)
+                      Thread.sleep(20)
                       hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
-                      Thread.sleep(18)
+                      Thread.sleep(15)
                   }
               }
 
@@ -356,10 +1035,10 @@ jobs:
               private fun sendMouseReport(buttons: Int, dx: Int, dy: Int, wheel: Int) {
                   val dev = connectedDevice ?: return
                   executor.execute {
-                      val clampedX = max(-127, min(127, dx)).toByte()
-                      val clampedY = max(-127, min(127, dy)).toByte()
-                      val clampedW = max(-127, min(127, wheel)).toByte()
-                      hidDevice?.sendReport(dev, 3, byteArrayOf(buttons.toByte(), clampedX, clampedY, clampedW))
+                      val cx = max(-127, min(127, dx)).toByte()
+                      val cy = max(-127, min(127, dy)).toByte()
+                      val cw = max(-127, min(127, wheel)).toByte()
+                      hidDevice?.sendReport(dev, 3, byteArrayOf(buttons.toByte(), cx, cy, cw))
                       if (buttons != 0) {
                           Thread.sleep(25)
                           hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
@@ -399,27 +1078,17 @@ jobs:
                   }
               }
 
-              private fun injectUniversalBridge() {
-                  val js = """
-                      (function() {
-                          window.AndroidBridge = new Proxy({}, {
-                              get: function(target, prop) {
-                                  return function(...args) {
-                                      return window.NativeHidBridge.invoke(String(prop), JSON.stringify(args));
-                                  };
-                              }
-                          });
-                      })();
-                  """.trimIndent()
-                  webView.evaluateJavascript(js, null)
-              }
-
-              inner class NativeBridge {
+              inner class AndroidBridge {
                   @JavascriptInterface
-                  fun connect() = showDevicePickerDialog()
+                  fun startScan() = startLiveDiscovery()
 
                   @JavascriptInterface
-                  fun selectDevice() = showDevicePickerDialog()
+                  fun stopScan() {
+                      btAdapter?.cancelDiscovery()
+                  }
+
+                  @JavascriptInterface
+                  fun connectDevice(address: String) = connectToAddress(address)
 
                   @JavascriptInterface
                   fun startVoice() = startNativeVoiceInput()
@@ -431,52 +1100,13 @@ jobs:
                   fun sendKey(keyCode: Int) = sendKeyboardKey(0, keyCode)
 
                   @JavascriptInterface
-                  fun sendKeyReport(modifier: Int, keyCode: Int) = sendKeyboardKey(modifier, keyCode)
-
-                  @JavascriptInterface
                   fun sendConsumer(usage: Int) = sendConsumerUsage(usage)
 
                   @JavascriptInterface
-                  fun sendMouse(dx: Int, dy: Int, wheel: Int, buttons: Int) = sendMouseReport(buttons, dx, dy, wheel)
+                  fun moveMouse(dx: Int, dy: Int, wheel: Int) = sendMouseReport(0, dx, dy, wheel)
 
                   @JavascriptInterface
-                  fun invoke(method: String, argsJson: String): String {
-                      try {
-                          val arr = JSONArray(argsJson)
-                          val m = method.lowercase()
-                          when {
-                              m.contains("connect") || m.contains("scan") || m.contains("pair") || m.contains("device") -> showDevicePickerDialog()
-                              m.contains("voice") || m.contains("speech") || m.contains("mic") -> startNativeVoiceInput()
-                              m.contains("text") || m.contains("string") || m.contains("type") -> {
-                                  if (arr.length() > 0) sendTextViaHid(arr.optString(0))
-                              }
-                              m.contains("mouse") || m.contains("move") || m.contains("touchpad") -> {
-                                  if (arr.length() >= 4) {
-                                      sendMouseReport(arr.optInt(3), arr.optInt(0), arr.optInt(1), arr.optInt(2))
-                                  } else if (arr.length() >= 2) {
-                                      sendMouseReport(0, arr.optInt(0), arr.optInt(1), 0)
-                                  }
-                              }
-                              m.contains("click") -> {
-                                  val btn = if (arr.length() > 0) arr.optInt(0, 1) else 1
-                                  sendMouseReport(btn, 0, 0, 0)
-                              }
-                              m.contains("consumer") || m.contains("media") -> {
-                                  if (arr.length() > 0) sendConsumerUsage(arr.optInt(0))
-                              }
-                              m.contains("key") || m.contains("hid") || m.contains("packet") || m.contains("report") -> {
-                                  if (arr.length() >= 2) {
-                                      sendKeyboardKey(arr.optInt(0), arr.optInt(1))
-                                  } else if (arr.length() == 1) {
-                                      sendKeyboardKey(0, arr.optInt(0))
-                                  }
-                              }
-                          }
-                      } catch (e: Exception) {
-                          e.printStackTrace()
-                      }
-                      return "OK"
-                  }
+                  fun clickMouse(button: Int) = sendMouseReport(button, 0, 0, 0)
               }
           }
           EOF
