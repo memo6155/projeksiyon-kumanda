@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 9
-                  versionName "9.0"
+                  versionCode 10
+                  versionName "10.0"
               }
 
               compileOptions {
@@ -284,9 +284,9 @@ jobs:
               color: #f87171;
               border-color: rgba(248, 113, 113, 0.35);
             }
-            .icon-pill.ir-btn {
-              color: #fb923c;
-              border-color: rgba(251, 146, 60, 0.35);
+            .icon-pill.adjust-btn {
+              color: #38bdf8;
+              border-color: rgba(56, 189, 248, 0.35);
               width: auto;
               padding: 0 10px;
               gap: 4px;
@@ -462,21 +462,17 @@ jobs:
               gap: 8px;
             }
             .soft-btn {
-              height: 40px;
+              height: 42px;
               border-radius: 12px;
               background: rgba(30, 41, 59, 0.55);
               border: 1px solid rgba(255, 255, 255, 0.06);
               color: #e2e8f0;
-              font-size: 12px;
+              font-size: 13px;
               font-weight: 600;
               display: flex;
               align-items: center;
               justify-content: center;
               gap: 5px;
-            }
-            .soft-btn.focus-orange {
-              color: #fb923c;
-              border-color: rgba(251, 146, 60, 0.35);
             }
             .soft-btn.pressed, .soft-btn:active {
               transform: scale(0.95);
@@ -606,6 +602,7 @@ jobs:
               color: #fff;
             }
 
+            /* Modaller */
             .modal-backdrop {
               position: fixed;
               inset: 0;
@@ -624,7 +621,7 @@ jobs:
               background: #141c2b;
               border: 1px solid rgba(255, 255, 255, 0.1);
               border-radius: 20px;
-              padding: 14px;
+              padding: 16px;
               max-height: 88vh;
               display: flex;
               flex-direction: column;
@@ -633,9 +630,9 @@ jobs:
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-bottom: 6px;
+              margin-bottom: 12px;
             }
-            .modal-title { font-size: 14px; font-weight: 700; color: #f8fafc; }
+            .modal-title { font-size: 15px; font-weight: 700; color: #f8fafc; }
             .close-x {
               width: 30px;
               height: 30px;
@@ -645,59 +642,30 @@ jobs:
               color: #cbd5e1;
               font-size: 15px;
             }
-            .ir-hw-badge {
-              font-size: 11px;
-              font-weight: 700;
-              padding: 6px 10px;
-              border-radius: 8px;
-              background: rgba(16, 185, 129, 0.14);
-              color: #34d399;
-              border: 1px solid rgba(16, 185, 129, 0.3);
-              margin-bottom: 6px;
-              text-align: center;
-            }
             .scan-info {
-              font-size: 11px;
-              color: #93c5fd;
-              margin-bottom: 8px;
-              line-height: 1.35;
-            }
-            .scanner-box {
-              background: rgba(15, 23, 42, 0.9);
-              border: 1px solid rgba(251, 146, 60, 0.35);
-              border-radius: 14px;
-              padding: 9px;
-              margin-bottom: 8px;
-            }
-            .scanner-code {
               font-size: 12px;
-              font-weight: 700;
-              color: #fb923c;
-              text-align: center;
-              margin-bottom: 7px;
+              color: #93c5fd;
+              margin-bottom: 14px;
+              line-height: 1.4;
             }
-            .scanner-controls {
-              display: grid;
-              grid-template-columns: 1fr 1.6fr 1fr;
-              gap: 6px;
+            .slider-group {
+              margin-bottom: 16px;
+            }
+            .slider-label {
+              display: flex;
+              justify-content: space-between;
+              font-size: 13px;
+              font-weight: 600;
+              color: #e2e8f0;
               margin-bottom: 6px;
             }
-            .assign-grid {
-              display: grid;
-              grid-template-columns: repeat(3, 1fr);
-              gap: 6px;
-            }
-            .assign-btn {
-              height: 34px;
-              border-radius: 9px;
-              border: 1px solid rgba(56, 189, 248, 0.35);
-              background: rgba(2, 132, 199, 0.2);
-              color: #e0f2fe;
-              font-size: 11px;
-              font-weight: 700;
-            }
-            .assign-btn:active {
-              background: #0284c7;
+            .slider-input {
+              width: 100%;
+              accent-color: #38bdf8;
+              height: 6px;
+              background: #1e293b;
+              border-radius: 3px;
+              outline: none;
             }
             .dev-list {
               flex: 1;
@@ -705,21 +673,17 @@ jobs:
               display: flex;
               flex-direction: column;
               gap: 6px;
-              min-height: 100px;
-              margin-bottom: 6px;
+              min-height: 110px;
+              margin-bottom: 8px;
             }
             .dev-card {
               background: rgba(15, 23, 42, 0.8);
               border: 1px solid rgba(255, 255, 255, 0.06);
               border-radius: 11px;
-              padding: 8px 11px;
+              padding: 9px 11px;
               display: flex;
               justify-content: space-between;
               align-items: center;
-            }
-            .dev-card.selected {
-              border-color: #fb923c;
-              background: rgba(251, 146, 60, 0.14);
             }
             .dev-title { font-size: 12px; font-weight: 600; color: #f1f5f9; }
             .dev-mac { font-size: 11px; color: #64748b; margin-top: 2px; }
@@ -741,8 +705,9 @@ jobs:
                 <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
               </button>
 
-              <button class="icon-pill ir-btn" onclick="openIrModal()">
-                <span>FOCUS BUL</span>
+              <button class="icon-pill adjust-btn" onclick="openAdjustModal()" title="Parlaklık & Kontrast">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+                <span>Ayarlar</span>
               </button>
 
               <div class="status-pill" onclick="reconnectOrScan()">
@@ -799,13 +764,6 @@ jobs:
                     <button class="soft-btn" onclick="tapMenu()">
                       <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Menü
                     </button>
-                  </div>
-
-                  <!-- F- | Oto-Focus [+] | F+ (Basılı Tutma + 807F IR Destekli) -->
-                  <div class="btn-row">
-                    <button class="soft-btn" data-hold-focus="-1">F- (Netlik)</button>
-                    <button class="soft-btn focus-orange" onclick="tapFocus(0)">[ + ] Oto-Focus</button>
-                    <button class="soft-btn" data-hold-focus="1">F+ (Netlik)</button>
                   </div>
 
                   <div class="btn-row">
@@ -880,35 +838,34 @@ jobs:
               </div>
             </div>
 
-            <!-- Yaber 807F Focus Tuşu Bulucu Modal (0x12 Güç Kodu Korumalı) -->
-            <div id="irModal" class="modal-backdrop">
+            <!-- Parlaklık & Kontrast Ayar Modal -->
+            <div id="adjustModal" class="modal-backdrop">
               <div class="modal">
                 <div class="modal-head">
-                  <span class="modal-title">Yaber (807F) Focus Kodu Bulucu</span>
-                  <button class="close-x" onclick="closeIrModal()">✕</button>
+                  <span class="modal-title">Görüntü Ayarları (Parlaklık & Kontrast)</span>
+                  <button class="close-x" onclick="closeAdjustModal()">✕</button>
+                </div>
+                <div class="scan-info">
+                  Düşük veya soluk kalan uygulamalar için ekran kontrastını ve parlaklığını anında artırın:
                 </div>
 
-                <div id="irHwStatus" class="ir-hw-badge">Güç Tuşu: 807F - 0x12 (Aktif)</div>
-
-                <div id="irStatus" class="scan-info">
-                  Bu tarayıcı <b>0x12 Güç kodunu atlar</b> (cihaz kapanmaz). Projeksiyonda <b>Netlik (Focus)</b> oynadığı anda durdurup ilgili tuşa kaydedin:
-                </div>
-
-                <div class="scanner-box">
-                  <div id="activeIrLabel" class="scanner-code">Komut #1</div>
-                  <div class="scanner-controls">
-                    <button class="soft-btn" onclick="stepIr(-1)">◀ Önceki</button>
-                    <button id="autoScanBtn" class="soft-btn focus-orange" onclick="toggleAutoIrScan()">▶️ Focus Tara</button>
-                    <button class="soft-btn" onclick="stepIr(1)">Sonraki ▶</button>
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span>Parlaklık (Brightness)</span>
+                    <span id="brightVal">100%</span>
                   </div>
-                  <div class="assign-grid">
-                    <button id="btnSaveFMinus" class="assign-btn" onclick="assignFocusKey(-1)">F- Kaydet</button>
-                    <button id="btnSaveFAuto" class="assign-btn" onclick="assignFocusKey(0)">Oto-Focus</button>
-                    <button id="btnSaveFPlus" class="assign-btn" onclick="assignFocusKey(1)">F+ Kaydet</button>
-                  </div>
+                  <input type="range" min="70" max="150" value="100" class="slider-input" id="brightRange" oninput="applyFilters()">
                 </div>
 
-                <div id="irList" class="dev-list"></div>
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span>Kontrast (Contrast)</span>
+                    <span id="contrastVal">100%</span>
+                  </div>
+                  <input type="range" min="70" max="160" value="100" class="slider-input" id="contrastRange" oninput="applyFilters()">
+                </div>
+
+                <button class="soft-btn" style="width:100%;background:#0284c7;color:#fff;margin-top:4px;" onclick="resetFilters()">Varsayılan Sıfırla</button>
               </div>
             </div>
 
@@ -916,77 +873,6 @@ jobs:
             const foundDevices = {};
             let isConnected = false;
             let gyroEnabled = false;
-            let selectedIrIndex = 0;
-            let autoScanTimer = null;
-
-            // Yaber Ace K1 (Anakart: 0x80, 0x7F) İçin Tüm Aday Focus/Fonksiyon Komutları
-            // (0x12 Güç kodu cihazı kapatmaması için listeden çıkarılmıştır!)
-            const focusCandidateCmds = [
-              // En yaygın 807F Focus ve Auto-Focus kodları ilk sırada:
-              { cmd: 0x1A, note: "807F Focus Adayı (0x1A)" },
-              { cmd: 0x1B, note: "807F Focus Adayı (0x1B)" },
-              { cmd: 0x1C, note: "807F Focus Adayı (0x1C)" },
-              { cmd: 0x1D, note: "807F Focus Adayı (0x1D)" },
-              { cmd: 0x1E, note: "807F Focus Adayı (0x1E)" },
-              { cmd: 0x1F, note: "807F Focus Adayı (0x1F)" },
-              { cmd: 0x0E, note: "807F Focus Adayı (0x0E)" },
-              { cmd: 0x0F, note: "807F Focus Adayı (0x0F)" },
-              { cmd: 0x0D, note: "807F Focus Adayı (0x0D)" },
-              { cmd: 0x0C, note: "807F Focus Adayı (0x0C)" },
-              { cmd: 0x0B, note: "807F Focus Adayı (0x0B)" },
-              { cmd: 0x0A, note: "807F Focus Adayı (0x0A)" },
-              { cmd: 0x40, note: "807F Focus Adayı (0x40)" },
-              { cmd: 0x41, note: "807F Focus Adayı (0x41)" },
-              { cmd: 0x42, note: "807F Focus Adayı (0x42)" },
-              { cmd: 0x43, note: "807F Focus Adayı (0x43)" },
-              { cmd: 0x44, note: "807F Focus Adayı (0x44)" },
-              { cmd: 0x45, note: "807F Focus Adayı (0x45)" },
-              { cmd: 0x46, note: "807F Focus Adayı (0x46)" },
-              { cmd: 0x47, note: "807F Focus Adayı (0x47)" },
-              { cmd: 0x48, note: "807F Focus Adayı (0x48)" },
-              { cmd: 0x49, note: "807F Focus Adayı (0x49)" },
-              { cmd: 0x4A, note: "807F Focus Adayı (0x4A)" },
-              { cmd: 0x4B, note: "807F Focus Adayı (0x4B)" },
-              { cmd: 0x4C, note: "807F Focus Adayı (0x4C)" },
-              { cmd: 0x4D, note: "807F Focus Adayı (0x4D)" },
-              { cmd: 0x4E, note: "807F Focus Adayı (0x4E)" },
-              { cmd: 0x4F, note: "807F Focus Adayı (0x4F)" },
-              { cmd: 0x50, note: "807F Focus Adayı (0x50)" },
-              { cmd: 0x51, note: "807F Focus Adayı (0x51)" },
-              { cmd: 0x52, note: "807F Focus Adayı (0x52)" },
-              { cmd: 0x53, note: "807F Focus Adayı (0x53)" },
-              { cmd: 0x54, note: "807F Focus Adayı (0x54)" },
-              { cmd: 0x55, note: "807F Focus Adayı (0x55)" },
-              { cmd: 0x56, note: "807F Focus Adayı (0x56)" },
-              { cmd: 0x57, note: "807F Focus Adayı (0x57)" },
-              { cmd: 0x58, note: "807F Focus Adayı (0x58)" },
-              { cmd: 0x59, note: "807F Focus Adayı (0x59)" },
-              { cmd: 0x5A, note: "807F Focus Adayı (0x5A)" },
-              { cmd: 0x5B, note: "807F Focus Adayı (0x5B)" },
-              { cmd: 0x5C, note: "807F Focus Adayı (0x5C)" },
-              { cmd: 0x5D, note: "807F Focus Adayı (0x5D)" },
-              { cmd: 0x5E, note: "807F Focus Adayı (0x5E)" },
-              { cmd: 0x5F, note: "807F Focus Adayı (0x5F)" },
-              { cmd: 0x00, note: "807F Komut (0x00)" },
-              { cmd: 0x01, note: "807F Komut (0x01)" },
-              { cmd: 0x02, note: "807F Komut (0x02)" },
-              { cmd: 0x03, note: "807F Komut (0x03)" },
-              { cmd: 0x04, note: "807F Komut (0x04)" },
-              { cmd: 0x05, note: "807F Komut (0x05)" },
-              { cmd: 0x06, note: "807F Komut (0x06)" },
-              { cmd: 0x07, note: "807F Komut (0x07)" },
-              { cmd: 0x08, note: "807F Komut (0x08)" },
-              { cmd: 0x09, note: "807F Komut (0x09)" },
-              { cmd: 0x10, note: "807F Komut (0x10)" },
-              { cmd: 0x11, note: "807F Komut (0x11)" },
-              { cmd: 0x13, note: "807F Komut (0x13)" },
-              { cmd: 0x14, note: "807F Komut (0x14)" },
-              { cmd: 0x15, note: "807F Komut (0x15)" },
-              { cmd: 0x16, note: "807F Komut (0x16)" },
-              { cmd: 0x17, note: "807F Komut (0x17)" },
-              { cmd: 0x18, note: "807F Komut (0x18)" },
-              { cmd: 0x19, note: "807F Komut (0x19)" }
-            ];
 
             const sensLevels = [
               { label: 'Yavaş', val: 14 },
@@ -994,10 +880,6 @@ jobs:
               { label: 'Hızlı', val: 32 }
             ];
             let sensIndex = 1;
-
-            function toHex(n) {
-              return '0x' + ('0' + (n & 0xFF).toString(16).toUpperCase()).slice(-2);
-            }
 
             function vibrate(ms = 14) {
               if (navigator.vibrate) navigator.vibrate(ms);
@@ -1025,18 +907,10 @@ jobs:
               }
             }
 
-            // Sol Üst Güç Tuşu: Doğrudan çalışan #29 (807F - 0x12) kodunu ateşler
             function triggerHybridPower() {
               vibrate(30);
               if (window.AndroidBridge) {
                 window.AndroidBridge.triggerPowerWithIr(0x80, 0x7F, 0x12);
-              }
-            }
-
-            function tapFocus(dir) {
-              vibrate(18);
-              if (window.AndroidBridge) {
-                window.AndroidBridge.sendSavedFocus(dir);
               }
             }
 
@@ -1123,6 +997,31 @@ jobs:
               input.value = '';
             }
 
+            // Parlaklık ve Kontrast Filtreleri
+            function openAdjustModal() {
+              vibrate();
+              document.getElementById('adjustModal').classList.add('open');
+            }
+
+            function closeAdjustModal() {
+              document.getElementById('adjustModal').classList.remove('open');
+            }
+
+            function applyFilters() {
+              const b = document.getElementById('brightRange').value;
+              const c = document.getElementById('contrastRange').value;
+              document.getElementById('brightVal').textContent = b + '%';
+              document.getElementById('contrastVal').textContent = c + '%';
+              document.body.style.filter = `brightness(${b}%) contrast(${c}%)`;
+            }
+
+            function resetFilters() {
+              vibrate(20);
+              document.getElementById('brightRange').value = 100;
+              document.getElementById('contrastRange').value = 100;
+              applyFilters();
+            }
+
             (function initHoldButtons() {
               document.querySelectorAll('[data-hold-key]').forEach((btn) => {
                 const keyCode = parseInt(btn.getAttribute('data-hold-key'), 10);
@@ -1207,32 +1106,6 @@ jobs:
                 btn.addEventListener('touchend', stopRepeat);
                 btn.addEventListener('touchcancel', stopRepeat);
               });
-
-              // F- ve F+ Tuşlarında Basılı Tutarak Seri Odaklama
-              document.querySelectorAll('[data-hold-focus]').forEach((btn) => {
-                const dir = parseInt(btn.getAttribute('data-hold-focus'), 10);
-                let timer = null;
-
-                const startFocusRepeat = (e) => {
-                  e.preventDefault();
-                  btn.classList.add('pressed');
-                  tapFocus(dir);
-                  clearInterval(timer);
-                  timer = setInterval(() => tapFocus(dir), 220);
-                };
-
-                const stopFocusRepeat = () => {
-                  btn.classList.remove('pressed');
-                  clearInterval(timer);
-                  timer = null;
-                };
-
-                btn.addEventListener('touchstart', startFocusRepeat, { passive: false });
-                btn.addEventListener('touchend', stopFocusRepeat);
-                btn.addEventListener('touchcancel', stopFocusRepeat);
-                btn.addEventListener('mousedown', startFocusRepeat);
-                btn.addEventListener('mouseup', stopFocusRepeat);
-              });
             })();
 
             (function initTouchpad() {
@@ -1291,113 +1164,6 @@ jobs:
                 }
               }, { passive: false });
             })();
-
-            // Yaber 807F Focus Bulucu Fonksiyonları
-            function openIrModal() {
-              vibrate();
-              refreshSavedFocusLabels();
-              updateIrScannerUi();
-              renderIrList();
-              document.getElementById('irModal').classList.add('open');
-            }
-
-            function closeIrModal() {
-              stopAutoIrScan();
-              document.getElementById('irModal').classList.remove('open');
-            }
-
-            function refreshSavedFocusLabels() {
-              if (!window.AndroidBridge) return;
-              const fm = window.AndroidBridge.getFocusCmd(-1);
-              const fa = window.AndroidBridge.getFocusCmd(0);
-              const fp = window.AndroidBridge.getFocusCmd(1);
-              document.getElementById('btnSaveFMinus').textContent = `F- (${toHex(fm)})`;
-              document.getElementById('btnSaveFAuto').textContent = `Oto (${toHex(fa)})`;
-              document.getElementById('btnSaveFPlus').textContent = `F+ (${toHex(fp)})`;
-            }
-
-            function updateIrScannerUi() {
-              const item = focusCandidateCmds[selectedIrIndex];
-              document.getElementById('activeIrLabel').textContent =
-                `[${selectedIrIndex + 1}/${focusCandidateCmds.length}] ${item.note}`;
-            }
-
-            function fireIrAtIndex(idx) {
-              selectedIrIndex = (idx + focusCandidateCmds.length) % focusCandidateCmds.length;
-              const item = focusCandidateCmds[selectedIrIndex];
-              updateIrScannerUi();
-              renderIrList();
-              if (window.AndroidBridge) {
-                window.AndroidBridge.transmitCustomNec(0x80, 0x7F, item.cmd);
-              }
-            }
-
-            function stepIr(delta) {
-              vibrate(18);
-              stopAutoIrScan();
-              fireIrAtIndex(selectedIrIndex + delta);
-            }
-
-            function toggleAutoIrScan() {
-              vibrate(25);
-              if (autoScanTimer) {
-                stopAutoIrScan();
-              } else {
-                document.getElementById('autoScanBtn').textContent = '⏸️ Durdur';
-                fireIrAtIndex(selectedIrIndex);
-                autoScanTimer = setInterval(() => {
-                  fireIrAtIndex(selectedIrIndex + 1);
-                }, 1300);
-              }
-            }
-
-            function stopAutoIrScan() {
-              if (autoScanTimer) {
-                clearInterval(autoScanTimer);
-                autoScanTimer = null;
-              }
-              const btn = document.getElementById('autoScanBtn');
-              if (btn) btn.textContent = '▶️ Focus Tara';
-            }
-
-            function assignFocusKey(dir) {
-              vibrate(30);
-              stopAutoIrScan();
-              const item = focusCandidateCmds[selectedIrIndex];
-              if (window.AndroidBridge) {
-                window.AndroidBridge.saveFocusCmd(dir, item.cmd);
-              }
-              refreshSavedFocusLabels();
-              const keyName = dir === -1 ? 'F- (Netlik -)' : (dir === 0 ? 'Oto-Focus [+]' : 'F+ (Netlik +)');
-              document.getElementById('irStatus').innerHTML =
-                `✅ <b>807F - ${toHex(item.cmd)}</b> kodu <b>${keyName}</b> tuşuna kaydedildi!`;
-            }
-
-            function renderIrList() {
-              const container = document.getElementById('irList');
-              container.innerHTML = '';
-              focusCandidateCmds.forEach((p, idx) => {
-                const card = document.createElement('div');
-                card.className = 'dev-card' + (idx === selectedIrIndex ? ' selected' : '');
-                card.onclick = () => {
-                  vibrate(20);
-                  stopAutoIrScan();
-                  fireIrAtIndex(idx);
-                };
-                card.innerHTML = `
-                  <div>
-                    <div class="dev-title">${p.note}</div>
-                  </div>
-                  <div class="dev-tag">${idx === selectedIrIndex ? 'Aktif' : 'Dene'}</div>
-                `;
-                container.appendChild(card);
-              });
-            }
-
-            window.onIrTransmitResult = function(msg) {
-              const badge = document.getElementById('irHwStatus');
-              if (badge) badge.textContent = msg;
-            };
 
             function openScanner() {
               vibrate();
@@ -1672,28 +1438,16 @@ jobs:
 
               private fun transmitNec(b0: Int, b1: Int, cmd: Int) {
                   val ir = irManager
-                  if (ir == null || !ir.hasIrEmitter()) {
-                      notifyIrResult("❌ IR Donanimi Bulunamadi")
-                      return
-                  }
+                  if (ir == null || !ir.hasIrEmitter()) return
                   executor.execute {
                       try {
                           val pattern = buildRedmiSafeNecPattern(b0, b1, cmd)
                           ir.transmit(38000, pattern)
                           Thread.sleep(95)
                           ir.transmit(38000, pattern)
-                          val hexCmd = String.format("0x%02X", cmd and 0xFF)
-                          notifyIrResult("✅ 807F - $hexCmd Gönderildi")
                       } catch (e: Exception) {
-                          notifyIrResult("⚠️ IR Hatasi: ${e.message}")
+                          e.printStackTrace()
                       }
-                  }
-              }
-
-              private fun notifyIrResult(msg: String) {
-                  val safe = msg.replace("'", "\\'")
-                  runOnUiThread {
-                      webView.evaluateJavascript("if(window.onIrTransmitResult) window.onIrTransmitResult('$safe');", null)
                   }
               }
 
@@ -2163,43 +1917,13 @@ jobs:
 
                   @JavascriptInterface
                   fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
-                      // Çalıştığı doğrulanan #29 (807F - 0x12) Güç Sinyali
+                      // Kesin çalışan #29 (807F - 0x12) Güç Kodu
                       transmitNec(0x80, 0x7F, 0x12)
                       if (connectedDevice != null) {
                           sendConsumerUsage(48)
                       } else {
                           runOnUiThread { ensureHidAndAutoConnect() }
                       }
-                  }
-
-                  @JavascriptInterface
-                  fun transmitCustomNec(b0: Int, b1: Int, cmd: Int) {
-                      transmitNec(b0, b1, cmd)
-                  }
-
-                  @JavascriptInterface
-                  fun getFocusCmd(dir: Int): Int {
-                      return when (dir) {
-                          -1 -> prefs.getInt("focus_minus_cmd", 0x1A)
-                          0 -> prefs.getInt("focus_auto_cmd", 0x1B)
-                          else -> prefs.getInt("focus_plus_cmd", 0x1C)
-                      }
-                  }
-
-                  @JavascriptInterface
-                  fun saveFocusCmd(dir: Int, cmd: Int) {
-                      val key = when (dir) {
-                          -1 -> "focus_minus_cmd"
-                          0 -> "focus_auto_cmd"
-                          else -> "focus_plus_cmd"
-                      }
-                      prefs.edit().putInt(key, cmd and 0xFF).apply()
-                  }
-
-                  @JavascriptInterface
-                  fun sendSavedFocus(dir: Int) {
-                      val cmd = getFocusCmd(dir)
-                      transmitNec(0x80, 0x7F, cmd)
                   }
 
                   @JavascriptInterface
