@@ -29,7 +29,7 @@ jobs:
         run: |
           rm -rf app filter settings.gradle gradle.properties build.gradle
           mkdir -p app/src/main/assets app/src/main/java/com/kumandarus/app app/src/main/res/drawable app/src/main/res/mipmap
-          mkdir -p filter/src/main/java/com/k1/screenfilter filter/src/main/res/mipmap
+          mkdir -p filter/src/main/java/com/k1/screenfilter filter/src/main/res/drawable filter/src/main/res/mipmap
 
           # settings.gradle
           cat << 'EOF' > settings.gradle
@@ -66,37 +66,7 @@ jobs:
           }
           EOF
 
-          # -------------------------------------------------------------
-          # 1. MODUL: KUMANDARUS (TELEFON KUMANDASI)
-          # -------------------------------------------------------------
-          cat << 'EOF' > app/build.gradle
-          plugins {
-              id 'com.android.application'
-              id 'org.jetbrains.kotlin.android'
-          }
-
-          android {
-              namespace 'com.kumandarus.app'
-              compileSdk 34
-
-              defaultConfig {
-                  applicationId "com.kumandarus.app"
-                  minSdk 26
-                  targetSdk 34
-                  versionCode 13
-                  versionName "13.0"
-              }
-
-              compileOptions {
-                  sourceCompatibility JavaVersion.VERSION_17
-                  targetCompatibility JavaVersion.VERSION_17
-              }
-              kotlinOptions { jvmTarget = '17' }
-              lint { abortOnError false; checkReleaseBuilds false }
-          }
-          EOF
-
-          # Simge Dosyalari
+          # Ortak Simge Dosyalari
           cat << 'EOF' > app/src/main/res/drawable/ic_launcher_background.xml
           <?xml version="1.0" encoding="utf-8"?>
           <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -135,6 +105,41 @@ jobs:
               <background android:drawable="@drawable/ic_launcher_background"/>
               <foreground android:drawable="@drawable/ic_launcher_foreground"/>
           </adaptive-icon>
+          EOF
+
+          # Simgeleri filter modulune de eksiksiz kopyala
+          cp app/src/main/res/drawable/ic_launcher_background.xml filter/src/main/res/drawable/
+          cp app/src/main/res/drawable/ic_launcher_foreground.xml filter/src/main/res/drawable/
+          cp app/src/main/res/mipmap/ic_launcher.xml filter/src/main/res/mipmap/
+
+          # -------------------------------------------------------------
+          # 1. MODUL: KUMANDARUS (TELEFON KUMANDASI)
+          # -------------------------------------------------------------
+          cat << 'EOF' > app/build.gradle
+          plugins {
+              id 'com.android.application'
+              id 'org.jetbrains.kotlin.android'
+          }
+
+          android {
+              namespace 'com.kumandarus.app'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId "com.kumandarus.app"
+                  minSdk 26
+                  targetSdk 34
+                  versionCode 13
+                  versionName "13.0"
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+              kotlinOptions { jvmTarget = '17' }
+              lint { abortOnError false; checkReleaseBuilds false }
+          }
           EOF
 
           cat << 'EOF' > app/src/main/AndroidManifest.xml
@@ -398,7 +403,6 @@ jobs:
               <button class="kb-btn send" onclick="sendManualText()">Gönder</button>
             </div>
 
-            <!-- Bluetooth Modal -->
             <div id="scanModal" class="modal-backdrop">
               <div class="modal">
                 <div class="modal-head">
@@ -411,7 +415,7 @@ jobs:
               </div>
             </div>
 
-            <!-- CANLI EKRAN FİLTRESİ MODAL -->
+            <!-- CANLI PROJEKSİYON EKRAN FİLTRESİ MODAL -->
             <div id="adjustModal" class="modal-backdrop">
               <div class="modal">
                 <div class="modal-head">
@@ -525,7 +529,6 @@ jobs:
               input.value = '';
             }
 
-            // --- CANLI PROJEKSİYON EKRAN FİLTRESİ ---
             let filterDebounce = null;
             function openAdjustModal() {
               vibrate();
@@ -722,6 +725,7 @@ jobs:
           import kotlin.math.min
           import kotlin.math.roundToInt
 
+          @Suppress("DEPRECATION")
           @SuppressLint("MissingPermission", "SetJavaScriptEnabled")
           class MainActivity : Activity(), SensorEventListener {
 
@@ -774,7 +778,11 @@ jobs:
                   override fun onReceive(context: Context?, intent: Intent?) {
                       when (intent?.action) {
                           BluetoothDevice.ACTION_FOUND -> {
-                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val device: BluetoothDevice? = if (Build.VERSION.SDK_INT >= 33) {
+                                  intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                              } else {
+                                  intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              }
                               val rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE).toInt()
                               val name = device?.name ?: intent.getStringExtra(BluetoothDevice.EXTRA_NAME)
                               if (device != null && !name.isNullOrBlank()) {
@@ -785,7 +793,11 @@ jobs:
                               runOnUiThread { webView.evaluateJavascript("if(window.onScanFinished) window.onScanFinished();", null) }
                           }
                           BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val device: BluetoothDevice? = if (Build.VERSION.SDK_INT >= 33) {
+                                  intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                              } else {
+                                  intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              }
                               val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
                               if (device != null && device.address == pendingDevice?.address && state == BluetoothDevice.BOND_BONDED) {
                                   pendingDevice = null
@@ -1212,7 +1224,7 @@ jobs:
                   @JavascriptInterface fun connectDevice(address: String) = connectToAddress(address)
                   @JavascriptInterface fun reconnectLast() = runOnUiThread { ensureHidAndAutoConnect() }
                   @JavascriptInterface fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
-                      transmitNec(0x80, 0x7F, 0x12)
+                      transmitNec(b0, b1, cmd)
                       if (connectedDevice != null) sendConsumerUsage(48)
                       else runOnUiThread { ensureHidAndAutoConnect() }
                   }
@@ -1263,8 +1275,6 @@ jobs:
               lint { abortOnError false; checkReleaseBuilds false }
           }
           EOF
-
-          cp app/src/main/res/mipmap/ic_launcher.xml filter/src/main/res/mipmap/ic_launcher.xml
 
           cat << 'EOF' > filter/src/main/AndroidManifest.xml
           <?xml version="1.0" encoding="utf-8"?>
@@ -1358,6 +1368,7 @@ jobs:
                           .setSmallIcon(android.R.drawable.ic_menu_manage)
                           .build()
                   } else {
+                      @Suppress("DEPRECATION")
                       Notification.Builder(this)
                           .setContentTitle("K1 Screen Filter")
                           .setContentText("Arka plan filtre servisi devrede (Port 8088)")
@@ -1372,6 +1383,7 @@ jobs:
                   val layoutType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                       WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
                   } else {
+                      @Suppress("DEPRECATION")
                       WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
                   }
 
@@ -1407,7 +1419,6 @@ jobs:
                       }
 
                       if (brightness < 100) {
-                          // Karartma (Dimmer): Siyah katman opakligi
                           val factor = (100 - brightness) / 70.0
                           val alpha = (factor * 200).toInt().coerceIn(0, 220)
                           if (warmth > 0) {
@@ -1416,7 +1427,6 @@ jobs:
                               view.setBackgroundColor(Color.argb(alpha, 0, 0, 0))
                           }
                       } else {
-                          // Aydinlatma (Shadow Boost): Yari saydam beyaz
                           val factor = (brightness - 100) / 50.0
                           val alpha = (factor * 80).toInt().coerceIn(0, 95)
                           if (warmth > 0) {
@@ -1505,7 +1515,6 @@ jobs:
           import android.os.Bundle
           import android.provider.Settings
           import android.widget.TextView
-          import android.widget.Toast
 
           class MainActivity : Activity() {
               override fun onCreate(savedInstanceState: Bundle?) {
@@ -1520,7 +1529,12 @@ jobs:
                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
                       startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
                   } else {
-                      startService(Intent(this, FilterService::class.java))
+                      val svc = Intent(this, FilterService::class.java)
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                          startForegroundService(svc)
+                      } else {
+                          startService(svc)
+                      }
                   }
                   finish()
               }
