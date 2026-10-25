@@ -105,4 +105,897 @@ jobs:
           EOF
 
           cat << 'EOF' > app/src/main/res/drawable/ic_launcher_background.xml
-          <?xml version="1.0" encoding="utf
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:aapt="http://schemas.android.com/aapt"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="108"
+              android:viewportHeight="108">
+              <path android:pathData="M0,0h108v108h-108z">
+                  <aapt:attr name="android:fillColor">
+                      <gradient
+                          android:startX="0"
+                          android:startY="0"
+                          android:endX="108"
+                          android:endY="108"
+                          android:type="linear">
+                          <item android:offset="0.0" android:color="#FF0F172A"/>
+                          <item android:offset="0.5" android:color="#FF1E1B4B"/>
+                          <item android:offset="1.0" android:color="#FF0284C7"/>
+                      </gradient>
+                  </aapt:attr>
+              </path>
+          </vector>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/drawable/ic_launcher_foreground.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp"
+              android:height="108dp"
+              android:viewportWidth="108"
+              android:viewportHeight="108">
+              <path
+                  android:fillColor="#00000000"
+                  android:strokeColor="#38BDF8"
+                  android:strokeWidth="2.8"
+                  android:strokeLineCap="round"
+                  android:pathData="M43,27 C49,21 59,21 65,27" />
+              <path
+                  android:fillColor="#00000000"
+                  android:strokeColor="#38BDF8"
+                  android:strokeWidth="2.8"
+                  android:strokeLineCap="round"
+                  android:pathData="M48,32 C51,28 57,28 60,32" />
+              <path
+                  android:fillColor="#FF1E293B"
+                  android:strokeColor="#0284C7"
+                  android:strokeWidth="3.2"
+                  android:pathData="M38,37 L70,37 A7,7 0 0 1 77,44 L77,87 A7,7 0 0 1 70,94 L38,94 A7,7 0 0 1 31,87 L31,44 A7,7 0 0 1 38,37 Z" />
+              <path
+                  android:fillColor="#FF0284C7"
+                  android:pathData="M54,43 A3.5,3.5 0 1 0 54,50 A3.5,3.5 0 1 0 54,43 Z" />
+              <path
+                  android:fillColor="#FF334155"
+                  android:pathData="M54,56 A14,14 0 1 0 54,84 A14,14 0 1 0 54,56 Z" />
+              <path
+                  android:fillColor="#FF0284C7"
+                  android:pathData="M54,65 A5,5 0 1 0 54,75 A5,5 0 1 0 54,65 Z" />
+          </vector>
+          EOF
+
+          cat << 'EOF' > app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@drawable/ic_launcher_background" />
+              <foreground android:drawable="@drawable/ic_launcher_foreground" />
+          </adaptive-icon>
+          EOF
+
+          cp app/src/main/res/drawable/* filter/src/main/res/drawable/
+          cp app/src/main/res/mipmap-anydpi-v26/* filter/src/main/res/mipmap-anydpi-v26/
+
+          cat << 'EOF' > app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.BLUETOOTH" />
+              <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+              <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+              <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.TRANSMIT_IR" />
+
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="Kumandarus"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize|keyboardHidden"
+                      android:screenOrientation="portrait">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # ==================== FILTER MODULU (K1 FILTER v2.0 - OTO AYDINLATMA) ====================
+          cat << 'EOF' > filter/build.gradle
+          plugins {
+              id 'com.android.application'
+              id 'org.jetbrains.kotlin.android'
+          }
+
+          android {
+              namespace 'com.k1.screenfilter'
+              compileSdk 34
+
+              defaultConfig {
+                  applicationId "com.k1.screenfilter"
+                  minSdk 26
+                  targetSdk 34
+                  versionCode 2
+                  versionName "2.0"
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+
+              kotlinOptions {
+                  jvmTarget = '17'
+              }
+
+              lint {
+                  abortOnError false
+                  checkReleaseBuilds false
+              }
+          }
+          EOF
+
+          cat << 'EOF' > filter/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+              <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+              <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+              <uses-permission android:name="android.permission.INTERNET" />
+
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="K1 Screen Filter"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                          <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+
+                  <service
+                      android:name=".FilterService"
+                      android:enabled="true"
+                      android:exported="false" />
+
+                  <receiver
+                      android:name=".BootReceiver"
+                      android:enabled="true"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.BOOT_COMPLETED" />
+                      </intent-filter>
+                  </receiver>
+              </application>
+          </manifest>
+          EOF
+
+          cat << 'EOF' > filter/src/main/java/com/k1/screenfilter/BootReceiver.kt
+          package com.k1.screenfilter
+
+          import android.content.BroadcastReceiver
+          import android.content.Context
+          import android.content.Intent
+          import android.os.Build
+
+          class BootReceiver : BroadcastReceiver() {
+              override fun onReceive(context: Context, intent: Intent) {
+                  if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+                      val serviceIntent = Intent(context, FilterService::class.java)
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                          context.startForegroundService(serviceIntent)
+                      } else {
+                          context.startService(serviceIntent)
+                      }
+                  }
+              }
+          }
+          EOF
+
+          cat << 'EOF' > filter/src/main/java/com/k1/screenfilter/MainActivity.kt
+          package com.k1.screenfilter
+
+          import android.app.Activity
+          import android.content.Intent
+          import android.net.Uri
+          import android.os.Build
+          import android.os.Bundle
+          import android.provider.Settings
+          import android.widget.Toast
+
+          class MainActivity : Activity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                      val intent = Intent(
+                          Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                          Uri.parse("package:$packageName")
+                      )
+                      startActivityForResult(intent, 1234)
+                  } else {
+                      startFilterService()
+                  }
+              }
+
+              private fun startFilterService() {
+                  val serviceIntent = Intent(this, FilterService::class.java)
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                      startForegroundService(serviceIntent)
+                  } else {
+                      startService(serviceIntent)
+                  }
+                  Toast.makeText(this, "K1 Filtre Servisi Devrede! Port: 8088", Toast.LENGTH_LONG).show()
+                  finish()
+              }
+
+              override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+                  super.onActivityResult(requestCode, resultCode, data)
+                  if (requestCode == 1234) {
+                      startFilterService()
+                  }
+              }
+          }
+          EOF
+
+          cat << 'EOF' > filter/src/main/java/com/k1/screenfilter/FilterService.kt
+          package com.k1.screenfilter
+
+          import android.app.Notification
+          import android.app.NotificationChannel
+          import android.app.NotificationManager
+          import android.app.Service
+          import android.content.Context
+          import android.content.Intent
+          import android.graphics.Color
+          import android.graphics.PixelFormat
+          import android.os.Build
+          import android.os.IBinder
+          import android.view.View
+          import android.view.WindowManager
+          import java.io.BufferedReader
+          import java.io.InputStreamReader
+          import java.net.ServerSocket
+          import java.net.Socket
+          import kotlin.concurrent.thread
+
+          class FilterService : Service() {
+
+              private var windowManager: WindowManager? = null
+              private var overlayView: View? = null
+              private var serverSocket: ServerSocket? = null
+              private var isRunning = true
+
+              override fun onCreate() {
+                  super.onCreate()
+                  createNotificationChannel()
+                  startForeground(1001, buildNotification())
+                  initOverlayView()
+                  startHttpServer()
+                  startAutoRecTvWatcher()
+              }
+
+              private fun createNotificationChannel() {
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                      val channel = NotificationChannel(
+                          "filter_channel",
+                          "K1 Filter Service",
+                          NotificationManager.IMPORTANCE_LOW
+                      )
+                      val manager = getSystemService(NotificationManager::class.java)
+                      manager?.createNotificationChannel(channel)
+                  }
+              }
+
+              private fun buildNotification(): Notification {
+                  val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                      Notification.Builder(this, "filter_channel")
+                  } else {
+                      @Suppress("DEPRECATION")
+                      Notification.Builder(this)
+                  }
+                  return builder
+                      .setContentTitle("K1 Screen Filter")
+                      .setContentText("K1 Canli Ekran Parlaklik ve Kontrast Modu Devrede")
+                      .setSmallIcon(android.R.drawable.ic_menu_manage)
+                      .build()
+              }
+
+              private fun initOverlayView() {
+                  windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                  overlayView = View(this)
+
+                  val layoutType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                      WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                  } else {
+                      @Suppress("DEPRECATION")
+                      WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
+                  }
+
+                  val params = WindowManager.LayoutParams(
+                      WindowManager.LayoutParams.MATCH_PARENT,
+                      WindowManager.LayoutParams.MATCH_PARENT,
+                      layoutType,
+                      WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                              WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                              WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                              WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                      PixelFormat.TRANSLUCENT
+                  )
+
+                  overlayView?.setBackgroundColor(Color.TRANSPARENT)
+                  try {
+                      windowManager?.addView(overlayView, params)
+                  } catch (e: Exception) {
+                      e.printStackTrace()
+                  }
+              }
+
+              // boost > 0: Karanlik tonlari ve golgeleri aydinlatma modu (White Shadow-Wash)
+              private fun updateFilterColor(brightness: Int, warmth: Int, boost: Int) {
+                  overlayView?.post {
+                      if (boost > 0) {
+                          // Beyaz yikama filtresi (Koyu sahneleri aydinlatir)
+                          val alpha = (boost * 0.75).toInt().coerceIn(0, 110)
+                          overlayView?.setBackgroundColor(Color.argb(alpha, 255, 255, 255))
+                      } else {
+                          val bClamped = brightness.coerceIn(0, 100)
+                          val wClamped = warmth.coerceIn(0, 100)
+
+                          val alphaDim = ((100 - bClamped) * 2.2).toInt().coerceIn(0, 220)
+                          val alphaWarm = (wClamped * 0.9).toInt().coerceIn(0, 90)
+
+                          val r = if (wClamped > 0) 255 else 0
+                          val g = if (wClamped > 0) 140 else 0
+                          val b = 0
+                          val combinedAlpha = (alphaDim + alphaWarm).coerceIn(0, 230)
+
+                          if (combinedAlpha <= 0) {
+                              overlayView?.setBackgroundColor(Color.TRANSPARENT)
+                          } else {
+                              overlayView?.setBackgroundColor(Color.argb(combinedAlpha, r, g, b))
+                          }
+                      }
+                  }
+              }
+
+              // REC TV'yi otomatik algilayip karanlik sahneleri canli aydinlatan izleyici
+              private fun startAutoRecTvWatcher() {
+                  thread {
+                      var lastState = false
+                      while (isRunning) {
+                          try {
+                              val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", "dumpsys window 2>/dev/null | grep -m 1 mCurrentFocus"))
+                              val reader = BufferedReader(InputStreamReader(process.inputStream))
+                              val focus = reader.readLine() ?: ""
+                              process.waitFor()
+
+                              val isRecTv = focus.contains("com.rectv.shot")
+                              if (isRecTv != lastState) {
+                                  lastState = isRecTv
+                                  if (isRecTv) {
+                                      // REC TV acildi -> Otomatik golge aydinlatma modunu baslat (boost=40)
+                                      updateFilterColor(100, 0, 40)
+                                  } else {
+                                      // REC TV'den cikildi -> Normale dondur
+                                      updateFilterColor(100, 0, 0)
+                                  }
+                              }
+                          } catch (e: Exception) {
+                              e.printStackTrace()
+                          }
+                          Thread.sleep(1500)
+                      }
+                  }
+              }
+
+              private fun startHttpServer() {
+                  thread {
+                      try {
+                          serverSocket = ServerSocket(8088)
+                          while (isRunning) {
+                              val client = serverSocket?.accept() ?: break
+                              handleClient(client)
+                          }
+                      } catch (e: Exception) {
+                          e.printStackTrace()
+                      }
+                  }
+              }
+
+              private fun handleClient(client: Socket) {
+                  thread {
+                      try {
+                          val reader = BufferedReader(InputStreamReader(client.getInputStream()))
+                          val line = reader.readLine() ?: ""
+
+                          if (line.startsWith("GET /filter")) {
+                              var b = 100
+                              var w = 0
+                              var boost = 0
+
+                              val query = line.substringAfter("?", "").substringBefore(" ")
+                              val params = query.split("&")
+                              for (p in params) {
+                                  val kv = p.split("=")
+                                  if (kv.size == 2) {
+                                      when (kv[0]) {
+                                          "b" -> b = kv[1].toIntOrNull() ?: 100
+                                          "w" -> w = kv[1].toIntOrNull() ?: 0
+                                          "boost" -> boost = kv[1].toIntOrNull() ?: 0
+                                      }
+                                  }
+                              }
+
+                              updateFilterColor(b, w, boost)
+
+                              val response = "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: text/plain\r\nContent-Length: 2\r\n\r\nOK"
+                              client.getOutputStream().write(response.toByteArray())
+                              client.getOutputStream().flush()
+                          }
+                          client.close()
+                      } catch (e: Exception) {
+                          e.printStackTrace()
+                      }
+                  }
+              }
+
+              override fun onDestroy() {
+                  isRunning = false
+                  try {
+                      serverSocket?.close()
+                      if (overlayView != null) {
+                          windowManager?.removeView(overlayView)
+                      }
+                  } catch (e: Exception) {
+                      e.printStackTrace()
+                  }
+                  super.onDestroy()
+              }
+
+              override fun onBind(intent: Intent?): IBinder? = null
+          }
+          EOF
+
+          # ==================== KUMANDARUS MainActivity ve HTML (Mevcut hali korunur) ====================
+          cat << 'EOF' > app/src/main/assets/index.html
+          <!DOCTYPE html>
+          <html lang="tr">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+              <title>Kumandarus</title>
+              <style>
+                  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; margin: 0; padding: 0; }
+                  body { background: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+                  header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #1e293b; border-bottom: 1px solid #334155; }
+                  .title { font-weight: 700; font-size: 1.1rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+                  .badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 9999px; font-weight: 600; text-transform: uppercase; background: #ef4444; color: #fff; }
+                  .badge.connected { background: #10b981; }
+                  .container { flex: 1; display: flex; flex-direction: column; padding: 12px; gap: 12px; overflow-y: auto; }
+                  .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+                  .btn { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 14px 6px; color: #f8fafc; font-size: 0.85rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.1s; }
+                  .btn:active { background: #38bdf8; color: #0f172a; transform: scale(0.96); }
+                  .btn.power { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #ef4444; }
+                  .btn.power:active { background: #ef4444; color: #fff; }
+                  .btn.filter { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #38bdf8; }
+                  .dpad-container { display: flex; justify-content: center; align-items: center; margin: 8px 0; }
+                  .dpad { width: 190px; height: 190px; background: #1e293b; border: 2px solid #334155; border-radius: 50%; position: relative; display: flex; justify-content: center; align-items: center; }
+                  .dpad-btn { position: absolute; background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; padding: 12px; }
+                  .dpad-btn:active { color: #38bdf8; }
+                  .dpad-btn.up { top: 6px; }
+                  .dpad-btn.down { bottom: 6px; }
+                  .dpad-btn.left { left: 6px; }
+                  .dpad-btn.right { right: 6px; }
+                  .dpad-center { width: 70px; height: 70px; background: #0f172a; border: 2px solid #38bdf8; border-radius: 50%; color: #38bdf8; font-weight: 700; font-size: 0.95rem; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+                  .dpad-center:active { background: #38bdf8; color: #0f172a; transform: scale(0.93); }
+                  .airmouse-area { flex: 1; min-height: 90px; background: #1e293b; border: 1px dashed #475569; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; color: #94a3b8; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
+                  .airmouse-area.active { background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8; }
+                  .modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; padding: 16px; }
+                  .modal.active { display: flex; }
+                  .modal-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 14px; }
+                  .slider-row { display: flex; flex-direction: column; gap: 6px; }
+                  .slider-row label { font-size: 0.85rem; color: #94a3b8; display: flex; justify-content: space-between; }
+                  input[type=range] { width: 100%; accent-color: #38bdf8; height: 6px; border-radius: 4px; background: #334155; outline: none; }
+              </style>
+          </head>
+          <body>
+              <header>
+                  <div class="title">
+                      <span>✦</span>
+                      <span>Kumandarus</span>
+                  </div>
+                  <div id="statusBadge" class="badge">BAGLANTI YOK</div>
+              </header>
+
+              <div class="container">
+                  <div class="btn-grid">
+                      <button class="btn power" onclick="sendCmd('POWER')">⏻ Güç</button>
+                      <button class="btn" onclick="sendCmd('FOCUS')">◎ Odak</button>
+                      <button class="btn filter" onclick="openFilterModal()">◐ Filtre</button>
+                  </div>
+
+                  <div class="dpad-container">
+                      <div class="dpad">
+                          <button class="dpad-btn up" onclick="sendKey(19)">▲</button>
+                          <button class="dpad-btn left" onclick="sendKey(21)">◀</button>
+                          <div class="dpad-center" onclick="sendKey(66)">OK</div>
+                          <button class="dpad-btn right" onclick="sendKey(22)">▶</button>
+                          <button class="dpad-btn down" onclick="sendKey(20)">▼</button>
+                      </div>
+                  </div>
+
+                  <div class="btn-grid">
+                      <button class="btn" onclick="sendKey(4)">↩ Geri</button>
+                      <button class="btn" onclick="sendKey(3)">⌂ Ev</button>
+                      <button class="btn" onclick="sendKey(82)">≡ Menü</button>
+                  </div>
+
+                  <div class="btn-grid">
+                      <button class="btn" onclick="sendKey(24)">🔊 Ses +</button>
+                      <button class="btn" onclick="sendKey(25)">🔉 Ses -</button>
+                      <button class="btn" onclick="sendKey(164)">🔇 Sessiz</button>
+                  </div>
+
+                  <div id="airMouseArea" class="airmouse-area" onclick="toggleAirMouse()">
+                      <div style="font-size: 1.3rem;">🎯</div>
+                      <div id="airMouseText">Air Mouse (Gyro) Başlat</div>
+                  </div>
+
+                  <div class="btn-grid" style="grid-template-columns: 1fr;">
+                      <button class="btn" style="background:#0284c7; border:none; padding:12px;" onclick="startVoiceInput()">🎤 Türkçe Sesle Yaz / Ara</button>
+                  </div>
+              </div>
+
+              <div id="filterModal" class="modal">
+                  <div class="modal-card">
+                      <h3 style="color:#38bdf8; font-size:1.05rem;">Projeksiyon Canlı Filtre</h3>
+                      <div class="slider-row">
+                          <label><span>Parlaklık (Dimmer)</span><span id="bVal">100%</span></label>
+                          <input type="range" id="bSlider" min="15" max="100" value="100" oninput="onFilterChange()">
+                      </div>
+                      <div class="slider-row">
+                          <label><span>Renk Sıcaklığı (Gece Modu)</span><span id="wVal">0%</span></label>
+                          <input type="range" id="wSlider" min="0" max="100" value="0" oninput="onFilterChange()">
+                      </div>
+                      <button class="btn" style="margin-top:8px;" onclick="closeFilterModal()">Kapat</button>
+                  </div>
+              </div>
+
+              <script>
+                  let airMouseActive = false;
+                  function sendKey(code) { if (window.Android) window.Android.sendKey(code); }
+                  function sendCmd(cmd) { if (window.Android) window.Android.sendCmd(cmd); }
+                  function startVoiceInput() { if (window.Android) window.Android.startVoiceInput(); }
+
+                  function toggleAirMouse() {
+                      airMouseActive = !airMouseActive;
+                      const area = document.getElementById('airMouseArea');
+                      const txt = document.getElementById('airMouseText');
+                      if (airMouseActive) {
+                          area.classList.add('active');
+                          txt.innerText = 'Air Mouse Aktif (Durdurmak için bas)';
+                          if (window.Android) window.Android.setAirMouse(true);
+                      } else {
+                          area.classList.remove('active');
+                          txt.innerText = 'Air Mouse (Gyro) Başlat';
+                          if (window.Android) window.Android.setAirMouse(false);
+                      }
+                  }
+
+                  function openFilterModal() { document.getElementById('filterModal').classList.add('active'); }
+                  function closeFilterModal() { document.getElementById('filterModal').classList.remove('active'); }
+
+                  function onFilterChange() {
+                      const b = document.getElementById('bSlider').value;
+                      const w = document.getElementById('wSlider').value;
+                      document.getElementById('bVal').innerText = b + '%';
+                      document.getElementById('wVal').innerText = w + '%';
+                      if (window.Android) window.Android.setFilter(parseInt(b), parseInt(w));
+                  }
+
+                  function updateStatus(connected) {
+                      const badge = document.getElementById('statusBadge');
+                      if (connected) {
+                          badge.innerText = 'BAGLANDI';
+                          badge.classList.add('connected');
+                      } else {
+                          badge.innerText = 'BAGLANTI YOK';
+                          badge.classList.remove('connected');
+                      }
+                  }
+              </script>
+          </body>
+          </html>
+          EOF
+
+          cat << 'EOF' > app/src/main/java/com/kumandarus/app/MainActivity.kt
+          package com.kumandarus.app
+
+          import android.annotation.SuppressLint
+          import android.app.Activity
+          import android.bluetooth.*
+          import android.bluetooth.le.AdvertiseCallback
+          import android.bluetooth.le.AdvertiseData
+          import android.bluetooth.le.AdvertiseSettings
+          import android.content.Context
+          import android.content.Intent
+          import android.hardware.ConsumerIrManager
+          import android.hardware.Sensor
+          import android.hardware.SensorEvent
+          import android.hardware.SensorEventListener
+          import android.hardware.SensorManager
+          import android.os.Bundle
+          import android.os.Handler
+          import android.os.Looper
+          import android.os.ParcelUuid
+          import android.speech.RecognizerIntent
+          import android.webkit.JavascriptInterface
+          import android.webkit.WebView
+          import java.net.HttpURLConnection
+          import java.net.URL
+          import java.util.UUID
+          import kotlin.concurrent.thread
+
+          class MainActivity : Activity(), SensorEventListener {
+
+              private lateinit var webView: WebView
+              private var sensorManager: SensorManager? = null
+              private var gyroSensor: Sensor? = null
+              private var irManager: ConsumerIrManager? = null
+
+              private var bluetoothManager: BluetoothManager? = null
+              private var bluetoothAdapter: BluetoothAdapter? = null
+              private var hidDevice: BluetoothHidDevice? = null
+              private var connectedDevice: BluetoothDevice? = null
+
+              private var isAirMouseEnabled = false
+              private val handler = Handler(Looper.getMainLooper())
+              private var projectorIp = "192.168.0.10"
+
+              private val hidUuid = UUID.fromString("00001124-0000-1000-8000-00805f9b34fb")
+
+              private val hidReportDescriptor = byteArrayOf(
+                  0x05.toByte(), 0x01.toByte(), 0x09.toByte(), 0x02.toByte(),
+                  0xA1.toByte(), 0x01.toByte(), 0x85.toByte(), 0x01.toByte(),
+                  0x09.toByte(), 0x01.toByte(), 0xA1.toByte(), 0x00.toByte(),
+                  0x05.toByte(), 0x09.toByte(), 0x19.toByte(), 0x01.toByte(),
+                  0x29.toByte(), 0x03.toByte(), 0x15.toByte(), 0x00.toByte(),
+                  0x25.toByte(), 0x01.toByte(), 0x95.toByte(), 0x03.toByte(),
+                  0x75.toByte(), 0x01.toByte(), 0x81.toByte(), 0x02.toByte(),
+                  0x95.toByte(), 0x01.toByte(), 0x75.toByte(), 0x05.toByte(),
+                  0x81.toByte(), 0x01.toByte(), 0x05.toByte(), 0x01.toByte(),
+                  0x09.toByte(), 0x30.toByte(), 0x09.toByte(), 0x31.toByte(),
+                  0x15.toByte(), 0x81.toByte(), 0x25.toByte(), 0x7F.toByte(),
+                  0x75.toByte(), 0x08.toByte(), 0x95.toByte(), 0x02.toByte(),
+                  0x81.toByte(), 0x06.toByte(), 0xC0.toByte(), 0xC0.toByte(),
+                  0x05.toByte(), 0x0C.toByte(), 0x09.toByte(), 0x01.toByte(),
+                  0xA1.toByte(), 0x01.toByte(), 0x85.toByte(), 0x02.toByte(),
+                  0x15.toByte(), 0x00.toByte(), 0x26.toByte(), 0x9C.toByte(),
+                  0x02.toByte(), 0x19.toByte(), 0x00.toByte(), 0x2A.toByte(),
+                  0x9C.toByte(), 0x02.toByte(), 0x95.toByte(), 0x01.toByte(),
+                  0x75.toByte(), 0x10.toByte(), 0x81.toByte(), 0x00.toByte(),
+                  0xC0.toByte()
+              )
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  initWebView()
+                  initSensors()
+                  initIr()
+                  initBluetoothHid()
+              }
+
+              @SuppressLint("SetJavaScriptEnabled")
+              private fun initWebView() {
+                  webView = WebView(this)
+                  setContentView(webView)
+                  webView.settings.javaScriptEnabled = true
+                  webView.settings.domStorageEnabled = true
+                  webView.addJavascriptInterface(WebAppInterface(), "Android")
+                  webView.loadUrl("file:///android_asset/index.html")
+              }
+
+              private fun initSensors() {
+                  sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+                  gyroSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+              }
+
+              private fun initIr() {
+                  irManager = getSystemService(Context.CONSUMER_IR_SERVICE) as? ConsumerIrManager
+              }
+
+              private fun initBluetoothHid() {
+                  bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+                  bluetoothAdapter = bluetoothManager?.adapter
+
+                  val sdp = BluetoothHidDeviceAppSdpSettings(
+                      "Kumandarus", "Yaber K1 Kumandasi", "Google",
+                      BluetoothHidDevice.SUBCLASS1_COMBO, hidReportDescriptor
+                  )
+
+                  bluetoothAdapter?.getProfileProxy(this, object : BluetoothProfile.ServiceListener {
+                      override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
+                          if (profile == BluetoothProfile.HID_DEVICE) {
+                              hidDevice = proxy as BluetoothHidDevice
+                              try {
+                                  hidDevice?.registerApp(sdp, null, null, { it.run() }, hidCallback)
+                              } catch (e: SecurityException) {
+                                  e.printStackTrace()
+                              }
+                          }
+                      }
+                      override fun onServiceDisconnected(profile: Int) {
+                          if (profile == BluetoothProfile.HID_DEVICE) hidDevice = null
+                      }
+                  }, BluetoothProfile.HID_DEVICE)
+              }
+
+              private val hidCallback = object : BluetoothHidDevice.Callback() {
+                  override fun onConnectionStateChanged(device: BluetoothDevice, state: Int) {
+                      super.onConnectionStateChanged(device, state)
+                      if (state == BluetoothProfile.STATE_CONNECTED) {
+                          connectedDevice = device
+                          handler.post { webView.evaluateJavascript("updateStatus(true);", null) }
+                      } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
+                          connectedDevice = null
+                          handler.post { webView.evaluateJavascript("updateStatus(false);", null) }
+                      }
+                  }
+              }
+
+              override fun onSensorChanged(event: SensorEvent?) {
+                  if (event?.sensor?.type == Sensor.TYPE_GYROSCOPE && isAirMouseEnabled) {
+                      val dx = (-event.values[2] * 20).toInt().coerceIn(-127, 127).toByte()
+                      val dy = (-event.values[0] * 20).toInt().coerceIn(-127, 127).toByte()
+                      sendMouseReport(0, dx, dy)
+                  }
+              }
+
+              override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+              private fun sendMouseReport(buttons: Byte, dx: Byte, dy: Byte) {
+                  val dev = connectedDevice ?: return
+                  val report = byteArrayOf(buttons, dx, dy)
+                  try {
+                      hidDevice?.sendReport(dev, 1, report)
+                  } catch (e: SecurityException) {
+                      e.printStackTrace()
+                  }
+              }
+
+              private fun sendConsumerReport(usageCode: Int) {
+                  val dev = connectedDevice ?: return
+                  val b0 = (usageCode and 0xFF).toByte()
+                  val b1 = ((usageCode shr 8) and 0xFF).toByte()
+                  try {
+                      hidDevice?.sendReport(dev, 2, byteArrayOf(b0, b1))
+                      handler.postDelayed({
+                          hidDevice?.sendReport(dev, 2, byteArrayOf(0, 0))
+                      }, 50)
+                  } catch (e: SecurityException) {
+                      e.printStackTrace()
+                  }
+              }
+
+              inner class WebAppInterface {
+                  @JavascriptInterface
+                  fun sendKey(keyCode: Int) {
+                      when (keyCode) {
+                          19 -> sendConsumerReport(0x0042) // Up
+                          20 -> sendConsumerReport(0x0043) // Down
+                          21 -> sendConsumerReport(0x0044) // Left
+                          22 -> sendConsumerReport(0x0045) // Right
+                          66 -> sendConsumerReport(0x0041) // OK / Select
+                          4  -> sendConsumerReport(0x0224) // Back
+                          3  -> sendConsumerReport(0x0223) // Home
+                          82 -> sendConsumerReport(0x0040) // Menu
+                          24 -> sendConsumerReport(0x00E9) // Vol +
+                          25 -> sendConsumerReport(0x00EA) // Vol -
+                          164 -> sendConsumerReport(0x00E2) // Mute
+                      }
+                  }
+
+                  @JavascriptInterface
+                  fun sendCmd(cmd: String) {
+                      if (cmd == "POWER") {
+                          sendConsumerReport(0x0030)
+                      }
+                  }
+
+                  @JavascriptInterface
+                  fun setAirMouse(enabled: Boolean) {
+                      isAirMouseEnabled = enabled
+                      if (enabled) {
+                          gyroSensor?.let {
+                              sensorManager?.registerListener(this@MainActivity, it, SensorManager.SENSOR_DELAY_GAME)
+                          }
+                      } else {
+                          sensorManager?.unregisterListener(this@MainActivity)
+                      }
+                  }
+
+                  @JavascriptInterface
+                  fun startVoiceInput() {
+                      val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                          putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                          putExtra(RecognizerIntent.EXTRA_LANGUAGE, "tr-TR")
+                          putExtra(RecognizerIntent.EXTRA_PROMPT, "Konuşun...")
+                      }
+                      try {
+                          startActivityForResult(intent, 2001)
+                      } catch (e: Exception) {
+                          e.printStackTrace()
+                      }
+                  }
+
+                  @JavascriptInterface
+                  fun setFilter(brightness: Int, warmth: Int) {
+                      thread {
+                          try {
+                              val url = URL("http://$projectorIp:8088/filter?b=$brightness&w=$warmth")
+                              val conn = url.openConnection() as HttpURLConnection
+                              conn.connectTimeout = 1500
+                              conn.readTimeout = 1500
+                              conn.responseCode
+                              conn.disconnect()
+                          } catch (e: Exception) {
+                              e.printStackTrace()
+                          }
+                      }
+                  }
+              }
+
+              override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+                  super.onActivityResult(requestCode, resultCode, data)
+                  if (requestCode == 2001 && resultCode == RESULT_OK) {
+                      val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                      val spokenText = results?.firstOrNull() ?: return
+                      sendTextViaAdb(spokenText)
+                  }
+              }
+
+              private fun sendTextViaAdb(text: String) {
+                  thread {
+                      try {
+                          val url = URL("http://$projectorIp:8088/input?text=" + java.net.URLEncoder.encode(text, "UTF-8"))
+                          val conn = url.openConnection() as HttpURLConnection
+                          conn.connectTimeout = 1500
+                          conn.responseCode
+                          conn.disconnect()
+                      } catch (e: Exception) {
+                          e.printStackTrace()
+                      }
+                  }
+              }
+
+              override fun onDestroy() {
+                  super.onDestroy()
+                  sensorManager?.unregisterListener(this)
+              }
+          }
+          EOF
+
+      - name: Debug APK'lari Derle
+        run: |
+          chmod +x gradlew || true
+          gradle assembleDebug --no-daemon
+
+      - name: APK'lari Yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: kumandarus-ve-filter-v2-APKlar
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            filter/build/outputs/apk/debug/*.apk
