@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 10
-                  versionName "10.0"
+                  versionCode 11
+                  versionName "11.0"
               }
 
               compileOptions {
@@ -284,7 +284,7 @@ jobs:
               color: #f87171;
               border-color: rgba(248, 113, 113, 0.35);
             }
-            .icon-pill.adjust-btn {
+            .icon-pill.settings-btn {
               color: #38bdf8;
               border-color: rgba(56, 189, 248, 0.35);
               width: auto;
@@ -630,7 +630,7 @@ jobs:
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-bottom: 12px;
+              margin-bottom: 10px;
             }
             .modal-title { font-size: 15px; font-weight: 700; color: #f8fafc; }
             .close-x {
@@ -641,31 +641,6 @@ jobs:
               background: rgba(255,255,255,0.07);
               color: #cbd5e1;
               font-size: 15px;
-            }
-            .scan-info {
-              font-size: 12px;
-              color: #93c5fd;
-              margin-bottom: 14px;
-              line-height: 1.4;
-            }
-            .slider-group {
-              margin-bottom: 16px;
-            }
-            .slider-label {
-              display: flex;
-              justify-content: space-between;
-              font-size: 13px;
-              font-weight: 600;
-              color: #e2e8f0;
-              margin-bottom: 6px;
-            }
-            .slider-input {
-              width: 100%;
-              accent-color: #38bdf8;
-              height: 6px;
-              background: #1e293b;
-              border-radius: 3px;
-              outline: none;
             }
             .dev-list {
               flex: 1;
@@ -701,12 +676,12 @@ jobs:
 
             <!-- Üst Bar -->
             <div class="header">
-              <button class="icon-pill power" onclick="triggerHybridPower()" title="Güç (807F - 0x12)">
+              <button class="icon-pill power" onclick="triggerHybridPower()" title="Güç">
                 <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
               </button>
 
-              <button class="icon-pill adjust-btn" onclick="openAdjustModal()" title="Parlaklık & Kontrast">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+              <button class="icon-pill settings-btn" onclick="tapSettings()" title="Projeksiyon Ayarlar Menüsü">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 <span>Ayarlar</span>
               </button>
 
@@ -832,40 +807,9 @@ jobs:
                   <span class="modal-title">Bluetooth Cihaz Seçin</span>
                   <button class="close-x" onclick="closeScanner()">✕</button>
                 </div>
-                <div id="scanStatus" class="scan-info">Cihazlar aranıyor...</div>
+                <div id="scanStatus" class="scan-info" style="margin-bottom:8px;">Cihazlar aranıyor...</div>
                 <div id="deviceList" class="dev-list"></div>
                 <button class="soft-btn" onclick="rescan()">Yeniden Tara</button>
-              </div>
-            </div>
-
-            <!-- Parlaklık & Kontrast Ayar Modal -->
-            <div id="adjustModal" class="modal-backdrop">
-              <div class="modal">
-                <div class="modal-head">
-                  <span class="modal-title">Görüntü Ayarları (Parlaklık & Kontrast)</span>
-                  <button class="close-x" onclick="closeAdjustModal()">✕</button>
-                </div>
-                <div class="scan-info">
-                  Düşük veya soluk kalan uygulamalar için ekran kontrastını ve parlaklığını anında artırın:
-                </div>
-
-                <div class="slider-group">
-                  <div class="slider-label">
-                    <span>Parlaklık (Brightness)</span>
-                    <span id="brightVal">100%</span>
-                  </div>
-                  <input type="range" min="70" max="150" value="100" class="slider-input" id="brightRange" oninput="applyFilters()">
-                </div>
-
-                <div class="slider-group">
-                  <div class="slider-label">
-                    <span>Kontrast (Contrast)</span>
-                    <span id="contrastVal">100%</span>
-                  </div>
-                  <input type="range" min="70" max="160" value="100" class="slider-input" id="contrastRange" oninput="applyFilters()">
-                </div>
-
-                <button class="soft-btn" style="width:100%;background:#0284c7;color:#fff;margin-top:4px;" onclick="resetFilters()">Varsayılan Sıfırla</button>
               </div>
             </div>
 
@@ -911,6 +855,13 @@ jobs:
               vibrate(30);
               if (window.AndroidBridge) {
                 window.AndroidBridge.triggerPowerWithIr(0x80, 0x7F, 0x12);
+              }
+            }
+
+            function tapSettings() {
+              vibrate(20);
+              if (window.AndroidBridge) {
+                window.AndroidBridge.sendSettingsKey();
               }
             }
 
@@ -995,31 +946,6 @@ jobs:
               vibrate();
               if (window.AndroidBridge) window.AndroidBridge.sendText(val);
               input.value = '';
-            }
-
-            // Parlaklık ve Kontrast Filtreleri
-            function openAdjustModal() {
-              vibrate();
-              document.getElementById('adjustModal').classList.add('open');
-            }
-
-            function closeAdjustModal() {
-              document.getElementById('adjustModal').classList.remove('open');
-            }
-
-            function applyFilters() {
-              const b = document.getElementById('brightRange').value;
-              const c = document.getElementById('contrastRange').value;
-              document.getElementById('brightVal').textContent = b + '%';
-              document.getElementById('contrastVal').textContent = c + '%';
-              document.body.style.filter = `brightness(${b}%) contrast(${c}%)`;
-            }
-
-            function resetFilters() {
-              vibrate(20);
-              document.getElementById('brightRange').value = 100;
-              document.getElementById('contrastRange').value = 100;
-              applyFilters();
             }
 
             (function initHoldButtons() {
@@ -1917,13 +1843,19 @@ jobs:
 
                   @JavascriptInterface
                   fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
-                      // Kesin çalışan #29 (807F - 0x12) Güç Kodu
                       transmitNec(0x80, 0x7F, 0x12)
                       if (connectedDevice != null) {
                           sendConsumerUsage(48)
                       } else {
-                          runOnUiThread { ensureHidAndAutoConnect() }
+                        runOnUiThread { ensureHidAndAutoConnect() }
                       }
+                  }
+
+                  @JavascriptInterface
+                  fun sendSettingsKey() {
+                      // Android TV / Projeksiyon Ayarlar Menüsü (Consumer Control: Settings = 0x40 veya 0x1B8 / Keyboard F1 / Menu)
+                      sendConsumerUsage(0x40)
+                      sendKeyboardKey(0, 101) // Context Menu
                   }
 
                   @JavascriptInterface
