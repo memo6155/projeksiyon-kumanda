@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 6
-                  versionName "6.0"
+                  versionCode 7
+                  versionName "7.0"
               }
 
               compileOptions {
@@ -242,12 +242,12 @@ jobs:
               display: flex;
               flex-direction: column;
               justify-content: space-between;
-              padding: 12px 16px 14px;
+              padding: 10px 14px 12px;
               overflow: hidden;
             }
             svg {
-              width: 20px;
-              height: 20px;
+              width: 19px;
+              height: 19px;
               stroke: currentColor;
               stroke-width: 2;
               stroke-linecap: round;
@@ -283,11 +283,11 @@ jobs:
             }
             .icon-pill.power {
               color: #f87171;
-              border-color: rgba(248, 113, 113, 0.28);
+              border-color: rgba(248, 113, 113, 0.3);
             }
             .icon-pill.ir-btn {
               color: #fb923c;
-              border-color: rgba(251, 146, 60, 0.25);
+              border-color: rgba(251, 146, 60, 0.3);
               width: auto;
               padding: 0 10px;
               gap: 4px;
@@ -338,12 +338,12 @@ jobs:
               display: flex;
               align-items: center;
               gap: 8px;
-              margin-top: 8px;
+              margin-top: 6px;
             }
             .gyro-btn {
               flex: 1;
-              height: 38px;
-              border-radius: 12px;
+              height: 36px;
+              border-radius: 11px;
               background: rgba(30, 41, 59, 0.6);
               border: 1px solid rgba(56, 189, 248, 0.2);
               color: #cbd5e1;
@@ -362,18 +362,14 @@ jobs:
               box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
             }
             .sens-pill {
-              height: 38px;
-              padding: 0 11px;
-              border-radius: 12px;
+              height: 36px;
+              padding: 0 10px;
+              border-radius: 11px;
               background: rgba(30, 41, 59, 0.6);
               border: 1px solid rgba(255, 255, 255, 0.07);
               color: #94a3b8;
               font-size: 11px;
               font-weight: 700;
-            }
-            .sens-pill:active {
-              background: rgba(51, 65, 85, 0.9);
-              color: #fff;
             }
 
             /* Orta Gövde */
@@ -401,20 +397,19 @@ jobs:
             /* Modern Dairesel D-Pad */
             .dpad-ring {
               position: relative;
-              width: 214px;
-              height: 214px;
+              width: 204px;
+              height: 204px;
               border-radius: 50%;
               background: linear-gradient(145deg, #161e2e, #0f1420);
               border: 1px solid rgba(255, 255, 255, 0.08);
-              box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.06);
+              box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.06);
               display: flex;
               align-items: center;
               justify-content: center;
-              transition: border-color 0.2s, box-shadow 0.2s;
             }
             .dpad-ring.gyro-on {
               border-color: rgba(56, 189, 248, 0.45);
-              box-shadow: 0 0 28px rgba(56, 189, 248, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+              box-shadow: 0 0 28px rgba(56, 189, 248, 0.18);
             }
             .d-btn {
               position: absolute;
@@ -424,7 +419,6 @@ jobs:
               display: flex;
               align-items: center;
               justify-content: center;
-              transition: color 0.1s, transform 0.1s, background 0.1s;
             }
             .d-btn svg {
               width: 24px;
@@ -435,13 +429,13 @@ jobs:
               color: #38bdf8;
               background: rgba(56, 189, 248, 0.12);
             }
-            .d-up { top: 6px; left: 57px; width: 100px; height: 62px; border-radius: 36px 36px 12px 12px; }
-            .d-down { bottom: 6px; left: 57px; width: 100px; height: 62px; border-radius: 12px 12px 36px 36px; }
-            .d-left { left: 6px; top: 57px; width: 62px; height: 100px; border-radius: 36px 12px 12px 36px; }
-            .d-right { right: 6px; top: 57px; width: 62px; height: 100px; border-radius: 12px 36px 36px 12px; }
+            .d-up { top: 5px; left: 52px; width: 100px; height: 60px; border-radius: 36px 36px 12px 12px; }
+            .d-down { bottom: 5px; left: 52px; width: 100px; height: 60px; border-radius: 12px 12px 36px 36px; }
+            .d-left { left: 5px; top: 52px; width: 60px; height: 100px; border-radius: 36px 12px 12px 36px; }
+            .d-right { right: 5px; top: 52px; width: 60px; height: 100px; border-radius: 12px 36px 36px 12px; }
             .d-ok {
-              width: 82px;
-              height: 82px;
+              width: 78px;
+              height: 78px;
               border-radius: 50%;
               background: linear-gradient(145deg, #1e293b, #111827);
               border: 1px solid rgba(255, 255, 255, 0.1);
@@ -449,12 +443,10 @@ jobs:
               color: #f8fafc;
               font-size: 14px;
               font-weight: 700;
-              letter-spacing: 0.5px;
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: center;
-              line-height: 1.15;
             }
             .d-ok small {
               font-size: 9px;
@@ -466,34 +458,36 @@ jobs:
               transform: scale(0.94);
               background: #0284c7;
               color: #fff;
-              border-color: #38bdf8;
             }
 
-            /* Yardımcı Kumanda Tuşları */
+            /* Yardımcı Kumanda Tuşları (Geri, Home, Menü + F-, Oto-Focus, F+ + Ses) */
             .control-rows {
               width: 100%;
               display: flex;
               flex-direction: column;
-              gap: 8px;
+              gap: 6px;
             }
             .btn-row {
               display: grid;
               grid-template-columns: repeat(3, 1fr);
-              gap: 10px;
+              gap: 8px;
             }
             .soft-btn {
-              height: 44px;
-              border-radius: 14px;
+              height: 40px;
+              border-radius: 12px;
               background: rgba(30, 41, 59, 0.55);
               border: 1px solid rgba(255, 255, 255, 0.06);
               color: #e2e8f0;
-              font-size: 13px;
+              font-size: 12px;
               font-weight: 600;
               display: flex;
               align-items: center;
               justify-content: center;
-              gap: 6px;
-              transition: transform 0.08s, background 0.12s;
+              gap: 5px;
+            }
+            .soft-btn.focus-orange {
+              color: #fb923c;
+              border-color: rgba(251, 146, 60, 0.3);
             }
             .soft-btn.pressed, .soft-btn:active {
               transform: scale(0.95);
@@ -509,7 +503,7 @@ jobs:
               display: flex;
               gap: 8px;
               margin-bottom: 8px;
-              min-height: 160px;
+              min-height: 150px;
             }
             .touch-surface {
               flex: 1;
@@ -558,13 +552,13 @@ jobs:
               gap: 10px;
               background: rgba(15, 23, 42, 0.85);
               border: 1px solid rgba(255, 255, 255, 0.07);
-              padding: 6px 8px;
-              border-radius: 20px;
-              margin-bottom: 8px;
+              padding: 5px 8px;
+              border-radius: 18px;
+              margin-bottom: 6px;
             }
             .dock-tab {
-              height: 44px;
-              border-radius: 14px;
+              height: 42px;
+              border-radius: 13px;
               border: none;
               background: transparent;
               color: #94a3b8;
@@ -574,15 +568,14 @@ jobs:
               align-items: center;
               justify-content: center;
               gap: 6px;
-              transition: all 0.15s;
             }
             .dock-tab.active {
               background: rgba(56, 189, 248, 0.15);
               color: #38bdf8;
             }
             .mic-center-btn {
-              width: 52px;
-              height: 52px;
+              width: 48px;
+              height: 48px;
               border-radius: 50%;
               border: none;
               background: linear-gradient(135deg, #0284c7, #2563eb);
@@ -591,11 +584,6 @@ jobs:
               align-items: center;
               justify-content: center;
               box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
-              transition: transform 0.1s;
-            }
-            .mic-center-btn svg {
-              width: 22px;
-              height: 22px;
             }
             .mic-center-btn:active {
               transform: scale(0.92);
@@ -607,14 +595,14 @@ jobs:
               gap: 8px;
               background: rgba(30, 41, 59, 0.55);
               border: 1px solid rgba(255, 255, 255, 0.06);
-              padding: 6px;
-              border-radius: 14px;
+              padding: 5px;
+              border-radius: 13px;
             }
             .kb-input {
               flex: 1;
               background: transparent;
               border: none;
-              padding: 8px 10px;
+              padding: 7px 10px;
               color: #f8fafc;
               font-size: 13px;
               outline: none;
@@ -625,41 +613,37 @@ jobs:
               background: rgba(51, 65, 85, 0.7);
               color: #e2e8f0;
               border: none;
-              border-radius: 10px;
+              border-radius: 9px;
               padding: 0 12px;
               font-size: 13px;
               font-weight: 600;
-              display: flex;
-              align-items: center;
-              justify-content: center;
             }
             .kb-btn.send {
               background: #0284c7;
               color: #fff;
             }
-            .kb-btn:active { opacity: 0.8; }
 
-            /* Modaller (BT ve IR Paketi) */
+            /* Modaller */
             .modal-backdrop {
               position: fixed;
               inset: 0;
-              background: rgba(5, 8, 14, 0.84);
+              background: rgba(5, 8, 14, 0.86);
               backdrop-filter: blur(4px);
               display: none;
               align-items: center;
               justify-content: center;
-              padding: 16px;
+              padding: 14px;
               z-index: 100;
             }
             .modal-backdrop.open { display: flex; }
             .modal {
               width: 100%;
-              max-width: 370px;
+              max-width: 380px;
               background: #141c2b;
               border: 1px solid rgba(255, 255, 255, 0.1);
               border-radius: 20px;
-              padding: 16px;
-              max-height: 82vh;
+              padding: 15px;
+              max-height: 86vh;
               display: flex;
               flex-direction: column;
             }
@@ -682,62 +666,73 @@ jobs:
             .scan-info {
               font-size: 12px;
               color: #38bdf8;
-              margin-bottom: 10px;
+              margin-bottom: 8px;
               line-height: 1.35;
+            }
+            .scanner-box {
+              background: rgba(15, 23, 42, 0.9);
+              border: 1px solid rgba(251, 146, 60, 0.35);
+              border-radius: 14px;
+              padding: 10px;
+              margin-bottom: 10px;
+            }
+            .scanner-code {
+              font-size: 13px;
+              font-weight: 700;
+              color: #fb923c;
+              text-align: center;
+              margin-bottom: 8px;
+            }
+            .scanner-controls {
+              display: grid;
+              grid-template-columns: 1fr 1.6fr 1fr;
+              gap: 6px;
+              margin-bottom: 6px;
             }
             .dev-list {
               flex: 1;
               overflow-y: auto;
               display: flex;
               flex-direction: column;
-              gap: 7px;
-              min-height: 140px;
-              margin-bottom: 12px;
+              gap: 6px;
+              min-height: 120px;
+              margin-bottom: 10px;
             }
             .dev-card {
               background: rgba(15, 23, 42, 0.8);
               border: 1px solid rgba(255, 255, 255, 0.06);
-              border-radius: 12px;
-              padding: 10px 12px;
+              border-radius: 11px;
+              padding: 9px 11px;
               display: flex;
               justify-content: space-between;
               align-items: center;
             }
             .dev-card.selected {
               border-color: #fb923c;
-              background: rgba(251, 146, 60, 0.12);
+              background: rgba(251, 146, 60, 0.14);
             }
-            .dev-card:active {
-              border-color: #38bdf8;
-              background: rgba(2, 132, 199, 0.15);
-            }
-            .dev-title { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+            .dev-title { font-size: 12px; font-weight: 600; color: #f1f5f9; }
             .dev-mac { font-size: 11px; color: #64748b; margin-top: 2px; }
             .dev-tag {
-              font-size: 11px;
-              padding: 4px 8px;
+              font-size: 10px;
+              padding: 4px 7px;
               border-radius: 6px;
               background: rgba(56, 189, 248, 0.12);
               color: #38bdf8;
-              font-weight: 600;
-            }
-            .ir-test-btn {
-              background: rgba(251, 146, 60, 0.18);
-              color: #fb923c;
-              border: 1px solid rgba(251, 146, 60, 0.35);
+              font-weight: 700;
             }
           </style>
           </head>
           <body>
 
-            <!-- Üst Bar: Hibrit Güç (IR+BT) | IR Paket Seçici | Bağlantı Durumu | BT Tara -->
+            <!-- Üst Bar -->
             <div class="header">
               <button class="icon-pill power" onclick="triggerHybridPower()" title="Güç (Kızılötesi + Bluetooth)">
                 <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
               </button>
 
-              <button class="icon-pill ir-btn" onclick="openIrModal()" title="Kızılötesi (IR) Paketi">
-                <span>IR</span>
+              <button class="icon-pill ir-btn" onclick="openIrModal()" title="Kızılötesi (IR) Bulucu">
+                <span>IR BUL</span>
               </button>
 
               <div class="status-pill" onclick="reconnectOrScan()">
@@ -756,10 +751,10 @@ jobs:
                 <svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
                 <span id="gyroText">Sihirli İmleç (Jiroskop): Kapalı</span>
               </button>
-              <button id="sensBtn" class="sens-pill" onclick="cycleSensitivity()" title="Jiroskop Hızı">Hız: Orta</button>
+              <button id="sensBtn" class="sens-pill" onclick="cycleSensitivity()">Hız: Orta</button>
             </div>
 
-            <!-- Orta Alan: Kumanda veya Touchpad -->
+            <!-- Orta Alan -->
             <div class="main-stage">
 
               <!-- KUMANDA MODU -->
@@ -784,18 +779,27 @@ jobs:
                 </div>
 
                 <div class="control-rows">
+                  <!-- Geri | Ana Ekran | Menü -->
                   <div class="btn-row">
                     <button class="soft-btn" onclick="tapBack()">
                       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Geri
                     </button>
                     <button class="soft-btn" onclick="tapConsumer(547)">
-                      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Ana Ekran
+                      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Home
                     </button>
                     <button class="soft-btn" onclick="tapMenu()">
                       <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="18" x2="20" y2="18"/></svg> Menü
                     </button>
                   </div>
 
+                  <!-- Yaber Kumandadaki F- | Oto-Focus [+] | F+ Satırı -->
+                  <div class="btn-row">
+                    <button class="soft-btn" onclick="tapFocus(-1)">F- (Netlik)</button>
+                    <button class="soft-btn focus-orange" onclick="tapFocus(0)">[ + ] Oto-Focus</button>
+                    <button class="soft-btn" onclick="tapFocus(1)">F+ (Netlik)</button>
+                  </div>
+
+                  <!-- Ses - | Sessiz | Ses + -->
                   <div class="btn-row">
                     <button class="soft-btn" data-hold-consumer="234">
                       <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="16" y1="12" x2="22" y2="12"/></svg> Ses -
@@ -868,18 +872,28 @@ jobs:
               </div>
             </div>
 
-            <!-- Çoklu Kızılötesi (IR) Paketi Modal -->
+            <!-- Akıllı IR Kod Bulucu Modal (64 Projeksiyon Kodu + Otomatik Tarayıcı) -->
             <div id="irModal" class="modal-backdrop">
               <div class="modal">
                 <div class="modal-head">
-                  <span class="modal-title">Kızılötesi (IR) Güç Paketi</span>
+                  <span class="modal-title">Yaber Ace K1 - Akıllı IR Bulucu</span>
                   <button class="close-x" onclick="closeIrModal()">✕</button>
                 </div>
                 <div id="irStatus" class="scan-info">
-                  Telefonu Yaber Ace K1'e doğrultup bir profile dokunun. Seçtiğiniz profil sol üstteki Güç (⏻) tuşuna kaydedilir.
+                  İpucu: Projeksiyon <b>AÇIKKEN</b> telefonu cihaza doğrultup <b>Otomatik Tara</b>'ya basın. Ekranda "Kapatılsın mı?" uyarısı çıktığı an durdurun!
                 </div>
+
+                <div class="scanner-box">
+                  <div id="activeIrLabel" class="scanner-code">Kod #1 / 64</div>
+                  <div class="scanner-controls">
+                    <button class="soft-btn" onclick="stepIr(-1)">◀ Önceki</button>
+                    <button id="autoScanBtn" class="soft-btn focus-orange" onclick="toggleAutoIrScan()">▶️ Otomatik Tara</button>
+                    <button class="soft-btn" onclick="stepIr(1)">Sonraki ▶</button>
+                  </div>
+                  <button class="soft-btn" style="width:100%;background:#0284c7;color:#fff;" onclick="saveCurrentIr()">✅ Bu Kodu Güç Tuşuna Kaydet</button>
+                </div>
+
                 <div id="irList" class="dev-list"></div>
-                <button class="soft-btn ir-test-btn" onclick="sweepAllIr()">⚡ Tüm Projeksiyon Kodlarını Sırayla Dene</button>
               </div>
             </div>
 
@@ -888,20 +902,83 @@ jobs:
             let isConnected = false;
             let gyroEnabled = false;
             let selectedIrIndex = 0;
+            let autoScanTimer = null;
 
-            const irProfiles = [
-              { name: "Yaber Ace K1 / Yaber Pro (Profil 1)", desc: "NEC 0x00FF - Cmd 0x40 (Varsayılan)" },
-              { name: "Yaber Ace K1 / Smart OS (Profil 2)", desc: "NEC 0x00FF - Cmd 0x10" },
-              { name: "Yaber / Genel DLP Projeksiyon (Profil 3)", desc: "NEC 0x00FF - Cmd 0x45" },
-              { name: "Yaber / LCD Projeksiyon (Profil 4)", desc: "NEC 0x00FF - Cmd 0x0A" },
-              { name: "Android Smart Projeksiyon (Profil 5)", desc: "NEC 0x00FF - Cmd 0x1C" },
-              { name: "Wanbo / Xiaomi Projeksiyon", desc: "NEC 0x40BF - Cmd 0x0B" },
-              { name: "Magcubic / HY300 / Allwinner", desc: "NEC 0x807F - Cmd 0x12" },
-              { name: "Anker Nebula / ViewSonic", desc: "NEC 0x20DF - Cmd 0x10" },
-              { name: "BenQ Projeksiyon", desc: "NEC 0x0030 - Cmd 0x02" },
-              { name: "Epson Projeksiyon", desc: "NEC 0x8355 - Cmd 0x90" },
-              { name: "LG Smart TV / Projeksiyon", desc: "NEC 0x04FB - Cmd 0x08" },
-              { name: "Samsung Smart TV / Projeksiyon", desc: "NEC 0x0707 - Cmd 0x02" }
+            // Yaber Ace K1 ve Bu Kumanda Kasasını Kullanan Projeksiyonların 64'lü NEC IR Kod Tablosu
+            const irDatabase = [
+              // Grup 1: 0x00FF (Yaber / Wimius / Toptroe En Yaygın Kumanda Kodları)
+              { name: "Yaber K1 Kod #1 (00FF - 0x0C)", b0: 0x00, b1: 0xFF, cmd: 0x0C },
+              { name: "Yaber K1 Kod #2 (00FF - 0x08)", b0: 0x00, b1: 0xFF, cmd: 0x08 },
+              { name: "Yaber K1 Kod #3 (00FF - 0x15)", b0: 0x00, b1: 0xFF, cmd: 0x15 },
+              { name: "Yaber K1 Kod #4 (00FF - 0x45)", b0: 0x00, b1: 0xFF, cmd: 0x45 },
+              { name: "Yaber K1 Kod #5 (00FF - 0x46)", b0: 0x00, b1: 0xFF, cmd: 0x46 },
+              { name: "Yaber K1 Kod #6 (00FF - 0x47)", b0: 0x00, b1: 0xFF, cmd: 0x47 },
+              { name: "Yaber K1 Kod #7 (00FF - 0x40)", b0: 0x00, b1: 0xFF, cmd: 0x40 },
+              { name: "Yaber K1 Kod #8 (00FF - 0x10)", b0: 0x00, b1: 0xFF, cmd: 0x10 },
+              { name: "Yaber K1 Kod #9 (00FF - 0x1C)", b0: 0x00, b1: 0xFF, cmd: 0x1C },
+              { name: "Yaber K1 Kod #10 (00FF - 0x02)", b0: 0x00, b1: 0xFF, cmd: 0x02 },
+              { name: "Yaber K1 Kod #11 (00FF - 0x12)", b0: 0x00, b1: 0xFF, cmd: 0x12 },
+              { name: "Yaber K1 Kod #12 (00FF - 0x14)", b0: 0x00, b1: 0xFF, cmd: 0x14 },
+              { name: "Yaber K1 Kod #13 (00FF - 0x18)", b0: 0x00, b1: 0xFF, cmd: 0x18 },
+              { name: "Yaber K1 Kod #14 (00FF - 0x5A)", b0: 0x00, b1: 0xFF, cmd: 0x5A },
+              { name: "Yaber K1 Kod #15 (00FF - 0x00)", b0: 0x00, b1: 0xFF, cmd: 0x00 },
+              { name: "Yaber K1 Kod #16 (00FF - 0x01)", b0: 0x00, b1: 0xFF, cmd: 0x01 },
+              { name: "Yaber K1 Kod #17 (00FF - 0x0D)", b0: 0x00, b1: 0xFF, cmd: 0x0D },
+              { name: "Yaber K1 Kod #18 (00FF - 0x48)", b0: 0x00, b1: 0xFF, cmd: 0x48 },
+              { name: "Yaber K1 Kod #19 (00FF - 0x57)", b0: 0x00, b1: 0xFF, cmd: 0x57 },
+              { name: "Yaber K1 Kod #20 (00FF - 0x5E)", b0: 0x00, b1: 0xFF, cmd: 0x5E },
+              { name: "Yaber K1 Kod #21 (00FF - 0x16)", b0: 0x00, b1: 0xFF, cmd: 0x16 },
+              { name: "Yaber K1 Kod #22 (00FF - 0x19)", b0: 0x00, b1: 0xFF, cmd: 0x19 },
+              { name: "Yaber K1 Kod #23 (00FF - 0x42)", b0: 0x00, b1: 0xFF, cmd: 0x42 },
+              { name: "Yaber K1 Kod #24 (00FF - 0x52)", b0: 0x00, b1: 0xFF, cmd: 0x52 },
+              { name: "Yaber K1 Kod #25 (00FF - 0x4A)", b0: 0x00, b1: 0xFF, cmd: 0x4A },
+              { name: "Yaber K1 Kod #26 (00FF - 0x0A)", b0: 0x00, b1: 0xFF, cmd: 0x0A },
+              { name: "Yaber K1 Kod #27 (00FF - 0x1A)", b0: 0x00, b1: 0xFF, cmd: 0x1A },
+              { name: "Yaber K1 Kod #28 (00FF - 0x03)", b0: 0x00, b1: 0xFF, cmd: 0x03 },
+
+              // Grup 2: 0x807F (Auto-Focus / F+ F- Kumandalı Linux/Android Projeksiyonlar)
+              { name: "Yaber / AutoFocus #29 (807F - 0x12)", b0: 0x80, b1: 0x7F, cmd: 0x12 },
+              { name: "Yaber / AutoFocus #30 (807F - 0x01)", b0: 0x80, b1: 0x7F, cmd: 0x01 },
+              { name: "Yaber / AutoFocus #31 (807F - 0x02)", b0: 0x80, b1: 0x7F, cmd: 0x02 },
+              { name: "Yaber / AutoFocus #32 (807F - 0x0C)", b0: 0x80, b1: 0x7F, cmd: 0x0C },
+              { name: "Yaber / AutoFocus #33 (807F - 0x1A)", b0: 0x80, b1: 0x7F, cmd: 0x1A },
+              { name: "Yaber / AutoFocus #34 (807F - 0x40)", b0: 0x80, b1: 0x7F, cmd: 0x40 },
+              { name: "Yaber / AutoFocus #35 (807F - 0x46)", b0: 0x80, b1: 0x7F, cmd: 0x46 },
+              { name: "Yaber / AutoFocus #36 (807F - 0x57)", b0: 0x80, b1: 0x7F, cmd: 0x57 },
+              { name: "Yaber / AutoFocus #37 (807F - 0x08)", b0: 0x80, b1: 0x7F, cmd: 0x08 },
+              { name: "Yaber / AutoFocus #38 (807F - 0x10)", b0: 0x80, b1: 0x7F, cmd: 0x10 },
+              { name: "Yaber / AutoFocus #39 (807F - 0x1E)", b0: 0x80, b1: 0x7F, cmd: 0x1E },
+
+              // Grup 3: 0x40BF (Amlogic / MStar / Smart Projeksiyon Anakartları)
+              { name: "Smart Board #40 (40BF - 0x0B)", b0: 0x40, b1: 0xBF, cmd: 0x0B },
+              { name: "Smart Board #41 (40BF - 0x02)", b0: 0x40, b1: 0xBF, cmd: 0x02 },
+              { name: "Smart Board #42 (40BF - 0x10)", b0: 0x40, b1: 0xBF, cmd: 0x10 },
+              { name: "Smart Board #43 (40BF - 0x12)", b0: 0x40, b1: 0xBF, cmd: 0x12 },
+              { name: "Smart Board #44 (40BF - 0x40)", b0: 0x40, b1: 0xBF, cmd: 0x40 },
+              { name: "Smart Board #45 (40BF - 0x01)", b0: 0x40, b1: 0xBF, cmd: 0x01 },
+              { name: "Smart Board #46 (40BF - 0x45)", b0: 0x40, b1: 0xBF, cmd: 0x45 },
+              { name: "Smart Board #47 (40BF - 0x0C)", b0: 0x40, b1: 0xBF, cmd: 0x0C },
+
+              // Grup 4: 0x01FE & 0x02FD (HiSilicon / Mediatek Projeksiyonlar)
+              { name: "Projeksiyon #48 (01FE - 0x40)", b0: 0x01, b1: 0xFE, cmd: 0x40 },
+              { name: "Projeksiyon #49 (01FE - 0x45)", b0: 0x01, b1: 0xFE, cmd: 0x45 },
+              { name: "Projeksiyon #50 (01FE - 0x50)", b0: 0x01, b1: 0xFE, cmd: 0x50 },
+              { name: "Projeksiyon #51 (01FE - 0x01)", b0: 0x01, b1: 0xFE, cmd: 0x01 },
+              { name: "Projeksiyon #52 (01FE - 0x12)", b0: 0x01, b1: 0xFE, cmd: 0x12 },
+              { name: "Projeksiyon #53 (01FE - 0x10)", b0: 0x01, b1: 0xFE, cmd: 0x10 },
+              { name: "Projeksiyon #54 (01FE - 0x08)", b0: 0x01, b1: 0xFE, cmd: 0x08 },
+              { name: "Projeksiyon #55 (01FE - 0x18)", b0: 0x01, b1: 0xFE, cmd: 0x18 },
+              { name: "Projeksiyon #56 (02FD - 0x45)", b0: 0x02, b1: 0xFD, cmd: 0x45 },
+              { name: "Projeksiyon #57 (02FD - 0x48)", b0: 0x02, b1: 0xFD, cmd: 0x48 },
+              { name: "Projeksiyon #58 (02FD - 0x10)", b0: 0x02, b1: 0xFD, cmd: 0x10 },
+
+              // Grup 5: 0x10EF, 0x20DF, 0x04FB, Extended NEC
+              { name: "Projeksiyon #59 (10EF - 0x40)", b0: 0x10, b1: 0xEF, cmd: 0x40 },
+              { name: "Projeksiyon #60 (10EF - 0x12)", b0: 0x10, b1: 0xEF, cmd: 0x12 },
+              { name: "Projeksiyon #61 (20DF - 0x10)", b0: 0x20, b1: 0xDF, cmd: 0x10 },
+              { name: "Projeksiyon #62 (04FB - 0x08)", b0: 0x04, b1: 0xFB, cmd: 0x08 },
+              { name: "Projeksiyon #63 (007F - 0x12)", b0: 0x00, b1: 0x7F, cmd: 0x12 },
+              { name: "Projeksiyon #64 (007F - 0x40)", b0: 0x00, b1: 0x7F, cmd: 0x40 }
             ];
 
             const sensLevels = [
@@ -915,7 +992,6 @@ jobs:
               if (navigator.vibrate) navigator.vibrate(ms);
             }
 
-            // Mod Değişimi: Touchpad'den Kumandaya dönerken Android TV Fare Kilidini (Touch Mode) Kaldırır
             function switchMode(mode) {
               vibrate(14);
               document.getElementById('tabRemote').classList.toggle('active', mode === 'remote');
@@ -938,15 +1014,22 @@ jobs:
               }
             }
 
-            // Hibrit Güç Tuşu: Hem Kızılötesi (IR) hem Bluetooth Güç gönderir
             function triggerHybridPower() {
               vibrate(30);
+              const item = irDatabase[selectedIrIndex] || irDatabase[0];
               if (window.AndroidBridge) {
-                window.AndroidBridge.triggerPowerHybrid();
+                window.AndroidBridge.triggerPowerWithIr(item.b0, item.b1, item.cmd);
               }
             }
 
-            // Geri ve Menü tuşları hem Consumer hem Klavye yedekli çalışır (Touchpad sonrası kilitlenmeyi önler)
+            function tapFocus(dir) {
+              vibrate(18);
+              const item = irDatabase[selectedIrIndex] || irDatabase[0];
+              if (window.AndroidBridge) {
+                window.AndroidBridge.sendFocusCommand(dir, item.b0, item.b1);
+              }
+            }
+
             function tapBack() {
               vibrate();
               if (window.AndroidBridge) window.AndroidBridge.sendBackKey();
@@ -1030,7 +1113,6 @@ jobs:
               input.value = '';
             }
 
-            // Yön Tuşları: Basıldığında Jiroskop açıksa otomatik kapatır ve D-Pad odağını geri alır
             (function initHoldButtons() {
               document.querySelectorAll('[data-hold-key]').forEach((btn) => {
                 const keyCode = parseInt(btn.getAttribute('data-hold-key'), 10);
@@ -1117,7 +1199,6 @@ jobs:
               });
             })();
 
-            // Touchpad (Fare) Kontrolleri
             (function initTouchpad() {
               const surface = document.getElementById('touchSurface');
               const strip = document.getElementById('scrollStrip');
@@ -1175,52 +1256,97 @@ jobs:
               }, { passive: false });
             })();
 
-            // Kızılötesi (IR) Paketi Penceresi
+            // Akıllı IR Bulucu Fonksiyonları
             function openIrModal() {
               vibrate();
               if (window.AndroidBridge) {
                 selectedIrIndex = window.AndroidBridge.getSavedIrIndex();
+                if (selectedIrIndex < 0 || selectedIrIndex >= irDatabase.length) selectedIrIndex = 0;
               }
+              updateIrScannerUi();
               renderIrList();
               document.getElementById('irModal').classList.add('open');
             }
 
             function closeIrModal() {
+              stopAutoIrScan();
               document.getElementById('irModal').classList.remove('open');
+            }
+
+            function updateIrScannerUi() {
+              const item = irDatabase[selectedIrIndex];
+              document.getElementById('activeIrLabel').textContent =
+                `[${selectedIrIndex + 1}/${irDatabase.length}] ${item.name}`;
+            }
+
+            function fireIrAtIndex(idx) {
+              selectedIrIndex = (idx + irDatabase.length) % irDatabase.length;
+              const item = irDatabase[selectedIrIndex];
+              updateIrScannerUi();
+              renderIrList();
+              if (window.AndroidBridge) {
+                window.AndroidBridge.transmitCustomNec(item.b0, item.b1, item.cmd);
+              }
+            }
+
+            function stepIr(delta) {
+              vibrate(18);
+              stopAutoIrScan();
+              fireIrAtIndex(selectedIrIndex + delta);
+            }
+
+            function toggleAutoIrScan() {
+              vibrate(25);
+              if (autoScanTimer) {
+                stopAutoIrScan();
+              } else {
+                document.getElementById('autoScanBtn').textContent = '⏸️ Durdur';
+                fireIrAtIndex(selectedIrIndex);
+                autoScanTimer = setInterval(() => {
+                  fireIrAtIndex(selectedIrIndex + 1);
+                }, 1250);
+              }
+            }
+
+            function stopAutoIrScan() {
+              if (autoScanTimer) {
+                clearInterval(autoScanTimer);
+                autoScanTimer = null;
+              }
+              const btn = document.getElementById('autoScanBtn');
+              if (btn) btn.textContent = '▶️ Otomatik Tara';
+            }
+
+            function saveCurrentIr() {
+              vibrate(30);
+              stopAutoIrScan();
+              if (window.AndroidBridge) {
+                window.AndroidBridge.saveIrIndex(selectedIrIndex);
+              }
+              document.getElementById('irStatus').innerHTML =
+                `<b>${irDatabase[selectedIrIndex].name}</b> sol üstteki Güç (⏻) tuşuna kaydedildi!`;
             }
 
             function renderIrList() {
               const container = document.getElementById('irList');
               container.innerHTML = '';
-              irProfiles.forEach((p, idx) => {
+              irDatabase.forEach((p, idx) => {
                 const card = document.createElement('div');
                 card.className = 'dev-card' + (idx === selectedIrIndex ? ' selected' : '');
                 card.onclick = () => {
-                  vibrate(25);
-                  selectedIrIndex = idx;
-                  renderIrList();
-                  document.getElementById('irStatus').textContent = p.name + ' sinyali gönderildi ve Güç tuşuna kaydedildi.';
-                  if (window.AndroidBridge) {
-                    window.AndroidBridge.selectAndTestIr(idx);
-                  }
+                  vibrate(20);
+                  stopAutoIrScan();
+                  fireIrAtIndex(idx);
+                  if (window.AndroidBridge) window.AndroidBridge.saveIrIndex(idx);
                 };
                 card.innerHTML = `
                   <div>
                     <div class="dev-title">${p.name}</div>
-                    <div class="dev-mac">${p.desc}</div>
                   </div>
-                  <div class="dev-tag">${idx === selectedIrIndex ? 'Seçili • Test' : 'Dene'}</div>
+                  <div class="dev-tag">${idx === selectedIrIndex ? 'Aktif' : 'Gönder'}</div>
                 `;
                 container.appendChild(card);
               });
-            }
-
-            function sweepAllIr() {
-              vibrate(30);
-              document.getElementById('irStatus').textContent = 'Tüm projeksiyon IR kodları sırayla gönderiliyor, telefonu Yaber Ace K1\'e tutun...';
-              if (window.AndroidBridge) {
-                window.AndroidBridge.sweepIrCodes();
-              }
             }
 
             // Bluetooth Tarama Penceresi
@@ -1304,6 +1430,13 @@ jobs:
             window.onNativeSpeechResult = function(text) {
               document.getElementById('manualText').value = text;
             };
+
+            window.addEventListener('DOMContentLoaded', () => {
+              if (window.AndroidBridge) {
+                selectedIrIndex = window.AndroidBridge.getSavedIrIndex();
+                if (selectedIrIndex < 0 || selectedIrIndex >= irDatabase.length) selectedIrIndex = 0;
+              }
+            });
           </script>
           </body>
           </html>
@@ -1359,7 +1492,6 @@ jobs:
               private var remX = 0f
               private var remY = 0f
 
-              // Son kullanılan mod takibi (Mouse sonrası D-Pad odak kilidini açmak için)
               private var lastInputWasMouse = false
 
               private val executor = Executors.newSingleThreadScheduledExecutor()
@@ -1370,22 +1502,6 @@ jobs:
               private val REQ_SPEECH = 1001
               private val REQ_PERMS = 1002
               private val REQ_ENABLE_BT = 1003
-
-              // Çoklu IR Paketi (Yaber Ace K1 + Popüler Projeksiyon ve TV NEC Kodları)
-              private val IR_PROFILES = arrayOf(
-                  intArrayOf(0x00, 0xFF, 0x40, 0xBF), // 0: Yaber Ace K1 / Yaber Pro (Profil 1)
-                  intArrayOf(0x00, 0xFF, 0x10, 0xEF), // 1: Yaber Ace K1 Smart OS (Profil 2)
-                  intArrayOf(0x00, 0xFF, 0x45, 0xBA), // 2: Yaber / DLP Projeksiyon (Profil 3)
-                  intArrayOf(0x00, 0xFF, 0x0A, 0xF5), // 3: Yaber / LCD Projeksiyon (Profil 4)
-                  intArrayOf(0x00, 0xFF, 0x1C, 0xE3), // 4: Genel Android Projeksiyon (Profil 5)
-                  intArrayOf(0x40, 0xBF, 0x0B, 0xF4), // 5: Wanbo / Xiaomi
-                  intArrayOf(0x80, 0x7F, 0x12, 0xED), // 6: Magcubic / HY300
-                  intArrayOf(0x20, 0xDF, 0x10, 0xEF), // 7: Anker Nebula / ViewSonic
-                  intArrayOf(0x00, 0x30, 0x02, 0xFD), // 8: BenQ Projeksiyon
-                  intArrayOf(0x83, 0x55, 0x90, 0x6F), // 9: Epson Projeksiyon
-                  intArrayOf(0x04, 0xFB, 0x08, 0xF7), // 10: LG Smart TV / Projeksiyon
-                  intArrayOf(0x07, 0x07, 0x02, 0xFD)  // 11: Samsung Smart TV
-              )
 
               private val HID_DESCRIPTOR = intArrayOf(
                   // Report ID 1: Keyboard
@@ -1499,12 +1615,15 @@ jobs:
                   btAdapter?.cancelDiscovery()
               }
 
-              // NEC 38kHz Kızılötesi Sinyal Üretici (Mikrosaniye darbe dizisi)
-              private fun buildNecPattern(b0: Int, b1: Int, b2: Int, b3: Int): IntArray {
-                  val list = ArrayList<Int>(68)
+              // Gerçek Kumanda NEC Sinyali: Ana Çerçeve + 1 Tekrar Darbesi (Repeat Frame)
+              // Projeksiyonların parazit filtresini aşmak için Repeat Frame zorunludur
+              private fun buildFullNecPattern(b0: Int, b1: Int, cmd: Int): IntArray {
+                  val invCmd = (cmd.inv()) and 0xFF
+                  val list = ArrayList<Int>(76)
+                  // 1. Ana NEC Çerçevesi
                   list.add(9000)
                   list.add(4500)
-                  val bytes = intArrayOf(b0, b1, b2, b3)
+                  val bytes = intArrayOf(b0 and 0xFF, b1 and 0xFF, cmd and 0xFF, invCmd)
                   for (b in bytes) {
                       for (bit in 0 until 8) {
                           list.add(560)
@@ -1517,24 +1636,25 @@ jobs:
                   }
                   list.add(560)
                   list.add(40000)
+                  // 2. NEC Repeat Pulse (Fiziksel tuş basımı onayı)
+                  list.add(9000)
+                  list.add(2250)
+                  list.add(560)
+                  list.add(96000)
                   return list.toIntArray()
               }
 
-              private fun transmitIrProfile(index: Int, showToast: Boolean = false) {
+              private fun transmitNec(b0: Int, b1: Int, cmd: Int) {
                   val ir = irManager
                   if (ir == null || !ir.hasIrEmitter()) {
-                      if (showToast) {
-                          runOnUiThread {
-                              Toast.makeText(this, "Bu telefonda Kizilotesi (IR) sensoru bulunamadi", Toast.LENGTH_SHORT).show()
-                          }
+                      runOnUiThread {
+                          Toast.makeText(this, "Kizilotesi (IR) verici bulunamadi", Toast.LENGTH_SHORT).show()
                       }
                       return
                   }
-                  val safeIdx = index.coerceIn(0, IR_PROFILES.size - 1)
-                  val code = IR_PROFILES[safeIdx]
                   executor.execute {
                       try {
-                          val pattern = buildNecPattern(code[0], code[1], code[2], code[3])
+                          val pattern = buildFullNecPattern(b0, b1, cmd)
                           ir.transmit(38000, pattern)
                       } catch (e: Exception) {
                           e.printStackTrace()
@@ -1847,7 +1967,6 @@ jobs:
                   }
               }
 
-              // Tüm HID Kanallarını (Klavye, Kumanda, Fare) Sıfırlar - Asılı kalan tuş/buton bırakmaz
               private fun releaseAllHidChannels() {
                   holdRepeatTask?.cancel(true)
                   holdRepeatTask = null
@@ -1861,10 +1980,20 @@ jobs:
                   }
               }
 
-              // Touchpad sonrasında Android TV'nin Touch Mode'dan çıkıp D-Pad Odağını geri almasını sağlar
+              // Touchpad'den Kumandaya dönüldüğünde fare imlecini kapatıp yön tuşu odağını (D-Pad Focus) uyandırır
               private fun wakeUpDpadFocusFromMouse() {
-                  releaseAllHidChannels()
-                  lastInputWasMouse = false
+                  holdRepeatTask?.cancel(true)
+                  holdRepeatTask = null
+                  val dev = connectedDevice ?: return
+                  executor.execute {
+                      hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                      Thread.sleep(15)
+                      // Sol/Sağ ok darbesi ile Android TV'yi Touch Mode'dan çıkarıp D-Pad Focus'a zorla
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 82, 0, 0, 0, 0, 0))
+                      Thread.sleep(18)
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+                      lastInputWasMouse = false
+                  }
               }
 
               private fun startHoldKey(keyCode: Int) {
@@ -1876,7 +2005,6 @@ jobs:
                       return
                   }
                   executor.execute {
-                      // Eğer öncesinde Touchpad/Mouse kullanıldıysa önce fareyi sıfırla
                       if (lastInputWasMouse) {
                           hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
                           Thread.sleep(15)
@@ -2001,16 +2129,36 @@ jobs:
                   fun reconnectLast() = runOnUiThread { ensureHidAndAutoConnect() }
 
                   @JavascriptInterface
-                  fun triggerPowerHybrid() {
-                      // 1. Kızılötesi (IR) Güç Sinyalini Ateşle (Kapalı cihazı açmak için)
-                      val savedIr = prefs.getInt("ir_profile_index", 0)
-                      transmitIrProfile(savedIr, showToast = false)
-
-                      // 2. Bağlıysa Bluetooth üzerinden de Güç komutu gönder, bağlı değilse otomatik bağlanmayı başlat
+                  fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
+                      transmitNec(b0, b1, cmd)
                       if (connectedDevice != null) {
                           sendConsumerUsage(48)
                       } else {
                           runOnUiThread { ensureHidAndAutoConnect() }
+                      }
+                  }
+
+                  @JavascriptInterface
+                  fun transmitCustomNec(b0: Int, b1: Int, cmd: Int) {
+                      transmitNec(b0, b1, cmd)
+                  }
+
+                  @JavascriptInterface
+                  fun sendFocusCommand(dir: Int, b0: Int, b1: Int) {
+                      // dir: -1 = F-, 0 = AutoFocus, 1 = F+
+                      when (dir) {
+                          -1 -> {
+                              transmitNec(b0, b1, 0x4B)
+                              sendKeyboardKey(0, 67) // F10 / Focus-
+                          }
+                          0 -> {
+                              transmitNec(b0, b1, 0x4C)
+                              sendKeyboardKey(0, 68) // F11 / AutoFocus
+                          }
+                          1 -> {
+                              transmitNec(b0, b1, 0x4D)
+                              sendKeyboardKey(0, 69) // F12 / Focus+
+                          }
                       }
                   }
 
@@ -2020,19 +2168,8 @@ jobs:
                   }
 
                   @JavascriptInterface
-                  fun selectAndTestIr(index: Int) {
+                  fun saveIrIndex(index: Int) {
                       prefs.edit().putInt("ir_profile_index", index).apply()
-                      transmitIrProfile(index, showToast = true)
-                  }
-
-                  @JavascriptInterface
-                  fun sweepIrCodes() {
-                      executor.execute {
-                          for (i in 0 until 8) {
-                              transmitIrProfile(i, showToast = false)
-                              Thread.sleep(380)
-                          }
-                      }
                   }
 
                   @JavascriptInterface
@@ -2043,13 +2180,11 @@ jobs:
 
                   @JavascriptInterface
                   fun sendBackKey() {
-                      // Hem Consumer AC Back (548) hem Klavye ESC (41) ile uyumlu geri komutu
                       sendConsumerUsage(548)
                   }
 
                   @JavascriptInterface
                   fun sendMenuKey() {
-                      // Hem Consumer Menu (64) hem Klavye Context Menu (101) gönderir
                       sendConsumerUsage(64)
                       sendKeyboardKey(0, 101)
                   }
