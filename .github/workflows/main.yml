@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 7
-                  versionName "7.0"
+                  versionCode 8
+                  versionName "8.0"
               }
 
               compileOptions {
@@ -256,7 +256,6 @@ jobs:
               flex-shrink: 0;
             }
 
-            /* Üst Bar */
             .header {
               display: flex;
               align-items: center;
@@ -283,11 +282,11 @@ jobs:
             }
             .icon-pill.power {
               color: #f87171;
-              border-color: rgba(248, 113, 113, 0.3);
+              border-color: rgba(248, 113, 113, 0.35);
             }
             .icon-pill.ir-btn {
               color: #fb923c;
-              border-color: rgba(251, 146, 60, 0.3);
+              border-color: rgba(251, 146, 60, 0.35);
               width: auto;
               padding: 0 10px;
               gap: 4px;
@@ -305,16 +304,12 @@ jobs:
               padding: 0 10px;
               overflow: hidden;
             }
-            .status-pill:active {
-              background: rgba(51, 65, 85, 0.85);
-            }
             .dot {
               width: 8px;
               height: 8px;
               border-radius: 50%;
               background: #ef4444;
               flex-shrink: 0;
-              transition: all 0.25s;
             }
             .dot.connecting {
               background: #f59e0b;
@@ -333,7 +328,6 @@ jobs:
               text-overflow: ellipsis;
             }
 
-            /* LG Sihirli Kumanda (Jiroskop) Çubuğu */
             .gyro-bar {
               display: flex;
               align-items: center;
@@ -353,13 +347,11 @@ jobs:
               align-items: center;
               justify-content: center;
               gap: 7px;
-              transition: all 0.18s;
             }
             .gyro-btn.active {
               background: linear-gradient(135deg, rgba(14, 165, 233, 0.28), rgba(37, 99, 235, 0.35));
               border-color: #38bdf8;
               color: #38bdf8;
-              box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
             }
             .sens-pill {
               height: 36px;
@@ -372,7 +364,6 @@ jobs:
               font-weight: 700;
             }
 
-            /* Orta Gövde */
             .main-stage {
               flex: 1;
               display: flex;
@@ -394,7 +385,6 @@ jobs:
               display: flex;
             }
 
-            /* Modern Dairesel D-Pad */
             .dpad-ring {
               position: relative;
               width: 204px;
@@ -460,7 +450,6 @@ jobs:
               color: #fff;
             }
 
-            /* Yardımcı Kumanda Tuşları (Geri, Home, Menü + F-, Oto-Focus, F+ + Ses) */
             .control-rows {
               width: 100%;
               display: flex;
@@ -487,7 +476,7 @@ jobs:
             }
             .soft-btn.focus-orange {
               color: #fb923c;
-              border-color: rgba(251, 146, 60, 0.3);
+              border-color: rgba(251, 146, 60, 0.35);
             }
             .soft-btn.pressed, .soft-btn:active {
               transform: scale(0.95);
@@ -496,7 +485,6 @@ jobs:
               color: #fff;
             }
 
-            /* Touchpad Alanı */
             .touchpad-wrap {
               width: 100%;
               flex: 1;
@@ -544,7 +532,6 @@ jobs:
               gap: 10px;
             }
 
-            /* OK Tuşlarının Altındaki 3'lü Bar: Kumanda | Mikrofon | Touchpad */
             .mode-dock {
               display: grid;
               grid-template-columns: 1fr auto 1fr;
@@ -585,11 +572,7 @@ jobs:
               justify-content: center;
               box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
             }
-            .mic-center-btn:active {
-              transform: scale(0.92);
-            }
 
-            /* Alt Klavye / Metin Çubuğu */
             .keyboard-bar {
               display: flex;
               gap: 8px;
@@ -623,7 +606,6 @@ jobs:
               color: #fff;
             }
 
-            /* Modaller */
             .modal-backdrop {
               position: fixed;
               inset: 0;
@@ -642,8 +624,8 @@ jobs:
               background: #141c2b;
               border: 1px solid rgba(255, 255, 255, 0.1);
               border-radius: 20px;
-              padding: 15px;
-              max-height: 86vh;
+              padding: 14px;
+              max-height: 88vh;
               display: flex;
               flex-direction: column;
             }
@@ -651,7 +633,7 @@ jobs:
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-bottom: 8px;
+              margin-bottom: 6px;
             }
             .modal-title { font-size: 15px; font-weight: 700; color: #f8fafc; }
             .close-x {
@@ -663,9 +645,20 @@ jobs:
               color: #cbd5e1;
               font-size: 15px;
             }
+            .ir-hw-badge {
+              font-size: 11px;
+              font-weight: 700;
+              padding: 6px 10px;
+              border-radius: 8px;
+              background: rgba(16, 185, 129, 0.14);
+              color: #34d399;
+              border: 1px solid rgba(16, 185, 129, 0.3);
+              margin-bottom: 8px;
+              text-align: center;
+            }
             .scan-info {
-              font-size: 12px;
-              color: #38bdf8;
+              font-size: 11px;
+              color: #93c5fd;
               margin-bottom: 8px;
               line-height: 1.35;
             }
@@ -674,10 +667,10 @@ jobs:
               border: 1px solid rgba(251, 146, 60, 0.35);
               border-radius: 14px;
               padding: 10px;
-              margin-bottom: 10px;
+              margin-bottom: 8px;
             }
             .scanner-code {
-              font-size: 13px;
+              font-size: 12px;
               font-weight: 700;
               color: #fb923c;
               text-align: center;
@@ -695,8 +688,8 @@ jobs:
               display: flex;
               flex-direction: column;
               gap: 6px;
-              min-height: 120px;
-              margin-bottom: 10px;
+              min-height: 110px;
+              margin-bottom: 8px;
             }
             .dev-card {
               background: rgba(15, 23, 42, 0.8);
@@ -731,7 +724,7 @@ jobs:
                 <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
               </button>
 
-              <button class="icon-pill ir-btn" onclick="openIrModal()" title="Kızılötesi (IR) Bulucu">
+              <button class="icon-pill ir-btn" onclick="openIrModal()">
                 <span>IR BUL</span>
               </button>
 
@@ -779,7 +772,6 @@ jobs:
                 </div>
 
                 <div class="control-rows">
-                  <!-- Geri | Ana Ekran | Menü -->
                   <div class="btn-row">
                     <button class="soft-btn" onclick="tapBack()">
                       <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Geri
@@ -792,14 +784,12 @@ jobs:
                     </button>
                   </div>
 
-                  <!-- Yaber Kumandadaki F- | Oto-Focus [+] | F+ Satırı -->
                   <div class="btn-row">
                     <button class="soft-btn" onclick="tapFocus(-1)">F- (Netlik)</button>
                     <button class="soft-btn focus-orange" onclick="tapFocus(0)">[ + ] Oto-Focus</button>
                     <button class="soft-btn" onclick="tapFocus(1)">F+ (Netlik)</button>
                   </div>
 
-                  <!-- Ses - | Sessiz | Ses + -->
                   <div class="btn-row">
                     <button class="soft-btn" data-hold-consumer="234">
                       <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="16" y1="12" x2="22" y2="12"/></svg> Ses -
@@ -835,7 +825,7 @@ jobs:
 
             </div>
 
-            <!-- OK Tuşlarının Altındaki Yan Yana Bar: Kumanda | 🎤 Mikrofon | Touchpad -->
+            <!-- Kumanda | 🎤 Mikrofon | Touchpad -->
             <div class="mode-dock">
               <button id="tabRemote" class="dock-tab active" onclick="switchMode('remote')">
                 <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><circle cx="12" cy="9" r="2"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
@@ -852,7 +842,7 @@ jobs:
               </button>
             </div>
 
-            <!-- Alt Hızlı Klavye Çubuğu -->
+            <!-- Alt Klavye Çubuğu -->
             <div class="keyboard-bar">
               <input id="manualText" class="kb-input" type="text" placeholder="Metin yazın veya mikrofona dokunun..." />
               <button class="kb-btn" onclick="tapKey(42)" title="Sil">⌫</button>
@@ -872,15 +862,18 @@ jobs:
               </div>
             </div>
 
-            <!-- Akıllı IR Kod Bulucu Modal (64 Projeksiyon Kodu + Otomatik Tarayıcı) -->
+            <!-- Redmi Note 8 Pro Uyumlu Akıllı IR Kod Bulucu Modal -->
             <div id="irModal" class="modal-backdrop">
               <div class="modal">
                 <div class="modal-head">
-                  <span class="modal-title">Yaber Ace K1 - Akıllı IR Bulucu</span>
+                  <span class="modal-title">Redmi Note 8 Pro - IR Bulucu</span>
                   <button class="close-x" onclick="closeIrModal()">✕</button>
                 </div>
+
+                <div id="irHwStatus" class="ir-hw-badge">IR Sensör Kontrol Ediliyor...</div>
+
                 <div id="irStatus" class="scan-info">
-                  İpucu: Projeksiyon <b>AÇIKKEN</b> telefonu cihaza doğrultup <b>Otomatik Tara</b>'ya basın. Ekranda "Kapatılsın mı?" uyarısı çıktığı an durdurun!
+                  Projeksiyon <b>AÇIKKEN</b> telefonu cihaza doğrultup <b>Otomatik Tara</b>'ya basın. Ekranda kapanma uyarısı çıktığı an durdurup kaydedin.
                 </div>
 
                 <div class="scanner-box">
@@ -904,9 +897,7 @@ jobs:
             let selectedIrIndex = 0;
             let autoScanTimer = null;
 
-            // Yaber Ace K1 ve Bu Kumanda Kasasını Kullanan Projeksiyonların 64'lü NEC IR Kod Tablosu
             const irDatabase = [
-              // Grup 1: 0x00FF (Yaber / Wimius / Toptroe En Yaygın Kumanda Kodları)
               { name: "Yaber K1 Kod #1 (00FF - 0x0C)", b0: 0x00, b1: 0xFF, cmd: 0x0C },
               { name: "Yaber K1 Kod #2 (00FF - 0x08)", b0: 0x00, b1: 0xFF, cmd: 0x08 },
               { name: "Yaber K1 Kod #3 (00FF - 0x15)", b0: 0x00, b1: 0xFF, cmd: 0x15 },
@@ -936,7 +927,6 @@ jobs:
               { name: "Yaber K1 Kod #27 (00FF - 0x1A)", b0: 0x00, b1: 0xFF, cmd: 0x1A },
               { name: "Yaber K1 Kod #28 (00FF - 0x03)", b0: 0x00, b1: 0xFF, cmd: 0x03 },
 
-              // Grup 2: 0x807F (Auto-Focus / F+ F- Kumandalı Linux/Android Projeksiyonlar)
               { name: "Yaber / AutoFocus #29 (807F - 0x12)", b0: 0x80, b1: 0x7F, cmd: 0x12 },
               { name: "Yaber / AutoFocus #30 (807F - 0x01)", b0: 0x80, b1: 0x7F, cmd: 0x01 },
               { name: "Yaber / AutoFocus #31 (807F - 0x02)", b0: 0x80, b1: 0x7F, cmd: 0x02 },
@@ -949,7 +939,6 @@ jobs:
               { name: "Yaber / AutoFocus #38 (807F - 0x10)", b0: 0x80, b1: 0x7F, cmd: 0x10 },
               { name: "Yaber / AutoFocus #39 (807F - 0x1E)", b0: 0x80, b1: 0x7F, cmd: 0x1E },
 
-              // Grup 3: 0x40BF (Amlogic / MStar / Smart Projeksiyon Anakartları)
               { name: "Smart Board #40 (40BF - 0x0B)", b0: 0x40, b1: 0xBF, cmd: 0x0B },
               { name: "Smart Board #41 (40BF - 0x02)", b0: 0x40, b1: 0xBF, cmd: 0x02 },
               { name: "Smart Board #42 (40BF - 0x10)", b0: 0x40, b1: 0xBF, cmd: 0x10 },
@@ -959,7 +948,6 @@ jobs:
               { name: "Smart Board #46 (40BF - 0x45)", b0: 0x40, b1: 0xBF, cmd: 0x45 },
               { name: "Smart Board #47 (40BF - 0x0C)", b0: 0x40, b1: 0xBF, cmd: 0x0C },
 
-              // Grup 4: 0x01FE & 0x02FD (HiSilicon / Mediatek Projeksiyonlar)
               { name: "Projeksiyon #48 (01FE - 0x40)", b0: 0x01, b1: 0xFE, cmd: 0x40 },
               { name: "Projeksiyon #49 (01FE - 0x45)", b0: 0x01, b1: 0xFE, cmd: 0x45 },
               { name: "Projeksiyon #50 (01FE - 0x50)", b0: 0x01, b1: 0xFE, cmd: 0x50 },
@@ -972,7 +960,6 @@ jobs:
               { name: "Projeksiyon #57 (02FD - 0x48)", b0: 0x02, b1: 0xFD, cmd: 0x48 },
               { name: "Projeksiyon #58 (02FD - 0x10)", b0: 0x02, b1: 0xFD, cmd: 0x10 },
 
-              // Grup 5: 0x10EF, 0x20DF, 0x04FB, Extended NEC
               { name: "Projeksiyon #59 (10EF - 0x40)", b0: 0x10, b1: 0xEF, cmd: 0x40 },
               { name: "Projeksiyon #60 (10EF - 0x12)", b0: 0x10, b1: 0xEF, cmd: 0x12 },
               { name: "Projeksiyon #61 (20DF - 0x10)", b0: 0x20, b1: 0xDF, cmd: 0x10 },
@@ -1256,12 +1243,13 @@ jobs:
               }, { passive: false });
             })();
 
-            // Akıllı IR Bulucu Fonksiyonları
             function openIrModal() {
               vibrate();
               if (window.AndroidBridge) {
                 selectedIrIndex = window.AndroidBridge.getSavedIrIndex();
                 if (selectedIrIndex < 0 || selectedIrIndex >= irDatabase.length) selectedIrIndex = 0;
+                const hwInfo = window.AndroidBridge.getIrHardwareInfo();
+                document.getElementById('irHwStatus').textContent = hwInfo;
               }
               updateIrScannerUi();
               renderIrList();
@@ -1304,7 +1292,7 @@ jobs:
                 fireIrAtIndex(selectedIrIndex);
                 autoScanTimer = setInterval(() => {
                   fireIrAtIndex(selectedIrIndex + 1);
-                }, 1250);
+                }, 1350);
               }
             }
 
@@ -1343,13 +1331,17 @@ jobs:
                   <div>
                     <div class="dev-title">${p.name}</div>
                   </div>
-                  <div class="dev-tag">${idx === selectedIrIndex ? 'Aktif' : 'Gönder'}</div>
+                  <div class="dev-tag">${idx === selectedIrIndex ? 'Aktif' : 'Dene'}</div>
                 `;
                 container.appendChild(card);
               });
             }
 
-            // Bluetooth Tarama Penceresi
+            window.onIrTransmitResult = function(msg) {
+              const badge = document.getElementById('irHwStatus');
+              if (badge) badge.textContent = msg;
+            };
+
             function openScanner() {
               vibrate();
               document.getElementById('scanModal').classList.add('open');
@@ -1484,7 +1476,6 @@ jobs:
               private var pendingDevice: BluetoothDevice? = null
               private var irManager: ConsumerIrManager? = null
 
-              // Jiroskop (Air Mouse)
               private var sensorManager: SensorManager? = null
               private var gyroSensor: Sensor? = null
               private var isGyroActive = false
@@ -1504,19 +1495,16 @@ jobs:
               private val REQ_ENABLE_BT = 1003
 
               private val HID_DESCRIPTOR = intArrayOf(
-                  // Report ID 1: Keyboard
                   0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x85, 0x01,
                   0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00,
                   0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02,
                   0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x95, 0x06,
                   0x75, 0x08, 0x15, 0x00, 0x25, 0x65, 0x05, 0x07,
                   0x19, 0x00, 0x29, 0x65, 0x81, 0x00, 0xC0,
-                  // Report ID 2: Consumer Control
                   0x05, 0x0C, 0x09, 0x01, 0xA1, 0x01, 0x85, 0x02,
                   0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
                   0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
                   0xC0,
-                  // Report ID 3: Mouse (Touchpad & Gyro)
                   0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x85, 0x03,
                   0x09, 0x01, 0xA1, 0x00, 0x05, 0x09, 0x19, 0x01,
                   0x29, 0x03, 0x15, 0x00, 0x25, 0x01, 0x95, 0x03,
@@ -1615,50 +1603,51 @@ jobs:
                   btAdapter?.cancelDiscovery()
               }
 
-              // Gerçek Kumanda NEC Sinyali: Ana Çerçeve + 1 Tekrar Darbesi (Repeat Frame)
-              // Projeksiyonların parazit filtresini aşmak için Repeat Frame zorunludur
-              private fun buildFullNecPattern(b0: Int, b1: Int, cmd: Int): IntArray {
+              // Redmi Note 8 Pro (MediaTek Helio G90T) Uyumlu 68-Elemanlı Saf NEC Sinyali
+              // Hiçbir eleman 65535 (16-bit) sınırını aşmaz!
+              private fun buildRedmiSafeNecPattern(b0: Int, b1: Int, cmd: Int): IntArray {
                   val invCmd = (cmd.inv()) and 0xFF
-                  val list = ArrayList<Int>(76)
-                  // 1. Ana NEC Çerçevesi
-                  list.add(9000)
-                  list.add(4500)
+                  val pattern = IntArray(68)
+                  pattern[0] = 9000
+                  pattern[1] = 4500
+                  var idx = 2
                   val bytes = intArrayOf(b0 and 0xFF, b1 and 0xFF, cmd and 0xFF, invCmd)
                   for (b in bytes) {
                       for (bit in 0 until 8) {
-                          list.add(560)
-                          if (((b shr bit) and 1) == 1) {
-                              list.add(1690)
-                          } else {
-                              list.add(560)
-                          }
+                          pattern[idx++] = 560
+                          pattern[idx++] = if (((b shr bit) and 1) == 1) 1690 else 560
                       }
                   }
-                  list.add(560)
-                  list.add(40000)
-                  // 2. NEC Repeat Pulse (Fiziksel tuş basımı onayı)
-                  list.add(9000)
-                  list.add(2250)
-                  list.add(560)
-                  list.add(96000)
-                  return list.toIntArray()
+                  pattern[66] = 560
+                  pattern[67] = 20000
+                  return pattern
               }
 
               private fun transmitNec(b0: Int, b1: Int, cmd: Int) {
                   val ir = irManager
                   if (ir == null || !ir.hasIrEmitter()) {
-                      runOnUiThread {
-                          Toast.makeText(this, "Kizilotesi (IR) verici bulunamadi", Toast.LENGTH_SHORT).show()
-                      }
+                      notifyIrResult("❌ IR Donanimi Bulunamadi")
                       return
                   }
                   executor.execute {
                       try {
-                          val pattern = buildFullNecPattern(b0, b1, cmd)
+                          val pattern = buildRedmiSafeNecPattern(b0, b1, cmd)
+                          // Projeksiyonun algılaması için 105ms arayla 2 tam çerçeve gönderilir
                           ir.transmit(38000, pattern)
+                          Thread.sleep(105)
+                          ir.transmit(38000, pattern)
+                          val hexCmd = String.format("0x%02X", cmd and 0xFF)
+                          notifyIrResult("✅ Redmi IR Ateslendi (38kHz • Komut: $hexCmd)")
                       } catch (e: Exception) {
-                          e.printStackTrace()
+                          notifyIrResult("⚠️ IR Hatasi: ${e.message}")
                       }
+                  }
+              }
+
+              private fun notifyIrResult(msg: String) {
+                  val safe = msg.replace("'", "\\'")
+                  runOnUiThread {
+                      webView.evaluateJavascript("if(window.onIrTransmitResult) window.onIrTransmitResult('$safe');", null)
                   }
               }
 
@@ -1980,7 +1969,6 @@ jobs:
                   }
               }
 
-              // Touchpad'den Kumandaya dönüldüğünde fare imlecini kapatıp yön tuşu odağını (D-Pad Focus) uyandırır
               private fun wakeUpDpadFocusFromMouse() {
                   holdRepeatTask?.cancel(true)
                   holdRepeatTask = null
@@ -1988,7 +1976,6 @@ jobs:
                   executor.execute {
                       hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
                       Thread.sleep(15)
-                      // Sol/Sağ ok darbesi ile Android TV'yi Touch Mode'dan çıkarıp D-Pad Focus'a zorla
                       hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 82, 0, 0, 0, 0, 0))
                       Thread.sleep(18)
                       hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
@@ -2129,6 +2116,16 @@ jobs:
                   fun reconnectLast() = runOnUiThread { ensureHidAndAutoConnect() }
 
                   @JavascriptInterface
+                  fun getIrHardwareInfo(): String {
+                      val ir = irManager
+                      return if (ir != null && ir.hasIrEmitter()) {
+                          "✅ Redmi Note 8 Pro IR Verici Hazır (38 kHz)"
+                      } else {
+                          "❌ IR Verici Algılanamadı"
+                      }
+                  }
+
+                  @JavascriptInterface
                   fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
                       transmitNec(b0, b1, cmd)
                       if (connectedDevice != null) {
@@ -2145,19 +2142,18 @@ jobs:
 
                   @JavascriptInterface
                   fun sendFocusCommand(dir: Int, b0: Int, b1: Int) {
-                      // dir: -1 = F-, 0 = AutoFocus, 1 = F+
                       when (dir) {
                           -1 -> {
                               transmitNec(b0, b1, 0x4B)
-                              sendKeyboardKey(0, 67) // F10 / Focus-
+                              sendKeyboardKey(0, 67)
                           }
                           0 -> {
                               transmitNec(b0, b1, 0x4C)
-                              sendKeyboardKey(0, 68) // F11 / AutoFocus
+                              sendKeyboardKey(0, 68)
                           }
                           1 -> {
                               transmitNec(b0, b1, 0x4D)
-                              sendKeyboardKey(0, 69) // F12 / Focus+
+                              sendKeyboardKey(0, 69)
                           }
                       }
                   }
