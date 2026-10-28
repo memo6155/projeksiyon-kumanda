@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 13
-                  versionName "13.0"
+                  versionCode 14
+                  versionName "14.0"
               }
 
               compileOptions {
@@ -386,7 +386,7 @@ jobs:
               display: flex;
             }
 
-            /* DPAD - Çakışmasız Net Geometri */
+            /* DPAD Kumanda */
             .dpad-ring {
               position: relative;
               width: 204px;
@@ -494,7 +494,7 @@ jobs:
               color: #fff;
             }
 
-            /* Touchpad & Kademeli Kenar Işıması */
+            /* Touchpad Alanı & LG Kenar Rozeti */
             .touchpad-wrap {
               width: 100%;
               flex: 1;
@@ -520,23 +520,26 @@ jobs:
               padding: 16px;
               touch-action: none;
               overflow: hidden;
-              transition: box-shadow 0.15s, border-color 0.15s;
             }
-            .touch-surface.edge-top {
-              border-top-color: #38bdf8;
-              box-shadow: inset 0 16px 22px -8px rgba(56, 189, 248, 0.45);
+            .edge-status-badge {
+              position: absolute;
+              top: 10px;
+              font-size: 11px;
+              font-weight: 700;
+              padding: 3px 12px;
+              border-radius: 20px;
+              background: rgba(30, 41, 59, 0.75);
+              color: #64748b;
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              pointer-events: none;
+              transition: all 0.2s ease;
             }
-            .touch-surface.edge-bottom {
-              border-bottom-color: #38bdf8;
-              box-shadow: inset 0 -16px 22px -8px rgba(56, 189, 248, 0.45);
-            }
-            .touch-surface.edge-left {
-              border-left-color: #38bdf8;
-              box-shadow: inset 16px 0 22px -8px rgba(56, 189, 248, 0.45);
-            }
-            .touch-surface.edge-right {
-              border-right-color: #38bdf8;
-              box-shadow: inset -16px 0 22px -8px rgba(56, 189, 248, 0.45);
+            .edge-status-badge.active {
+              background: rgba(2, 132, 199, 0.35);
+              color: #38bdf8;
+              border-color: #38bdf8;
+              box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+              transform: scale(1.05);
             }
             .scroll-bar {
               width: 44px;
@@ -824,12 +827,13 @@ jobs:
                 </div>
               </div>
 
-              <!-- TOUCHPAD MODU (2D Kademeli Kenar Kaydırma) -->
+              <!-- TOUCHPAD MODU (LG Tarzı Otomatik Kenar Algılayıcı) -->
               <div id="panelTouch" class="stage-panel">
                 <div class="touchpad-wrap">
                   <div id="touchSurface" class="touch-surface">
+                    <div id="edgeIndicator" class="edge-status-badge">LG Kenar Kaydırma Aktif</div>
                     <svg viewBox="0 0 24 24" style="width:28px;height:28px;opacity:0.45;"><rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="7" x2="12" y2="11"/></svg>
-                    <span>İmleci yönetin • Dokunup tıklayın<br>Kenarlara gelince veya çift parmakla kademeli kaydırın</span>
+                    <span>İmleci yönetin • Tıklamak için dokunun<br>İmleç TV kenarına ulaştığında otomatik kaydırır</span>
                   </div>
                   <div id="scrollStrip" class="scroll-bar">
                     <span>▲</span>
@@ -845,7 +849,7 @@ jobs:
 
             </div>
 
-            <!-- Kumanda | Mikrofon | Touchpad Sekmeleri -->
+            <!-- Mod Sekmeleri -->
             <div class="mode-dock">
               <button id="tabRemote" class="dock-tab active" onclick="switchMode('remote')">
                 <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><circle cx="12" cy="9" r="2"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
@@ -890,7 +894,7 @@ jobs:
                   <button class="close-x" onclick="closeAdjustModal()">✕</button>
                 </div>
                 <div class="scan-info">
-                  Projeksiyon ve ekran için anında filtre katmanı uygulayın:
+                  Projeksiyon ve ekran için filtre katmanı uygulayın:
                 </div>
 
                 <div class="slider-group">
@@ -918,6 +922,7 @@ jobs:
             let isConnected = false;
             let gyroEnabled = false;
             let isConnectingFromModal = false;
+            let badgeTimer = null;
 
             const sensLevels = [
               { label: 'Yavaş', val: 14 },
@@ -945,6 +950,7 @@ jobs:
               }
               if (window.AndroidBridge) {
                 window.AndroidBridge.releaseAllHid();
+                window.AndroidBridge.resetVirtualCursor();
               }
             }
 
@@ -1062,7 +1068,6 @@ jobs:
               applyFilters();
             }
 
-            // Temiz tuş basma bağlayıcısı (Çakışmaları ve hayalet tıklamaları önler)
             function bindButtonPress(btn, onDown, onUp) {
               let active = false;
               const handleStart = (e) => {
@@ -1133,91 +1138,14 @@ jobs:
               });
             })();
 
-            /* TOUCHPAD: 2D Kademeli Kenar Kaydırma & Çift Parmakla Kaydırma */
+            /* TOUCHPAD: Serbest Dokunmatik & Çift Parmak */
             (function initTouchpad() {
               const surface = document.getElementById('touchSurface');
               const strip = document.getElementById('scrollStrip');
               let lastX = 0, lastY = 0, startX = 0, startY = 0, startTime = 0;
               let accX = 0, accY = 0, moveTimer = null;
-              let edgeScrollTimer = null;
               let isTwoFinger = false;
               let lastTwoX = 0, lastTwoY = 0;
-
-              function stopEdgeScroll() {
-                if (edgeScrollTimer) {
-                  clearInterval(edgeScrollTimer);
-                  edgeScrollTimer = null;
-                }
-                surface.classList.remove('edge-top', 'edge-bottom', 'edge-left', 'edge-right');
-              }
-
-              function checkAndApplyEdgeScroll(clientX, clientY) {
-                const rect = surface.getBoundingClientRect();
-                const thresholdX = rect.width * 0.16;   // %16 kenar eşiği
-                const thresholdY = rect.height * 0.16;  // %16 kenar eşiği
-
-                const distLeft = clientX - rect.left;
-                const distRight = rect.right - clientX;
-                const distTop = clientY - rect.top;
-                const distBottom = rect.bottom - clientY;
-
-                let dirV = 0; // +1: yukarı, -1: aşağı
-                let dirH = 0; // +1: sağa, -1: sola
-                let speedV = 0;
-                let speedH = 0;
-
-                // Üst Kenar -> Yukarı Kaydır
-                if (distTop < thresholdY && distTop >= -25) {
-                  dirV = 1;
-                  const factor = Math.max(0.2, 1 - (Math.max(0, distTop) / thresholdY));
-                  speedV = Math.round(1 + factor * 4); // 1-5 arası kademeli
-                  surface.classList.add('edge-top');
-                } else {
-                  surface.classList.remove('edge-top');
-                }
-
-                // Alt Kenar -> Aşağı Kaydır
-                if (distBottom < thresholdY && distBottom >= -25) {
-                  dirV = -1;
-                  const factor = Math.max(0.2, 1 - (Math.max(0, distBottom) / thresholdY));
-                  speedV = Math.round(1 + factor * 4);
-                  surface.classList.add('edge-bottom');
-                } else {
-                  surface.classList.remove('edge-bottom');
-                }
-
-                // Sol Kenar -> Sola Kaydır
-                if (distLeft < thresholdX && distLeft >= -25) {
-                  dirH = -1;
-                  const factor = Math.max(0.2, 1 - (Math.max(0, distLeft) / thresholdX));
-                  speedH = Math.round(1 + factor * 4);
-                  surface.classList.add('edge-left');
-                } else {
-                  surface.classList.remove('edge-left');
-                }
-
-                // Sağ Kenar -> Sağa Kaydır
-                if (distRight < thresholdX && distRight >= -25) {
-                  dirH = 1;
-                  const factor = Math.max(0.2, 1 - (Math.max(0, distRight) / thresholdX));
-                  speedH = Math.round(1 + factor * 4);
-                  surface.classList.add('edge-right');
-                } else {
-                  surface.classList.remove('edge-right');
-                }
-
-                if (dirV !== 0 || dirH !== 0) {
-                  if (!edgeScrollTimer) {
-                    edgeScrollTimer = setInterval(() => {
-                      if (window.AndroidBridge) {
-                        window.AndroidBridge.scrollMouse(dirV * speedV, dirH * speedH);
-                      }
-                    }, 50); // 50ms kademeli akıcı kaydırma
-                  }
-                } else {
-                  stopEdgeScroll();
-                }
-              }
 
               surface.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
@@ -1226,10 +1154,8 @@ jobs:
                   lastX = startX = t.clientX;
                   lastY = startY = t.clientY;
                   startTime = Date.now();
-                  stopEdgeScroll();
                 } else if (e.touches.length === 2) {
                   isTwoFinger = true;
-                  stopEdgeScroll();
                   lastTwoX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                   lastTwoY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 }
@@ -1238,7 +1164,7 @@ jobs:
               surface.addEventListener('touchmove', (e) => {
                 e.preventDefault();
 
-                // Çift parmakla 2D kaydırma
+                // Çift parmakla manuel kaydırma
                 if (e.touches.length === 2) {
                   const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                   const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
@@ -1257,13 +1183,11 @@ jobs:
                   return;
                 }
 
-                // Tek parmak: Kenar kontrolü & İmleç hareketi
+                // Tek parmak: İmleç serbest hareketi (Kenar kontrolünü Kotlin Sanal Ekranı yapar)
                 if (e.touches.length === 1) {
                   const t = e.touches[0];
-                  checkAndApplyEdgeScroll(t.clientX, t.clientY);
-
-                  accX += (t.clientX - lastX) * 1.75;
-                  accY += (t.clientY - lastY) * 1.75;
+                  accX += (t.clientX - lastX) * 1.8;
+                  accY += (t.clientY - lastY) * 1.8;
                   lastX = t.clientX;
                   lastY = t.clientY;
 
@@ -1281,7 +1205,6 @@ jobs:
               }, { passive: false });
 
               surface.addEventListener('touchend', (e) => {
-                stopEdgeScroll();
                 if (!isTwoFinger && e.touches.length === 0) {
                   const dist = Math.hypot(lastX - startX, lastY - startY);
                   if (Date.now() - startTime < 220 && dist < 12) {
@@ -1292,10 +1215,10 @@ jobs:
               });
 
               surface.addEventListener('touchcancel', () => {
-                stopEdgeScroll();
                 isTwoFinger = false;
               });
 
+              // Yan Şerit Scroll
               let lastScrollY = 0;
               strip.addEventListener('touchstart', (e) => {
                 lastScrollY = e.touches[0].clientY;
@@ -1313,7 +1236,27 @@ jobs:
               }, { passive: false });
             })();
 
-            /* Bluetooth Tarama Modal Yönetimi */
+            // LG Sanal Ekran Kenarına Vurulduğunda Haptik ve Görsel Geri Bildirim
+            window.onEdgeScrollActive = function(dir) {
+              vibrate(10);
+              const badge = document.getElementById('edgeIndicator');
+              if (badge) {
+                const labels = {
+                  down: '▼ Aşağı Kaydırılıyor',
+                  up: '▲ Yukarı Kaydırılıyor',
+                  left: '◀ Sola Kaydırılıyor',
+                  right: '▶ Sağa Kaydırılıyor'
+                };
+                badge.textContent = labels[dir] || 'Kenar Kaydırma';
+                badge.classList.add('active');
+                clearTimeout(badgeTimer);
+                badgeTimer = setTimeout(() => {
+                  badge.classList.remove('active');
+                  badge.textContent = 'LG Kenar Kaydırma Aktif';
+                }, 450);
+              }
+            };
+
             function openScanner() {
               vibrate(20);
               const modal = document.getElementById('scanModal');
@@ -1328,7 +1271,6 @@ jobs:
               if (window.AndroidBridge) window.AndroidBridge.stopScan();
             }
 
-            // Dış alana tıklayınca modalleri kapat
             document.getElementById('scanModal').addEventListener('click', (e) => {
               if (e.target.id === 'scanModal') closeScanner();
             });
@@ -1461,6 +1403,16 @@ jobs:
               private var remX = 0f
               private var remY = 0f
 
+              // LG Sihirli Kumanda: Sanal Ekran Sınır & Duvara Çarpma Algoritması
+              private var virtX = 480f
+              private var virtY = 270f
+              private val VIRT_MAX_X = 960f
+              private val VIRT_MAX_Y = 540f
+              private var overflowScrollY = 0f
+              private var overflowScrollX = 0f
+              private val SCROLL_THRESHOLD = 18f
+              private var lastEdgeNotifyTime = 0L
+
               private var lastInputWasMouse = false
 
               private val executor = Executors.newSingleThreadScheduledExecutor()
@@ -1473,9 +1425,8 @@ jobs:
               private val REQ_PERMS_AUDIO = 1003
               private val REQ_ENABLE_BT = 1004
 
-              // HID Descriptor: Klavye (1), Consumer Control (2), Mouse + 2D Scroll Wheel & AC Pan (3)
+              // HID Descriptor: Klavye (1), Consumer (2), Mouse + 2D Scroll (3)
               private val HID_DESCRIPTOR = intArrayOf(
-                  // 1) Keyboard
                   0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x85, 0x01,
                   0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00,
                   0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02,
@@ -1483,19 +1434,20 @@ jobs:
                   0x75, 0x08, 0x15, 0x00, 0x25, 0x65, 0x05, 0x07,
                   0x19, 0x00, 0x29, 0x65, 0x81, 0x00, 0xC0,
 
-                  // 2) Consumer Control
                   0x05, 0x0C, 0x09, 0x01, 0xA1, 0x01, 0x85, 0x02,
                   0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
                   0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
                   0xC0,
 
-                  // 3) Mouse: Butonlar, X, Y, Dikey Wheel, Yatay Pan (AC Pan)
                   0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x85, 0x03,
                   0x09, 0x01, 0xA1, 0x00,
-                  0x05, 0x09, 0x19, 0x01, 0x29, 0x03, 0x15, 0x00, 0x25, 0x01, 0x95, 0x03, 0x75, 0x01, 0x81, 0x02,
+                  0x05, 0x09, 0x19, 0x01, 0x29, 0x03, 0x15, 0x00,
+                  0x25, 0x01, 0x95, 0x03, 0x75, 0x01, 0x81, 0x02,
                   0x95, 0x01, 0x75, 0x05, 0x81, 0x01,
-                  0x05, 0x01, 0x09, 0x30, 0x09, 0x31, 0x09, 0x38, 0x15, 0x81, 0x25, 0x7F, 0x75, 0x08, 0x95, 0x03, 0x81, 0x06,
-                  0x05, 0x0C, 0x0A, 0x38, 0x02, 0x15, 0x81, 0x25, 0x7F, 0x75, 0x08, 0x95, 0x01, 0x81, 0x06,
+                  0x05, 0x01, 0x09, 0x30, 0x09, 0x31, 0x09, 0x38,
+                  0x15, 0x81, 0x25, 0x7F, 0x75, 0x08, 0x95, 0x03, 0x81, 0x06,
+                  0x05, 0x0C, 0x0A, 0x38, 0x02, 0x15, 0x81, 0x25,
+                  0x7F, 0x75, 0x08, 0x95, 0x01, 0x81, 0x06,
                   0xC0, 0xC0
               ).map { it.toByte() }.toByteArray()
 
@@ -2032,18 +1984,131 @@ jobs:
                   }
               }
 
-              // 2D Mouse Raporu: buttons, dx, dy, wheelV (dikey), wheelH (yatay pan)
+              // LG Sihirli Kumanda Sanal Ekran Sınır Kontrolü
+              private fun notifyEdgeScroll(dir: String) {
+                  val now = System.currentTimeMillis()
+                  if (now - lastEdgeNotifyTime > 160) {
+                      lastEdgeNotifyTime = now
+                      runOnUiThread {
+                          webView.evaluateJavascript("if(window.onEdgeScrollActive) window.onEdgeScrollActive('$dir');", null)
+                      }
+                  }
+              }
+
+              private fun processVirtualCursor(dx: Int, dy: Int, wheelV: Int, wheelH: Int): IntArray {
+                  if (wheelV != 0 || wheelH != 0) {
+                      return intArrayOf(dx, dy, wheelV, wheelH)
+                  }
+
+                  var outDx = dx
+                  var outDy = dy
+                  var outWheelV = 0
+                  var outWheelH = 0
+
+                  // Dikey Eksen (Y) - Sayfanın sonuna ulaşıldığında kaydır
+                  val nextY = virtY + dy
+                  if (nextY >= VIRT_MAX_Y) {
+                      virtY = VIRT_MAX_Y
+                      if (dy > 0) {
+                          overflowScrollY += dy
+                          if (overflowScrollY >= SCROLL_THRESHOLD) {
+                              val steps = max(1, (overflowScrollY / SCROLL_THRESHOLD).toInt())
+                              overflowScrollY %= SCROLL_THRESHOLD
+                              outWheelV = -steps // Sayfayı aşağı kaydır
+                              outDy = 0          // İmleç duvarda kalsın
+                              notifyEdgeScroll("down")
+                          } else {
+                              outDy = 0
+                          }
+                      } else {
+                          overflowScrollY = 0f
+                      }
+                  } else if (nextY <= 0f) {
+                      virtY = 0f
+                      if (dy < 0) {
+                          overflowScrollY += dy
+                          if (overflowScrollY <= -SCROLL_THRESHOLD) {
+                              val steps = max(1, (-overflowScrollY / SCROLL_THRESHOLD).toInt())
+                              overflowScrollY %= SCROLL_THRESHOLD
+                              outWheelV = steps  // Sayfayı yukarı kaydır
+                              outDy = 0
+                              notifyEdgeScroll("up")
+                          } else {
+                              outDy = 0
+                          }
+                      } else {
+                          overflowScrollY = 0f
+                      }
+                  } else {
+                      virtY = nextY
+                      overflowScrollY = 0f
+                  }
+
+                  // Yatay Eksen (X) - Sağa veya sola ulaşıldığında kaydır (AC Pan)
+                  val nextX = virtX + dx
+                  if (nextX >= VIRT_MAX_X) {
+                      virtX = VIRT_MAX_X
+                      if (dx > 0) {
+                          overflowScrollX += dx
+                          if (overflowScrollX >= SCROLL_THRESHOLD) {
+                              val steps = max(1, (overflowScrollX / SCROLL_THRESHOLD).toInt())
+                              overflowScrollX %= SCROLL_THRESHOLD
+                              outWheelH = steps  // Sağa kaydır
+                              outDx = 0
+                              notifyEdgeScroll("right")
+                          } else {
+                              outDx = 0
+                          }
+                      } else {
+                          overflowScrollX = 0f
+                      }
+                  } else if (nextX <= 0f) {
+                      virtX = 0f
+                      if (dx < 0) {
+                          overflowScrollX += dx
+                          if (overflowScrollX <= -SCROLL_THRESHOLD) {
+                              val steps = max(1, (-overflowScrollX / SCROLL_THRESHOLD).toInt())
+                              overflowScrollX %= SCROLL_THRESHOLD
+                              outWheelH = -steps // Sola kaydır
+                              outDx = 0
+                              notifyEdgeScroll("left")
+                          } else {
+                              outDx = 0
+                          }
+                      } else {
+                          overflowScrollX = 0f
+                      }
+                  } else {
+                      virtX = nextX
+                      overflowScrollX = 0f
+                  }
+
+                  return intArrayOf(outDx, outDy, outWheelV, outWheelH)
+              }
+
               private fun sendMouseReport(buttons: Int, dx: Int, dy: Int, wheelV: Int = 0, wheelH: Int = 0) {
                   val dev = connectedDevice ?: return
                   lastInputWasMouse = true
+
+                  val processed = if (buttons == 0) {
+                      processVirtualCursor(dx, dy, wheelV, wheelH)
+                  } else {
+                      intArrayOf(dx, dy, wheelV, wheelH)
+                  }
+
+                  val finalDx = processed[0]
+                  val finalDy = processed[1]
+                  val finalWheelV = processed[2]
+                  val finalWheelH = processed[3]
+
                   executor.execute {
-                      val cx = max(-127, min(127, dx)).toByte()
-                      val cy = max(-127, min(127, dy)).toByte()
-                      val cwV = max(-127, min(127, wheelV)).toByte()
-                      val cwH = max(-127, min(127, wheelH)).toByte()
+                      val cx = max(-127, min(127, finalDx)).toByte()
+                      val cy = max(-127, min(127, finalDy)).toByte()
+                      val cwV = max(-127, min(127, finalWheelV)).toByte()
+                      val cwH = max(-127, min(127, finalWheelH)).toByte()
                       hidDevice?.sendReport(dev, 3, byteArrayOf(buttons.toByte(), cx, cy, cwV, cwH))
-                      if (buttons != 0) {
-                          Thread.sleep(24)
+                      if (buttons != 0 || cwV.toInt() != 0 || cwH.toInt() != 0) {
+                          Thread.sleep(18)
                           hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0, 0))
                       }
                   }
@@ -2108,6 +2173,14 @@ jobs:
 
                   @JavascriptInterface
                   fun releaseAllHid() = releaseAllHidChannels()
+
+                  @JavascriptInterface
+                  fun resetVirtualCursor() {
+                      virtX = 480f
+                      virtY = 270f
+                      overflowScrollX = 0f
+                      overflowScrollY = 0f
+                  }
 
                   @JavascriptInterface
                   fun sendBackKey() {
