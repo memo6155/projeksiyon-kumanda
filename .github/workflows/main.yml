@@ -5,9 +5,17 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: kumandarus-build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Dosyalari Cek
@@ -23,7 +31,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
-          cache-disabled: true
 
       - name: Kumandarus Projesini Olustur
         run: |
@@ -77,10 +84,11 @@ jobs:
 
               defaultConfig {
                   applicationId "com.kumandarus.app"
-                  minSdk 26
+                  // BluetoothHidDevice API 28 ile geldi; altinda uygulama coker.
+                  minSdk 28
                   targetSdk 34
-                  versionCode 14
-                  versionName "14.0"
+                  versionCode 15
+                  versionName "15.0"
               }
 
               compileOptions {
@@ -178,19 +186,27 @@ jobs:
 
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools">
 
-              <uses-permission android:name="android.permission.BLUETOOTH" />
-              <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-              <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+              <!-- Android 11 ve alti -->
+              <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+              <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />
+              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="30" />
+
+              <!-- Android 12 ve ustu -->
+              <uses-permission
+                  android:name="android.permission.BLUETOOTH_SCAN"
+                  android:usesPermissionFlags="neverForLocation"
+                  tools:targetApi="s" />
               <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
               <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-              <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-              <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
               <uses-permission android:name="android.permission.VIBRATE" />
               <uses-permission android:name="android.permission.TRANSMIT_IR" />
 
+              <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
               <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
               <uses-feature android:name="android.hardware.consumerir" android:required="false" />
 
@@ -220,7 +236,7 @@ jobs:
           <html lang="tr">
           <head>
           <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
           <title>kumandarus</title>
           <style>
             * {
@@ -232,11 +248,13 @@ jobs:
               -webkit-touch-callout: none;
               -webkit-tap-highlight-color: transparent;
             }
+            html, body { height: 100%; }
             body {
               font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
               background: radial-gradient(circle at 50% 0%, #172033 0%, #0b0e14 70%);
               color: #f1f5f9;
               height: 100vh;
+              height: 100dvh;
               display: flex;
               flex-direction: column;
               justify-content: space-between;
@@ -521,6 +539,10 @@ jobs:
               touch-action: none;
               overflow: hidden;
             }
+            .touch-surface.dragging {
+              border-color: #38bdf8;
+              box-shadow: inset 0 0 24px rgba(56, 189, 248, 0.22);
+            }
             .edge-status-badge {
               position: absolute;
               top: 10px;
@@ -665,6 +687,7 @@ jobs:
               display: flex;
               flex-direction: column;
             }
+            .modal.scroll { overflow-y: auto; display: block; }
             .modal-head {
               display: flex;
               justify-content: space-between;
@@ -690,6 +713,19 @@ jobs:
               color: #93c5fd;
               margin-bottom: 14px;
               line-height: 1.4;
+            }
+            .sec-title {
+              font-size: 11px;
+              font-weight: 700;
+              color: #64748b;
+              letter-spacing: 0.5px;
+              margin: 8px 0 6px;
+            }
+            .grid3 {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 8px;
+              margin-bottom: 6px;
             }
             .slider-group {
               margin-bottom: 16px;
@@ -742,27 +778,33 @@ jobs:
               color: #38bdf8;
               font-weight: 700;
             }
+            .empty-note {
+              color: #64748b;
+              font-size: 12px;
+              text-align: center;
+              margin-top: 34px;
+            }
           </style>
           </head>
           <body>
 
             <!-- Üst Bar -->
             <div class="header">
-              <button class="icon-pill power" onclick="triggerHybridPower()" title="Güç">
+              <button class="icon-pill power" onclick="triggerHybridPower()" title="Güç" aria-label="Güç">
                 <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
               </button>
 
-              <button class="icon-pill adjust-btn" onclick="openAdjustModal()" title="Ekran Filtresi & Parlaklık">
+              <button class="icon-pill adjust-btn" onclick="openAdjustModal()" title="Ekran Filtresi & Parlaklık" aria-label="Ekran filtresi">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
                 <span>Filtre</span>
               </button>
 
-              <div class="status-pill" onclick="reconnectOrScan()">
+              <div class="status-pill" onclick="reconnectOrScan()" role="button" aria-label="Bağlantı durumu">
                 <div id="statusDot" class="dot"></div>
                 <span id="statusText">Bağlı Değil</span>
               </div>
 
-              <button id="btnScanner" class="icon-pill" onclick="openScanner()" title="Bluetooth Cihazlar">
+              <button id="btnScanner" class="icon-pill" onclick="openScanner()" title="Bluetooth Cihazlar" aria-label="Bluetooth cihazlar">
                 <svg viewBox="0 0 24 24"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>
               </button>
             </div>
@@ -774,6 +816,7 @@ jobs:
                 <span id="gyroText">Sihirli İmleç (Jiroskop): Kapalı</span>
               </button>
               <button id="sensBtn" class="sens-pill" onclick="cycleSensitivity()">Hız: Orta</button>
+              <button class="sens-pill" onclick="openMoreModal()" aria-label="Medya ve rakam tuşları">Tuşlar</button>
             </div>
 
             <!-- Orta Alan -->
@@ -782,20 +825,20 @@ jobs:
               <!-- KUMANDA MODU -->
               <div id="panelRemote" class="stage-panel active">
                 <div id="dpadRing" class="dpad-ring">
-                  <button class="d-btn d-up" data-hold-key="82" title="Yukarı">
+                  <button class="d-btn d-up" data-hold-key="82" title="Yukarı" aria-label="Yukarı">
                     <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
                   </button>
-                  <button class="d-btn d-left" data-hold-key="80" title="Sol">
+                  <button class="d-btn d-left" data-hold-key="80" title="Sol" aria-label="Sol">
                     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
                   </button>
-                  <button id="okButton" class="d-ok" title="Tamam">
+                  <button id="okButton" class="d-ok" title="Tamam" aria-label="Tamam">
                     <span id="okMainLabel">OK</span>
                     <small id="okSubLabel"></small>
                   </button>
-                  <button class="d-btn d-right" data-hold-key="79" title="Sağ">
+                  <button class="d-btn d-right" data-hold-key="79" title="Sağ" aria-label="Sağ">
                     <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
                   </button>
-                  <button class="d-btn d-down" data-hold-key="81" title="Aşağı">
+                  <button class="d-btn d-down" data-hold-key="81" title="Aşağı" aria-label="Aşağı">
                     <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
                   </button>
                 </div>
@@ -827,13 +870,13 @@ jobs:
                 </div>
               </div>
 
-              <!-- TOUCHPAD MODU (LG Tarzı Otomatik Kenar Algılayıcı) -->
+              <!-- TOUCHPAD MODU -->
               <div id="panelTouch" class="stage-panel">
                 <div class="touchpad-wrap">
                   <div id="touchSurface" class="touch-surface">
                     <div id="edgeIndicator" class="edge-status-badge">LG Kenar Kaydırma Aktif</div>
                     <svg viewBox="0 0 24 24" style="width:28px;height:28px;opacity:0.45;"><rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="7" x2="12" y2="11"/></svg>
-                    <span>İmleci yönetin • Tıklamak için dokunun<br>İmleç TV kenarına ulaştığında otomatik kaydırır</span>
+                    <span>İmleci yönetin • Tıklamak için dokunun<br>İki parmakla dokun: Sağ tık • Basılı tut: Sürükle<br>İmleç kenara dayanınca otomatik kaydırır</span>
                   </div>
                   <div id="scrollStrip" class="scroll-bar">
                     <span>▲</span>
@@ -856,7 +899,7 @@ jobs:
                 Kumanda
               </button>
 
-              <button class="mic-center-btn" onclick="startVoice()" title="Sesli Yaz">
+              <button class="mic-center-btn" onclick="startVoice()" title="Sesli Yaz" aria-label="Sesli yaz">
                 <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
               </button>
 
@@ -869,7 +912,7 @@ jobs:
             <!-- Alt Klavye Çubuğu -->
             <div class="keyboard-bar">
               <input id="manualText" class="kb-input" type="text" placeholder="Metin yazın veya mikrofona dokunun..." />
-              <button class="kb-btn" onclick="tapKey(42)" title="Sil">⌫</button>
+              <button class="kb-btn" onclick="tapKey(42)" title="Sil" aria-label="Sil">⌫</button>
               <button class="kb-btn send" onclick="sendManualText()">Gönder</button>
             </div>
 
@@ -878,7 +921,7 @@ jobs:
               <div class="modal">
                 <div class="modal-head">
                   <span class="modal-title">Bluetooth Cihaz Seçin</span>
-                  <button class="close-x" onclick="closeScanner()">✕</button>
+                  <button class="close-x" onclick="closeScanner()" aria-label="Kapat">✕</button>
                 </div>
                 <div id="scanStatus" class="scan-info" style="margin-bottom:8px;">Cihazlar aranıyor...</div>
                 <div id="deviceList" class="dev-list"></div>
@@ -891,10 +934,10 @@ jobs:
               <div class="modal">
                 <div class="modal-head">
                   <span class="modal-title">Ekran Parlaklık & Kontrast Filtresi</span>
-                  <button class="close-x" onclick="closeAdjustModal()">✕</button>
+                  <button class="close-x" onclick="closeAdjustModal()" aria-label="Kapat">✕</button>
                 </div>
                 <div class="scan-info">
-                  Projeksiyon ve ekran için filtre katmanı uygulayın:
+                  Telefon ekranına filtre katmanı uygulayın:
                 </div>
 
                 <div class="slider-group">
@@ -917,6 +960,20 @@ jobs:
               </div>
             </div>
 
+            <!-- Medya & Rakam Modal -->
+            <div id="moreModal" class="modal-backdrop">
+              <div class="modal scroll">
+                <div class="modal-head">
+                  <span class="modal-title">Medya & Rakam Tuşları</span>
+                  <button class="close-x" onclick="closeMoreModal()" aria-label="Kapat">✕</button>
+                </div>
+                <div class="sec-title">MEDYA</div>
+                <div id="mediaGrid" class="grid3"></div>
+                <div class="sec-title">RAKAMLAR</div>
+                <div id="numGrid" class="grid3"></div>
+              </div>
+            </div>
+
           <script>
             const foundDevices = {};
             let isConnected = false;
@@ -931,8 +988,23 @@ jobs:
             ];
             let sensIndex = 1;
 
+            /* Kalıcı ayarlar */
+            function saveSetting(k, v) {
+              try { localStorage.setItem('kr_' + k, String(v)); } catch (e) {}
+            }
+            function loadSetting(k, d) {
+              try {
+                const v = localStorage.getItem('kr_' + k);
+                return v === null ? d : v;
+              } catch (e) { return d; }
+            }
+
             function vibrate(ms = 14) {
-              if (navigator.vibrate) navigator.vibrate(ms);
+              if (window.AndroidBridge && typeof window.AndroidBridge.vibrate === 'function') {
+                window.AndroidBridge.vibrate(ms);
+              } else if (navigator.vibrate) {
+                navigator.vibrate(ms);
+              }
             }
 
             function switchMode(mode) {
@@ -941,11 +1013,13 @@ jobs:
               document.getElementById('tabTouch').classList.toggle('active', mode === 'touch');
               document.getElementById('panelRemote').classList.toggle('active', mode === 'remote');
               document.getElementById('panelTouch').classList.toggle('active', mode === 'touch');
+              saveSetting('mode', mode);
 
               if (mode === 'remote') {
                 if (gyroEnabled) {
                   gyroEnabled = false;
                   updateGyroUi();
+                  if (window.AndroidBridge) window.AndroidBridge.setGyroEnabled(false);
                 }
               }
               if (window.AndroidBridge) {
@@ -993,14 +1067,19 @@ jobs:
               sub.textContent = gyroEnabled ? 'SOL TIK' : '';
             }
 
-            function cycleSensitivity() {
-              sensIndex = (sensIndex + 1) % sensLevels.length;
+            function applySensitivity(notify) {
               const item = sensLevels[sensIndex];
-              vibrate(15);
               document.getElementById('sensBtn').textContent = 'Hız: ' + item.label;
-              if (window.AndroidBridge) {
+              if (notify && window.AndroidBridge) {
                 window.AndroidBridge.setGyroSensitivity(item.val);
               }
+            }
+
+            function cycleSensitivity() {
+              sensIndex = (sensIndex + 1) % sensLevels.length;
+              vibrate(15);
+              applySensitivity(true);
+              saveSetting('sens', sensIndex);
             }
 
             function tapKey(code) {
@@ -1053,12 +1132,23 @@ jobs:
               document.getElementById('adjustModal').classList.remove('open');
             }
 
+            function openMoreModal() {
+              vibrate();
+              document.getElementById('moreModal').classList.add('open');
+            }
+
+            function closeMoreModal() {
+              document.getElementById('moreModal').classList.remove('open');
+            }
+
             function applyFilters() {
               const b = document.getElementById('brightRange').value;
               const c = document.getElementById('contrastRange').value;
               document.getElementById('brightVal').textContent = b + '%';
               document.getElementById('contrastVal').textContent = c + '%';
               document.body.style.filter = `brightness(${b}%) contrast(${c}%)`;
+              saveSetting('bright', b);
+              saveSetting('contrast', c);
             }
 
             function resetFilters() {
@@ -1067,6 +1157,18 @@ jobs:
               document.getElementById('contrastRange').value = 100;
               applyFilters();
             }
+
+            /* Android geri tuşu: açık bir modal varsa onu kapat */
+            window.handleBack = function() {
+              const open = document.querySelector('.modal-backdrop.open');
+              if (!open) return false;
+              if (open.id === 'scanModal') {
+                closeScanner();
+              } else {
+                open.classList.remove('open');
+              }
+              return true;
+            };
 
             function bindButtonPress(btn, onDown, onUp) {
               let active = false;
@@ -1138,14 +1240,58 @@ jobs:
               });
             })();
 
-            /* TOUCHPAD: Serbest Dokunmatik & Çift Parmak */
+            /* Medya ve rakam tuşları (modal içi) */
+            (function buildMoreKeys() {
+              const media = [
+                ['⏮ Önceki', 182], ['⏯ Oynat', 205], ['⏭ Sonraki', 181],
+                ['⏪ Geri Sar', 180], ['⏹ Dur', 183], ['⏩ İleri Sar', 179],
+                ['CH −', 157], ['Rehber', 141], ['CH +', 156]
+              ];
+              const mediaGrid = document.getElementById('mediaGrid');
+              media.forEach(([label, usage]) => {
+                const b = document.createElement('button');
+                b.className = 'soft-btn';
+                b.textContent = label;
+                b.onclick = () => tapConsumer(usage);
+                mediaGrid.appendChild(b);
+              });
+
+              const nums = [
+                ['1', 30], ['2', 31], ['3', 32],
+                ['4', 33], ['5', 34], ['6', 35],
+                ['7', 36], ['8', 37], ['9', 38],
+                ['⌫', 42], ['0', 39], ['↵', 40]
+              ];
+              const numGrid = document.getElementById('numGrid');
+              nums.forEach(([label, code]) => {
+                const b = document.createElement('button');
+                b.className = 'soft-btn';
+                b.textContent = label;
+                b.onclick = () => tapKey(code);
+                numGrid.appendChild(b);
+              });
+            })();
+
+            /* TOUCHPAD: serbest dokunmatik, iki parmak kaydırma / sağ tık, basılı tutup sürükleme */
             (function initTouchpad() {
               const surface = document.getElementById('touchSurface');
               const strip = document.getElementById('scrollStrip');
               let lastX = 0, lastY = 0, startX = 0, startY = 0, startTime = 0;
               let accX = 0, accY = 0, moveTimer = null;
-              let isTwoFinger = false;
+              let isTwoFinger = false, twoStart = 0, twoDist = 0;
               let lastTwoX = 0, lastTwoY = 0;
+              let holdTimer = null, dragging = false, moved = false;
+
+              function cancelHold() {
+                if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+              }
+              function endDrag() {
+                if (dragging) {
+                  dragging = false;
+                  surface.classList.remove('dragging');
+                  if (window.AndroidBridge) window.AndroidBridge.mouseHold(false);
+                }
+              }
 
               surface.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
@@ -1154,8 +1300,24 @@ jobs:
                   lastX = startX = t.clientX;
                   lastY = startY = t.clientY;
                   startTime = Date.now();
+                  moved = false;
+                  accX = 0; accY = 0;
+                  cancelHold();
+                  holdTimer = setTimeout(() => {
+                    holdTimer = null;
+                    if (!moved && !isTwoFinger) {
+                      dragging = true;
+                      surface.classList.add('dragging');
+                      vibrate(30);
+                      if (window.AndroidBridge) window.AndroidBridge.mouseHold(true);
+                    }
+                  }, 450);
                 } else if (e.touches.length === 2) {
+                  cancelHold();
+                  endDrag();
                   isTwoFinger = true;
+                  twoStart = Date.now();
+                  twoDist = 0;
                   lastTwoX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                   lastTwoY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 }
@@ -1164,7 +1326,6 @@ jobs:
               surface.addEventListener('touchmove', (e) => {
                 e.preventDefault();
 
-                // Çift parmakla manuel kaydırma
                 if (e.touches.length === 2) {
                   const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                   const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
@@ -1172,6 +1333,7 @@ jobs:
                   const dY = midY - lastTwoY;
                   lastTwoX = midX;
                   lastTwoY = midY;
+                  twoDist += Math.hypot(dX, dY);
 
                   let wheelV = 0, wheelH = 0;
                   if (Math.abs(dY) > 2) wheelV = dY > 0 ? 1 : -1;
@@ -1183,9 +1345,12 @@ jobs:
                   return;
                 }
 
-                // Tek parmak: İmleç serbest hareketi (Kenar kontrolünü Kotlin Sanal Ekranı yapar)
-                if (e.touches.length === 1) {
+                if (e.touches.length === 1 && !isTwoFinger) {
                   const t = e.touches[0];
+                  if (!moved && Math.hypot(t.clientX - startX, t.clientY - startY) > 10) {
+                    moved = true;
+                    cancelHold();
+                  }
                   accX += (t.clientX - lastX) * 1.8;
                   accY += (t.clientY - lastY) * 1.8;
                   lastX = t.clientX;
@@ -1205,20 +1370,30 @@ jobs:
               }, { passive: false });
 
               surface.addEventListener('touchend', (e) => {
-                if (!isTwoFinger && e.touches.length === 0) {
+                if (e.touches.length !== 0) return;
+                cancelHold();
+                if (dragging) {
+                  endDrag();
+                } else if (isTwoFinger) {
+                  if (twoDist < 10 && Date.now() - twoStart < 260) {
+                    clickMouse(2);
+                  }
+                } else {
                   const dist = Math.hypot(lastX - startX, lastY - startY);
                   if (Date.now() - startTime < 220 && dist < 12) {
                     clickMouse(1);
                   }
                 }
-                if (e.touches.length === 0) isTwoFinger = false;
-              });
-
-              surface.addEventListener('touchcancel', () => {
                 isTwoFinger = false;
               });
 
-              // Yan Şerit Scroll
+              surface.addEventListener('touchcancel', () => {
+                cancelHold();
+                endDrag();
+                isTwoFinger = false;
+              });
+
+              // Yan şerit kaydırma: parmak yukarı = içerik yukarı (sayfa aşağı kayar)
               let lastScrollY = 0;
               strip.addEventListener('touchstart', (e) => {
                 lastScrollY = e.touches[0].clientY;
@@ -1229,14 +1404,14 @@ jobs:
                 const y = e.touches[0].clientY;
                 const diff = lastScrollY - y;
                 if (Math.abs(diff) > 10) {
-                  const wheel = diff > 0 ? 1 : -1;
+                  const wheel = diff > 0 ? -1 : 1;
                   lastScrollY = y;
                   if (window.AndroidBridge) window.AndroidBridge.scrollMouse(wheel, 0);
                 }
               }, { passive: false });
             })();
 
-            // LG Sanal Ekran Kenarına Vurulduğunda Haptik ve Görsel Geri Bildirim
+            // Sanal ekran kenarına vurulduğunda haptik ve görsel geri bildirim
             window.onEdgeScrollActive = function(dir) {
               vibrate(10);
               const badge = document.getElementById('edgeIndicator');
@@ -1277,6 +1452,9 @@ jobs:
             document.getElementById('adjustModal').addEventListener('click', (e) => {
               if (e.target.id === 'adjustModal') closeAdjustModal();
             });
+            document.getElementById('moreModal').addEventListener('click', (e) => {
+              if (e.target.id === 'moreModal') closeMoreModal();
+            });
 
             function rescan() {
               for (const k in foundDevices) delete foundDevices[k];
@@ -1285,14 +1463,18 @@ jobs:
               if (window.AndroidBridge) window.AndroidBridge.startScan();
             }
 
+            // Cihaz adları dışarıdan geldiği için ASLA innerHTML ile yazılmaz (XSS koruması).
             function renderDeviceList() {
               const container = document.getElementById('deviceList');
+              container.textContent = '';
               const keys = Object.keys(foundDevices);
               if (keys.length === 0) {
-                container.innerHTML = '<div style="color:#64748b;font-size:12px;text-align:center;margin-top:34px;">Cihazlar taranıyor veya eşleşmiş cihaz aranıyor...</div>';
+                const empty = document.createElement('div');
+                empty.className = 'empty-note';
+                empty.textContent = 'Cihazlar taranıyor veya eşleşmiş cihaz aranıyor...';
+                container.appendChild(empty);
                 return;
               }
-              container.innerHTML = '';
               keys.forEach((addr) => {
                 const d = foundDevices[addr];
                 const item = document.createElement('div');
@@ -1303,13 +1485,23 @@ jobs:
                   document.getElementById('scanStatus').textContent = d.name + ' bağlanıyor...';
                   if (window.AndroidBridge) window.AndroidBridge.connectDevice(d.address);
                 };
-                item.innerHTML = `
-                  <div>
-                    <div class="dev-title">${d.name}</div>
-                    <div class="dev-mac">${d.address}</div>
-                  </div>
-                  <div class="dev-tag">${d.isPaired ? 'Kayıtlı' : 'Yeni'}</div>
-                `;
+
+                const left = document.createElement('div');
+                const title = document.createElement('div');
+                title.className = 'dev-title';
+                title.textContent = d.name;
+                const mac = document.createElement('div');
+                mac.className = 'dev-mac';
+                mac.textContent = d.address;
+                left.appendChild(title);
+                left.appendChild(mac);
+
+                const tag = document.createElement('div');
+                tag.className = 'dev-tag';
+                tag.textContent = d.isPaired ? 'Kayıtlı' : 'Yeni';
+
+                item.appendChild(left);
+                item.appendChild(tag);
                 container.appendChild(item);
               });
             }
@@ -1350,6 +1542,21 @@ jobs:
             window.onNativeSpeechResult = function(text) {
               document.getElementById('manualText').value = text;
             };
+
+            /* Kayıtlı ayarları geri yükle */
+            (function restoreSettings() {
+              const s = parseInt(loadSetting('sens', '1'), 10);
+              sensIndex = (s >= 0 && s < sensLevels.length) ? s : 1;
+              applySensitivity(true);
+
+              const b = parseInt(loadSetting('bright', '100'), 10);
+              const c = parseInt(loadSetting('contrast', '100'), 10);
+              document.getElementById('brightRange').value = (b >= 70 && b <= 150) ? b : 100;
+              document.getElementById('contrastRange').value = (c >= 70 && c <= 160) ? c : 100;
+              applyFilters();
+
+              if (loadSetting('mode', 'remote') === 'touch') switchMode('touch');
+            })();
           </script>
           </body>
           </html>
@@ -1364,6 +1571,7 @@ jobs:
           import android.bluetooth.*
           import android.content.*
           import android.content.pm.PackageManager
+          import android.graphics.Color
           import android.hardware.ConsumerIrManager
           import android.hardware.Sensor
           import android.hardware.SensorEvent
@@ -1374,9 +1582,13 @@ jobs:
           import android.os.Bundle
           import android.os.Handler
           import android.os.Looper
+          import android.os.VibrationEffect
+          import android.os.Vibrator
           import android.speech.RecognizerIntent
+          import android.view.WindowManager
           import android.webkit.*
           import android.widget.Toast
+          import org.json.JSONObject
           import java.util.concurrent.Executors
           import java.util.concurrent.ScheduledFuture
           import java.util.concurrent.TimeUnit
@@ -1392,37 +1604,44 @@ jobs:
               private lateinit var prefs: SharedPreferences
               private var btAdapter: BluetoothAdapter? = null
               private var hidDevice: BluetoothHidDevice? = null
-              private var connectedDevice: BluetoothDevice? = null
+              @Volatile private var connectedDevice: BluetoothDevice? = null
               private var pendingDevice: BluetoothDevice? = null
               private var irManager: ConsumerIrManager? = null
+              private var vibrator: Vibrator? = null
 
               private var sensorManager: SensorManager? = null
               private var gyroSensor: Sensor? = null
-              private var isGyroActive = false
-              private var gyroSensitivity = 22.0f
+              @Volatile private var isGyroActive = false
+              @Volatile private var gyroSensitivity = 22.0f
               private var remX = 0f
               private var remY = 0f
+              private var lastGyroTs = 0L
 
-              // LG Sihirli Kumanda: Sanal Ekran Sınır & Duvara Çarpma Algoritması
-              private var virtX = 480f
-              private var virtY = 270f
-              private val VIRT_MAX_X = 960f
-              private val VIRT_MAX_Y = 540f
-              private var overflowScrollY = 0f
-              private var overflowScrollX = 0f
+              // LG Sihirli Kumanda: Sanal ekran sinir algoritmasi.
+              // Imlec hareketi her zaman TV'ye iletilir (TV kendi kenarinda kirpar);
+              // sanal alan TV'den buyuk tutulur, boylece gercek imlec kenara once ulasir
+              // ve kenara dayanmaya devam edilince kaydirma tetiklenir.
+              private class Axis(var pos: Float, val max: Float) {
+                  var overflow = 0f
+              }
+              private val cursorLock = Any()
+              private val axisX = Axis(960f, 1920f)
+              private val axisY = Axis(540f, 1080f)
               private val SCROLL_THRESHOLD = 18f
               private var lastEdgeNotifyTime = 0L
 
-              private var lastInputWasMouse = false
+              @Volatile private var lastInputWasMouse = false
+              @Volatile private var heldButtons = 0
 
               private val executor = Executors.newSingleThreadScheduledExecutor()
+              // HID callback'leri ayri thread'de calissin (executor'daki sleep'ler callback'leri bekletmesin)
+              private val cbExecutor = Executors.newSingleThreadExecutor()
               private var holdRepeatTask: ScheduledFuture<*>? = null
               private val mainHandler = Handler(Looper.getMainLooper())
-              private var isAppInForeground = false
+              @Volatile private var isAppInForeground = false
 
               private val REQ_SPEECH = 1001
               private val REQ_PERMS_BT = 1002
-              private val REQ_PERMS_AUDIO = 1003
               private val REQ_ENABLE_BT = 1004
 
               // HID Descriptor: Klavye (1), Consumer (2), Mouse + 2D Scroll (3)
@@ -1451,11 +1670,23 @@ jobs:
                   0xC0, 0xC0
               ).map { it.toByte() }.toByteArray()
 
+              // JS tarafina guvenli string gecirmek icin (tirnak, ters bolu, satir sonu vb. kacirilir)
+              private fun jsStr(s: String?): String = JSONObject.quote(s ?: "")
+
+              @Suppress("DEPRECATION")
+              private fun Intent.btDevice(): BluetoothDevice? {
+                  return if (Build.VERSION.SDK_INT >= 33) {
+                      getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+                  } else {
+                      getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                  }
+              }
+
               private val btReceiver = object : BroadcastReceiver() {
                   override fun onReceive(context: Context?, intent: Intent?) {
                       when (intent?.action) {
                           BluetoothDevice.ACTION_FOUND -> {
-                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val device: BluetoothDevice? = intent.btDevice()
                               val rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE).toInt()
                               val name = device?.name ?: intent.getStringExtra(BluetoothDevice.EXTRA_NAME)
                               if (device != null && !name.isNullOrBlank()) {
@@ -1468,7 +1699,7 @@ jobs:
                               }
                           }
                           BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val device: BluetoothDevice? = intent.btDevice()
                               val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
                               if (device != null && device.address == pendingDevice?.address && state == BluetoothDevice.BOND_BONDED) {
                                   pendingDevice = null
@@ -1486,9 +1717,17 @@ jobs:
                   webView = WebView(this)
                   setContentView(webView)
 
+                  // Acilista beyaz parlama olmasin
+                  val bg = Color.parseColor("#0B0E14")
+                  webView.setBackgroundColor(bg)
+                  window.decorView.setBackgroundColor(bg)
+                  window.statusBarColor = bg
+                  window.navigationBarColor = bg
+
                   val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
                   btAdapter = btManager?.adapter
                   irManager = getSystemService(Context.CONSUMER_IR_SERVICE) as? ConsumerIrManager
+                  vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
 
                   sensorManager = getSystemService(Context.SENSOR_SERVICE) as? SensorManager
                   gyroSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
@@ -1498,13 +1737,17 @@ jobs:
                       addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
                       addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
                   }
-                  registerReceiver(btReceiver, filter)
+                  if (Build.VERSION.SDK_INT >= 33) {
+                      registerReceiver(btReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+                  } else {
+                      registerReceiver(btReceiver, filter)
+                  }
 
-                  webView.clearCache(true)
                   webView.settings.apply {
                       javaScriptEnabled = true
                       domStorageEnabled = true
-                      cacheMode = WebSettings.LOAD_NO_CACHE
+                      allowFileAccess = true
+                      allowContentAccess = false
                   }
                   webView.addJavascriptInterface(AndroidBridge(), "AndroidBridge")
                   webView.webViewClient = object : WebViewClient() {
@@ -1530,14 +1773,44 @@ jobs:
                   isAppInForeground = false
                   releaseAllHidChannels()
                   registerGyroscope(false)
+                  window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
               }
 
               override fun onDestroy() {
                   super.onDestroy()
+                  isAppInForeground = false
                   releaseAllHidChannels()
                   registerGyroscope(false)
                   try { unregisterReceiver(btReceiver) } catch (_: Exception) {}
                   try { btAdapter?.cancelDiscovery() } catch (_: Exception) {}
+
+                  // Bekleyen "birakma" raporlari gittikten sonra HID kaydini kapat ve proxy'yi birak
+                  val proxy = hidDevice
+                  val adapter = btAdapter
+                  hidDevice = null
+                  connectedDevice = null
+                  executor.execute {
+                      try { proxy?.unregisterApp() } catch (_: Exception) {}
+                      try {
+                          if (proxy != null) adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, proxy)
+                      } catch (_: Exception) {}
+                  }
+                  executor.shutdown()
+              }
+
+              // Geri tusu: acik bir modal varsa once onu kapat
+              @Suppress("OVERRIDE_DEPRECATION")
+              override fun onBackPressed() {
+                  webView.evaluateJavascript("(window.handleBack ? window.handleBack() : false)") { result ->
+                      if (result != "true") finish()
+                  }
+              }
+
+              private fun nativeVibrate(ms: Int) {
+                  val v = vibrator ?: return
+                  try {
+                      v.vibrate(VibrationEffect.createOneShot(ms.coerceIn(1, 100).toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
+                  } catch (_: Exception) {}
               }
 
               private fun buildRedmiSafeNecPattern(b0: Int, b1: Int, cmd: Int): IntArray {
@@ -1557,6 +1830,8 @@ jobs:
                   pattern[67] = 20000
                   return pattern
               }
+
+              private fun hasIrEmitter(): Boolean = irManager?.hasIrEmitter() == true
 
               private fun transmitNec(b0: Int, b1: Int, cmd: Int) {
                   val ir = irManager
@@ -1579,6 +1854,7 @@ jobs:
                   if (enable) {
                       remX = 0f
                       remY = 0f
+                      lastGyroTs = 0L
                       sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME)
                   } else {
                       sm.unregisterListener(this)
@@ -1590,6 +1866,12 @@ jobs:
                   if (!isGyroActive || event?.sensor?.type != Sensor.TYPE_GYROSCOPE) return
                   if (connectedDevice == null) return
 
+                  // Hiz, ornekleme frekansindan bagimsiz olsun: dt ile olceklendir
+                  val dt = if (lastGyroTs == 0L) 0.02f
+                           else ((event.timestamp - lastGyroTs) / 1_000_000_000f).coerceIn(0.001f, 0.05f)
+                  lastGyroTs = event.timestamp
+                  val scale = gyroSensitivity * 50f * dt   // 50 Hz'de eski davranisla ayni
+
                   val rotX = event.values[0]
                   val rotZ = event.values[2]
 
@@ -1598,8 +1880,8 @@ jobs:
                   val cleanX = if (abs(rotX) < deadzone) 0f else rotX
                   if (cleanZ == 0f && cleanX == 0f) return
 
-                  val rawDx = (-cleanZ * gyroSensitivity) + remX
-                  val rawDy = (-cleanX * gyroSensitivity) + remY
+                  val rawDx = (-cleanZ * scale) + remX
+                  val rawDy = (-cleanX * scale) + remY
 
                   val dx = rawDx.roundToInt()
                   val dy = rawDy.roundToInt()
@@ -1623,8 +1905,6 @@ jobs:
                       )
                   } else {
                       listOf(
-                          Manifest.permission.BLUETOOTH,
-                          Manifest.permission.BLUETOOTH_ADMIN,
                           Manifest.permission.ACCESS_FINE_LOCATION,
                           Manifest.permission.ACCESS_COARSE_LOCATION
                       )
@@ -1652,14 +1932,8 @@ jobs:
 
               override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
                   super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-                  if (requestCode == REQ_PERMS_BT) {
-                      if (hasBluetoothPermissions()) {
-                          ensureHidAndAutoConnect()
-                      }
-                  } else if (requestCode == REQ_PERMS_AUDIO) {
-                      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                          startNativeVoiceInput()
-                      }
+                  if (requestCode == REQ_PERMS_BT && hasBluetoothPermissions()) {
+                      ensureHidAndAutoConnect()
                   }
               }
 
@@ -1713,12 +1987,17 @@ jobs:
                       BluetoothHidDevice.SUBCLASS1_COMBO,
                       HID_DESCRIPTOR
                   )
-                  hidDevice?.registerApp(sdp, null, null, executor, object : BluetoothHidDevice.Callback() {
+                  hidDevice?.registerApp(sdp, null, null, cbExecutor, object : BluetoothHidDevice.Callback() {
                       override fun onAppStatusChanged(pluggedDevice: BluetoothDevice?, registered: Boolean) {
                           if (registered) {
                               autoReconnectToSaved(pluggedDevice)
                           } else {
+                              // Proxy'yi sizdirmadan birak, sonra yeniden kurulumu dene
+                              val old = hidDevice
                               hidDevice = null
+                              try {
+                                  if (old != null) btAdapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, old)
+                              } catch (_: Exception) {}
                               if (isAppInForeground) {
                                   mainHandler.postDelayed({ ensureHidAndAutoConnect() }, 800)
                               }
@@ -1784,20 +2063,18 @@ jobs:
               }
 
               private fun notifyWebStatus(state: String, name: String) {
-                  val safeName = name.replace("'", "\\'")
                   runOnUiThread {
                       webView.evaluateJavascript(
-                          "if(window.onBluetoothStateChanged) window.onBluetoothStateChanged('$state', '$safeName');",
+                          "if(window.onBluetoothStateChanged) window.onBluetoothStateChanged(${jsStr(state)}, ${jsStr(name)});",
                           null
                       )
                   }
               }
 
               private fun sendDeviceToWeb(address: String, name: String, rssi: Int, isPaired: Boolean) {
-                  val safeName = name.replace("'", "\\'")
                   runOnUiThread {
                       webView.evaluateJavascript(
-                          "if(window.onDeviceFound) window.onDeviceFound('$address', '$safeName', $rssi, $isPaired);",
+                          "if(window.onDeviceFound) window.onDeviceFound(${jsStr(address)}, ${jsStr(name)}, $rssi, $isPaired);",
                           null
                       )
                   }
@@ -1845,7 +2122,8 @@ jobs:
                   runOnUiThread {
                       val adapter = btAdapter ?: return@runOnUiThread
                       try { adapter.cancelDiscovery() } catch (_: Exception) {}
-                      val device = adapter.getRemoteDevice(address) ?: return@runOnUiThread
+                      val device = try { adapter.getRemoteDevice(address) } catch (_: Exception) { null }
+                          ?: return@runOnUiThread
                       saveLastDevice(device)
 
                       if (hidDevice == null) {
@@ -1864,12 +2142,9 @@ jobs:
                   }
               }
 
+              // RecognizerIntent kendi aktivitesini acar; RECORD_AUDIO izni gerekmez.
               private fun startNativeVoiceInput() {
                   runOnUiThread {
-                      if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                          requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQ_PERMS_AUDIO)
-                          return@runOnUiThread
-                      }
                       try {
                           val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                               putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -1894,8 +2169,7 @@ jobs:
                           }
                           sendTextViaHid(spoken)
                       }
-                      val safe = spoken.replace("'", "\\'")
-                      webView.evaluateJavascript("if(window.onNativeSpeechResult) window.onNativeSpeechResult('$safe');", null)
+                      webView.evaluateJavascript("if(window.onNativeSpeechResult) window.onNativeSpeechResult(${jsStr(spoken)});", null)
                   } else if (requestCode == REQ_ENABLE_BT && resultCode == RESULT_OK) {
                       ensureHidAndAutoConnect()
                   }
@@ -1904,6 +2178,7 @@ jobs:
               private fun releaseAllHidChannels() {
                   holdRepeatTask?.cancel(true)
                   holdRepeatTask = null
+                  heldButtons = 0
                   val dev = connectedDevice ?: return
                   executor.execute {
                       hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0, 0))
@@ -1984,114 +2259,86 @@ jobs:
                   }
               }
 
-              // LG Sihirli Kumanda Sanal Ekran Sınır Kontrolü
+              // LG Sihirli Kumanda Sanal Ekran Sinir Kontrolu
               private fun notifyEdgeScroll(dir: String) {
                   val now = System.currentTimeMillis()
                   if (now - lastEdgeNotifyTime > 160) {
                       lastEdgeNotifyTime = now
                       runOnUiThread {
-                          webView.evaluateJavascript("if(window.onEdgeScrollActive) window.onEdgeScrollActive('$dir');", null)
+                          webView.evaluateJavascript("if(window.onEdgeScrollActive) window.onEdgeScrollActive(${jsStr(dir)});", null)
                       }
                   }
               }
 
-              private fun processVirtualCursor(dx: Int, dy: Int, wheelV: Int, wheelH: Int): IntArray {
-                  if (wheelV != 0 || wheelH != 0) {
-                      return intArrayOf(dx, dy, wheelV, wheelH)
+              private fun resetCursor() {
+                  synchronized(cursorLock) {
+                      axisX.pos = axisX.max / 2f
+                      axisX.overflow = 0f
+                      axisY.pos = axisY.max / 2f
+                      axisY.overflow = 0f
                   }
+              }
 
-                  var outDx = dx
-                  var outDy = dy
-                  var outWheelV = 0
-                  var outWheelH = 0
-
-                  // Dikey Eksen (Y) - Sayfanın sonuna ulaşıldığında kaydır
-                  val nextY = virtY + dy
-                  if (nextY >= VIRT_MAX_Y) {
-                      virtY = VIRT_MAX_Y
-                      if (dy > 0) {
-                          overflowScrollY += dy
-                          if (overflowScrollY >= SCROLL_THRESHOLD) {
-                              val steps = max(1, (overflowScrollY / SCROLL_THRESHOLD).toInt())
-                              overflowScrollY %= SCROLL_THRESHOLD
-                              outWheelV = -steps // Sayfayı aşağı kaydır
-                              outDy = 0          // İmleç duvarda kalsın
-                              notifyEdgeScroll("down")
-                          } else {
-                              outDy = 0
-                          }
-                      } else {
-                          overflowScrollY = 0f
+              // Bir eksende ilerler. Duvara dayaninca birikmis tasmaya gore isaretli adim sayisi doner
+              // (+: artan yon, -: azalan yon, 0: kaydirma yok).
+              private fun stepAxis(a: Axis, d: Int): Int {
+                  val next = a.pos + d
+                  if (d > 0 && next >= a.max) {
+                      a.pos = a.max
+                      if (a.overflow < 0f) a.overflow = 0f
+                      a.overflow += d
+                      if (a.overflow >= SCROLL_THRESHOLD) {
+                          val steps = max(1, (a.overflow / SCROLL_THRESHOLD).toInt())
+                          a.overflow %= SCROLL_THRESHOLD
+                          return steps
                       }
-                  } else if (nextY <= 0f) {
-                      virtY = 0f
-                      if (dy < 0) {
-                          overflowScrollY += dy
-                          if (overflowScrollY <= -SCROLL_THRESHOLD) {
-                              val steps = max(1, (-overflowScrollY / SCROLL_THRESHOLD).toInt())
-                              overflowScrollY %= SCROLL_THRESHOLD
-                              outWheelV = steps  // Sayfayı yukarı kaydır
-                              outDy = 0
-                              notifyEdgeScroll("up")
-                          } else {
-                              outDy = 0
-                          }
-                      } else {
-                          overflowScrollY = 0f
-                      }
-                  } else {
-                      virtY = nextY
-                      overflowScrollY = 0f
+                      return 0
                   }
-
-                  // Yatay Eksen (X) - Sağa veya sola ulaşıldığında kaydır (AC Pan)
-                  val nextX = virtX + dx
-                  if (nextX >= VIRT_MAX_X) {
-                      virtX = VIRT_MAX_X
-                      if (dx > 0) {
-                          overflowScrollX += dx
-                          if (overflowScrollX >= SCROLL_THRESHOLD) {
-                              val steps = max(1, (overflowScrollX / SCROLL_THRESHOLD).toInt())
-                              overflowScrollX %= SCROLL_THRESHOLD
-                              outWheelH = steps  // Sağa kaydır
-                              outDx = 0
-                              notifyEdgeScroll("right")
-                          } else {
-                              outDx = 0
-                          }
-                      } else {
-                          overflowScrollX = 0f
+                  if (d < 0 && next <= 0f) {
+                      a.pos = 0f
+                      if (a.overflow > 0f) a.overflow = 0f
+                      a.overflow += d
+                      if (a.overflow <= -SCROLL_THRESHOLD) {
+                          val steps = max(1, (-a.overflow / SCROLL_THRESHOLD).toInt())
+                          a.overflow %= SCROLL_THRESHOLD
+                          return -steps
                       }
-                  } else if (nextX <= 0f) {
-                      virtX = 0f
-                      if (dx < 0) {
-                          overflowScrollX += dx
-                          if (overflowScrollX <= -SCROLL_THRESHOLD) {
-                              val steps = max(1, (-overflowScrollX / SCROLL_THRESHOLD).toInt())
-                              overflowScrollX %= SCROLL_THRESHOLD
-                              outWheelH = -steps // Sola kaydır
-                              outDx = 0
-                              notifyEdgeScroll("left")
-                          } else {
-                              outDx = 0
-                          }
-                      } else {
-                          overflowScrollX = 0f
-                      }
-                  } else {
-                      virtX = nextX
-                      overflowScrollX = 0f
+                      return 0
                   }
+                  a.pos = next
+                  a.overflow = 0f
+                  return 0
+              }
 
-                  return intArrayOf(outDx, outDy, outWheelV, outWheelH)
+              private fun processVirtualCursor(dx: Int, dy: Int): IntArray {
+                  var wheelV = 0
+                  var wheelH = 0
+                  var dirY: String? = null
+                  var dirX: String? = null
+                  synchronized(cursorLock) {
+                      val sy = stepAxis(axisY, dy)
+                      if (sy != 0) {
+                          wheelV = -sy                       // asagi dayanma -> sayfayi asagi kaydir
+                          dirY = if (sy > 0) "down" else "up"
+                      }
+                      val sx = stepAxis(axisX, dx)
+                      if (sx != 0) {
+                          wheelH = sx
+                          dirX = if (sx > 0) "right" else "left"
+                      }
+                  }
+                  val ny = dirY
+                  val nx = dirX
+                  if (ny != null) notifyEdgeScroll(ny) else if (nx != null) notifyEdgeScroll(nx)
+                  return intArrayOf(dx, dy, wheelV, wheelH)
               }
 
               private fun sendMouseReport(buttons: Int, dx: Int, dy: Int, wheelV: Int = 0, wheelH: Int = 0) {
                   val dev = connectedDevice ?: return
                   lastInputWasMouse = true
 
-                  val processed = if (buttons == 0) {
-                      processVirtualCursor(dx, dy, wheelV, wheelH)
+                  val processed = if (buttons == 0 && wheelV == 0 && wheelH == 0) {
+                      processVirtualCursor(dx, dy)
                   } else {
                       intArrayOf(dx, dy, wheelV, wheelH)
                   }
@@ -2100,21 +2347,33 @@ jobs:
                   val finalDy = processed[1]
                   val finalWheelV = processed[2]
                   val finalWheelH = processed[3]
+                  val held = heldButtons   // surukleme sirasinda basili tutulan tus
 
                   executor.execute {
                       val cx = max(-127, min(127, finalDx)).toByte()
                       val cy = max(-127, min(127, finalDy)).toByte()
                       val cwV = max(-127, min(127, finalWheelV)).toByte()
                       val cwH = max(-127, min(127, finalWheelH)).toByte()
-                      hidDevice?.sendReport(dev, 3, byteArrayOf(buttons.toByte(), cx, cy, cwV, cwH))
+                      hidDevice?.sendReport(dev, 3, byteArrayOf((buttons or held).toByte(), cx, cy, cwV, cwH))
                       if (buttons != 0 || cwV.toInt() != 0 || cwH.toInt() != 0) {
                           Thread.sleep(18)
-                          hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0, 0))
+                          hidDevice?.sendReport(dev, 3, byteArrayOf(held.toByte(), 0, 0, 0, 0))
                       }
                   }
               }
 
+              // Surukle-birak: tusu basili tut / birak
+              private fun setMouseHeld(buttons: Int) {
+                  val dev = connectedDevice ?: return
+                  heldButtons = buttons
+                  lastInputWasMouse = true
+                  executor.execute {
+                      hidDevice?.sendReport(dev, 3, byteArrayOf(buttons.toByte(), 0, 0, 0, 0))
+                  }
+              }
+
               private fun sendTextViaHid(rawText: String) {
+                  // TV'nin klavye duzeni US varsayilir; Turkce karakterler ASCII karsiligina cevrilir.
                   val trMap = mapOf(
                       'ç' to 'c', 'Ç' to 'C', 'ğ' to 'g', 'Ğ' to 'G',
                       'ı' to 'i', 'İ' to 'I', 'ö' to 'o', 'Ö' to 'O',
@@ -2129,6 +2388,7 @@ jobs:
                   }
               }
 
+              // US duzeni HID kodlari (modifier 2 = Left Shift)
               private fun charToHid(c: Char): Pair<Int, Int>? {
                   return when (c) {
                       in 'a'..'z' -> Pair(0, (c - 'a') + 4)
@@ -2137,11 +2397,39 @@ jobs:
                       '0' -> Pair(0, 39)
                       ' ' -> Pair(0, 44)
                       '\n' -> Pair(0, 40)
-                      '.' -> Pair(0, 55)
-                      ',' -> Pair(0, 54)
+                      '\t' -> Pair(0, 43)
                       '-' -> Pair(0, 45)
+                      '_' -> Pair(2, 45)
+                      '=' -> Pair(0, 46)
+                      '+' -> Pair(2, 46)
+                      '[' -> Pair(0, 47)
+                      '{' -> Pair(2, 47)
+                      ']' -> Pair(0, 48)
+                      '}' -> Pair(2, 48)
+                      '\\' -> Pair(0, 49)
+                      '|' -> Pair(2, 49)
+                      ';' -> Pair(0, 51)
+                      ':' -> Pair(2, 51)
+                      '\'' -> Pair(0, 52)
+                      '"' -> Pair(2, 52)
+                      '`' -> Pair(0, 53)
+                      '~' -> Pair(2, 53)
+                      ',' -> Pair(0, 54)
+                      '<' -> Pair(2, 54)
+                      '.' -> Pair(0, 55)
+                      '>' -> Pair(2, 55)
+                      '/' -> Pair(0, 56)
                       '?' -> Pair(2, 56)
                       '!' -> Pair(2, 30)
+                      '@' -> Pair(2, 31)
+                      '#' -> Pair(2, 32)
+                      '$' -> Pair(2, 33)
+                      '%' -> Pair(2, 34)
+                      '^' -> Pair(2, 35)
+                      '&' -> Pair(2, 36)
+                      '*' -> Pair(2, 37)
+                      '(' -> Pair(2, 38)
+                      ')' -> Pair(2, 39)
                       else -> null
                   }
               }
@@ -2161,10 +2449,12 @@ jobs:
                   @JavascriptInterface
                   fun reconnectLast() = runOnUiThread { ensureHidAndAutoConnect() }
 
+                  // IR vericisi varsa sadece IR (cift tetiklenmeyi onler); yoksa Bluetooth Power tusu
                   @JavascriptInterface
                   fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
-                      transmitNec(0x80, 0x7F, 0x12)
-                      if (connectedDevice != null) {
+                      if (hasIrEmitter()) {
+                          transmitNec(b0, b1, cmd)
+                      } else if (connectedDevice != null) {
                           sendConsumerUsage(48)
                       } else {
                           runOnUiThread { ensureHidAndAutoConnect() }
@@ -2175,12 +2465,10 @@ jobs:
                   fun releaseAllHid() = releaseAllHidChannels()
 
                   @JavascriptInterface
-                  fun resetVirtualCursor() {
-                      virtX = 480f
-                      virtY = 270f
-                      overflowScrollX = 0f
-                      overflowScrollY = 0f
-                  }
+                  fun resetVirtualCursor() = resetCursor()
+
+                  @JavascriptInterface
+                  fun vibrate(ms: Int) = nativeVibrate(ms)
 
                   @JavascriptInterface
                   fun sendBackKey() {
@@ -2195,7 +2483,14 @@ jobs:
                   @JavascriptInterface
                   fun setGyroEnabled(enabled: Boolean) {
                       isGyroActive = enabled
-                      runOnUiThread { registerGyroscope(enabled) }
+                      runOnUiThread {
+                          registerGyroscope(enabled)
+                          if (enabled) {
+                              window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                          } else {
+                              window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                          }
+                      }
                   }
 
                   @JavascriptInterface
@@ -2229,6 +2524,9 @@ jobs:
 
                   @JavascriptInterface
                   fun clickMouse(button: Int) = sendMouseReport(button, 0, 0, 0, 0)
+
+                  @JavascriptInterface
+                  fun mouseHold(down: Boolean) = setMouseHeld(if (down) 1 else 0)
               }
           }
           EOF
