@@ -27,7 +27,7 @@ jobs:
 
       - name: Kumandarus Projesini Olustur
         run: |
-          rm -rf app
+          rm -rf index.html app
           mkdir -p app/src/main/assets
           mkdir -p app/src/main/java/com/kumandarus/app
           mkdir -p app/src/main/res/drawable
@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 21
-                  versionName "21.0"
+                  versionCode 23
+                  versionName "23.0"
               }
 
               compileOptions {
@@ -102,11 +102,25 @@ jobs:
           cat << 'EOF' > app/src/main/res/drawable/ic_launcher_background.xml
           <?xml version="1.0" encoding="utf-8"?>
           <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:aapt="http://schemas.android.com/aapt"
               android:width="108dp"
               android:height="108dp"
               android:viewportWidth="108"
               android:viewportHeight="108">
-              <path android:fillColor="#090D16" android:pathData="M0,0h108v108h-108z" />
+              <path android:pathData="M0,0h108v108h-108z">
+                  <aapt:attr name="android:fillColor">
+                      <gradient
+                          android:startX="0"
+                          android:startY="0"
+                          android:endX="108"
+                          android:endY="108"
+                          android:type="linear">
+                          <item android:offset="0.0" android:color="#FF0F172A"/>
+                          <item android:offset="0.5" android:color="#FF1E1B4B"/>
+                          <item android:offset="1.0" android:color="#FF0284C7"/>
+                      </gradient>
+                  </aapt:attr>
+              </path>
           </vector>
           EOF
 
@@ -120,20 +134,37 @@ jobs:
               <path
                   android:fillColor="#00000000"
                   android:strokeColor="#38BDF8"
-                  android:strokeWidth="3.2"
+                  android:strokeWidth="2.8"
                   android:strokeLineCap="round"
-                  android:pathData="M38,20 C48,11 60,11 70,20" />
+                  android:pathData="M43,27 C49,21 59,21 65,27" />
+              <path
+                  android:fillColor="#00000000"
+                  android:strokeColor="#7DD3FC"
+                  android:strokeWidth="2.4"
+                  android:strokeLineCap="round"
+                  android:pathData="M37,22 C46,13 62,13 71,22" />
               <path
                   android:fillColor="#1E293B"
+                  android:strokeColor="#E2E8F0"
+                  android:strokeWidth="2.5"
+                  android:pathData="M42,32 L66,32 A8,8 0 0,1 74,40 L74,76 A8,8 0 0,1 66,84 L42,84 A8,8 0 0,1 34,76 L34,40 A8,8 0 0,1 42,32 Z" />
+              <path
+                  android:fillColor="#0F172A"
                   android:strokeColor="#38BDF8"
-                  android:strokeWidth="2.8"
-                  android:pathData="M40,28 L68,28 A8,8 0 0,1 76,36 L76,80 A8,8 0 0,1 68,88 L40,88 A8,8 0 0,1 32,80 L32,36 A8,8 0 0,1 40,28 Z" />
+                  android:strokeWidth="2.2"
+                  android:pathData="M54,42 A11,11 0 1,1 53.9,42 Z" />
               <path
-                  android:fillColor="#0284C7"
-                  android:pathData="M54,42 A10,10 0 1,1 53.9,42 Z" />
+                  android:fillColor="#38BDF8"
+                  android:pathData="M54,49 A4,4 0 1,1 53.9,49 Z" />
               <path
-                  android:fillColor="#FFFFFF"
-                  android:pathData="M54,42 A4,4 0 1,1 53.9,42 Z" />
+                  android:fillColor="#94A3B8"
+                  android:pathData="M43,69 A2.5,2.5 0 1,1 42.9,69 Z" />
+              <path
+                  android:fillColor="#38BDF8"
+                  android:pathData="M54,69 A3.2,3.2 0 1,1 53.9,69 Z" />
+              <path
+                  android:fillColor="#94A3B8"
+                  android:pathData="M65,69 A2.5,2.5 0 1,1 64.9,69 Z" />
           </vector>
           EOF
 
@@ -156,6 +187,7 @@ jobs:
               <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
               <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
               <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
               <uses-permission android:name="android.permission.VIBRATE" />
               <uses-permission android:name="android.permission.TRANSMIT_IR" />
 
@@ -187,779 +219,992 @@ jobs:
           <!DOCTYPE html>
           <html lang="tr">
           <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-              <title>Kumandarus</title>
-              <style>
-                  :root {
-                      --bg: #07090e;
-                      --card-bg: rgba(18, 24, 38, 0.7);
-                      --border: rgba(56, 189, 248, 0.2);
-                      --accent: #38bdf8;
-                      --accent-glow: rgba(56, 189, 248, 0.45);
-                      --red: #ef4444;
-                      --green: #22c55e;
-                      --text: #f8fafc;
-                      --text-muted: #94a3b8;
-                  }
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <title>kumandarus</title>
+          <style>
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+              user-select: none;
+              -webkit-user-select: none;
+              -webkit-touch-callout: none;
+              -webkit-tap-highlight-color: transparent;
+            }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              background: radial-gradient(circle at 50% 0%, #172033 0%, #0b0e14 70%);
+              color: #f1f5f9;
+              height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              padding: 10px 14px 12px;
+              overflow: hidden;
+            }
+            svg {
+              width: 19px;
+              height: 19px;
+              stroke: currentColor;
+              stroke-width: 2;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              fill: none;
+              flex-shrink: 0;
+            }
 
-                  * {
-                      box-sizing: border-box;
-                      margin: 0;
-                      padding: 0;
-                      user-select: none;
-                      -webkit-user-select: none;
-                      -webkit-tap-highlight-color: transparent;
-                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                  }
+            /* EN ÜST ALAN: YALNIZCA ŞIK LOGO & BAŞLIK (SIFIR BUTON) */
+            .brand-zone {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              padding: 8px 0 2px;
+              pointer-events: none;
+            }
+            .brand-title {
+              font-size: 24px;
+              font-weight: 900;
+              letter-spacing: 5px;
+              background: linear-gradient(135deg, #e0f2fe 0%, #38bdf8 50%, #818cf8 100%);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              text-shadow: 0 0 22px rgba(56, 189, 248, 0.45);
+            }
+            .brand-sub {
+              font-size: 10px;
+              font-weight: 600;
+              letter-spacing: 2px;
+              color: #94a3b8;
+              text-transform: uppercase;
+              margin-top: 2px;
+              opacity: 0.8;
+            }
 
-                  body {
-                      background: radial-gradient(circle at 50% 20%, #111827 0%, #05070a 100%);
-                      color: var(--text);
-                      min-height: 100vh;
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: space-between;
-                      overflow: hidden;
-                      padding: 14px 16px env(safe-area-inset-bottom, 16px);
-                  }
+            /* YÖN TUŞLARININ ÜSTÜNE TAŞINAN KONTROL BUTONLARI */
+            .header-cluster {
+              width: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 8px;
+              margin-bottom: 6px;
+            }
+            .icon-pill {
+              width: 44px;
+              height: 42px;
+              border-radius: 13px;
+              background: rgba(30, 41, 59, 0.65);
+              border: 1px solid rgba(255, 255, 255, 0.07);
+              color: #cbd5e1;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: transform 0.1s, background 0.15s;
+              font-size: 11px;
+              font-weight: 800;
+            }
+            .icon-pill:active {
+              transform: scale(0.92);
+              background: rgba(51, 65, 85, 0.9);
+            }
+            .icon-pill.power {
+              color: #f87171;
+              border-color: rgba(248, 113, 113, 0.35);
+            }
+            .status-pill {
+              flex: 1;
+              height: 42px;
+              border-radius: 13px;
+              background: rgba(30, 41, 59, 0.65);
+              border: 1px solid rgba(255, 255, 255, 0.07);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 7px;
+              padding: 0 10px;
+              overflow: hidden;
+            }
+            .dot {
+              width: 8px;
+              height: 8px;
+              border-radius: 50%;
+              background: #ef4444;
+              flex-shrink: 0;
+            }
+            .dot.connecting {
+              background: #f59e0b;
+              box-shadow: 0 0 8px #f59e0b;
+            }
+            .dot.connected {
+              background: #10b981;
+              box-shadow: 0 0 8px #10b981;
+            }
+            #statusText {
+              font-size: 12px;
+              font-weight: 600;
+              color: #e2e8f0;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
 
-                  /* EN ÜST ALAN: SADECE LOGO & İSİM - SIFIR BUTON */
-                  .brand-zone {
-                      display: flex;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                      padding: 22px 0 8px;
-                      pointer-events: none;
-                  }
+            .gyro-bar {
+              width: 100%;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              margin-bottom: 8px;
+            }
+            .gyro-btn {
+              flex: 1;
+              height: 38px;
+              border-radius: 11px;
+              background: rgba(30, 41, 59, 0.6);
+              border: 1px solid rgba(56, 189, 248, 0.2);
+              color: #cbd5e1;
+              font-size: 12px;
+              font-weight: 600;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 7px;
+            }
+            .gyro-btn.active {
+              background: linear-gradient(135deg, rgba(14, 165, 233, 0.28), rgba(37, 99, 235, 0.35));
+              border-color: #38bdf8;
+              color: #38bdf8;
+            }
+            .sens-pill {
+              height: 38px;
+              padding: 0 10px;
+              border-radius: 11px;
+              background: rgba(30, 41, 59, 0.6);
+              border: 1px solid rgba(255, 255, 255, 0.07);
+              color: #94a3b8;
+              font-size: 11px;
+              font-weight: 700;
+            }
 
-                  .brand-logo-text {
-                      font-size: 26px;
-                      font-weight: 900;
-                      letter-spacing: 5px;
-                      background: linear-gradient(135deg, #e0f2fe 0%, #38bdf8 50%, #818cf8 100%);
-                      -webkit-background-clip: text;
-                      -webkit-text-fill-color: transparent;
-                      text-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
-                  }
+            .main-stage {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              min-height: 0;
+              margin: 4px 0;
+            }
+            .stage-panel {
+              display: none;
+              width: 100%;
+              height: 100%;
+              flex-direction: column;
+              justify-content: space-evenly;
+              align-items: center;
+            }
+            .stage-panel.active {
+              display: flex;
+            }
 
-                  .brand-tagline {
-                      font-size: 11px;
-                      font-weight: 500;
-                      letter-spacing: 2px;
-                      color: var(--text-muted);
-                      text-transform: uppercase;
-                      margin-top: 4px;
-                      opacity: 0.8;
-                  }
+            .dpad-ring {
+              position: relative;
+              width: 204px;
+              height: 204px;
+              border-radius: 50%;
+              background: linear-gradient(145deg, #161e2e, #0f1420);
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.06);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .dpad-ring.gyro-on {
+              border-color: rgba(56, 189, 248, 0.45);
+              box-shadow: 0 0 28px rgba(56, 189, 248, 0.18);
+            }
+            .d-btn {
+              position: absolute;
+              background: transparent;
+              border: none;
+              color: #94a3b8;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .d-btn svg {
+              width: 24px;
+              height: 24px;
+              stroke-width: 2.4;
+            }
+            .d-btn.pressed, .d-btn:active {
+              color: #38bdf8;
+              background: rgba(56, 189, 248, 0.12);
+            }
+            .d-up { top: 5px; left: 52px; width: 100px; height: 60px; border-radius: 36px 36px 12px 12px; }
+            .d-down { bottom: 5px; left: 52px; width: 100px; height: 60px; border-radius: 12px 12px 36px 36px; }
+            .d-left { left: 5px; top: 52px; width: 60px; height: 100px; border-radius: 36px 12px 12px 36px; }
+            .d-right { right: 5px; top: 52px; width: 60px; height: 100px; border-radius: 12px 36px 36px 12px; }
+            .d-ok {
+              width: 78px;
+              height: 78px;
+              border-radius: 50%;
+              background: linear-gradient(145deg, #1e293b, #111827);
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+              color: #f8fafc;
+              font-size: 14px;
+              font-weight: 700;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+            }
+            .d-ok small {
+              font-size: 9px;
+              font-weight: 500;
+              color: #38bdf8;
+              margin-top: 2px;
+            }
+            .d-ok.pressed, .d-ok:active {
+              transform: scale(0.94);
+              background: #0284c7;
+              color: #fff;
+            }
 
-                  /* ANA İÇERİK */
-                  .view-container {
-                      flex: 1;
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: center;
-                      gap: 12px;
-                      max-width: 420px;
-                      width: 100%;
-                      margin: 0 auto;
-                  }
+            .control-rows {
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            }
+            .btn-row {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 8px;
+            }
+            .soft-btn {
+              height: 42px;
+              border-radius: 12px;
+              background: rgba(30, 41, 59, 0.55);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              color: #e2e8f0;
+              font-size: 13px;
+              font-weight: 600;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 5px;
+            }
+            .soft-btn.pressed, .soft-btn:active {
+              transform: scale(0.95);
+              background: rgba(56, 189, 248, 0.18);
+              border-color: rgba(56, 189, 248, 0.4);
+              color: #fff;
+            }
 
-                  .panel {
-                      display: none;
-                      width: 100%;
-                      flex-direction: column;
-                      align-items: center;
-                      gap: 12px;
-                  }
+            .touchpad-wrap {
+              width: 100%;
+              flex: 1;
+              display: flex;
+              gap: 8px;
+              margin-bottom: 8px;
+              min-height: 150px;
+            }
+            .touch-surface {
+              flex: 1;
+              background: rgba(15, 23, 42, 0.75);
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              border-radius: 18px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              color: #64748b;
+              font-size: 13px;
+              gap: 6px;
+              text-align: center;
+              padding: 16px;
+              touch-action: none;
+            }
+            .scroll-bar {
+              width: 44px;
+              background: rgba(30, 41, 59, 0.5);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              border-radius: 18px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: space-between;
+              padding: 14px 0;
+              color: #64748b;
+              font-size: 10px;
+              font-weight: 700;
+              letter-spacing: 1px;
+              touch-action: none;
+            }
+            .mouse-row {
+              width: 100%;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+            }
 
-                  .panel.active {
-                      display: flex;
-                  }
+            /* ORİJİNAL DOCK & SESLİ ARAMA BUTONU */
+            .mode-dock {
+              display: grid;
+              grid-template-columns: 1fr auto 1fr;
+              align-items: center;
+              gap: 10px;
+              background: rgba(15, 23, 42, 0.85);
+              border: 1px solid rgba(255, 255, 255, 0.07);
+              padding: 5px 8px;
+              border-radius: 18px;
+              margin-bottom: 6px;
+            }
+            .dock-tab {
+              height: 42px;
+              border-radius: 13px;
+              border: none;
+              background: transparent;
+              color: #94a3b8;
+              font-size: 13px;
+              font-weight: 600;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 6px;
+            }
+            .dock-tab.active {
+              background: rgba(56, 189, 248, 0.15);
+              color: #38bdf8;
+            }
+            .mic-center-btn {
+              width: 48px;
+              height: 48px;
+              border-radius: 50%;
+              border: none;
+              background: linear-gradient(135deg, #0284c7, #2563eb);
+              color: #ffffff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+              cursor: pointer;
+            }
+            .mic-center-btn:active {
+              transform: scale(0.92);
+            }
 
-                  /* D-PAD ÜSTÜ KONTROL KÜMESİ */
-                  .control-cluster {
-                      width: 100%;
-                      display: flex;
-                      flex-direction: column;
-                      gap: 10px;
-                      background: var(--card-bg);
-                      border: 1px solid var(--border);
-                      backdrop-filter: blur(12px);
-                      padding: 10px 12px;
-                      border-radius: 20px;
-                      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-                  }
+            /* ORİJİNAL KLAVYE ÇUBUĞU */
+            .keyboard-bar {
+              display: flex;
+              gap: 8px;
+              background: rgba(30, 41, 59, 0.55);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              padding: 5px;
+              border-radius: 13px;
+            }
+            .kb-input {
+              flex: 1;
+              background: transparent;
+              border: none;
+              padding: 7px 10px;
+              color: #f8fafc;
+              font-size: 13px;
+              outline: none;
+              min-width: 0;
+            }
+            .kb-input::placeholder { color: #64748b; }
+            .kb-btn {
+              background: rgba(51, 65, 85, 0.7);
+              color: #e2e8f0;
+              border: none;
+              border-radius: 9px;
+              padding: 0 12px;
+              font-size: 13px;
+              font-weight: 600;
+              cursor: pointer;
+            }
+            .kb-btn.send {
+              background: #0284c7;
+              color: #fff;
+            }
 
-                  .cluster-row {
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      gap: 10px;
-                      width: 100%;
-                  }
-
-                  .btn-pill {
-                      flex: 1;
-                      height: 44px;
-                      background: rgba(30, 41, 59, 0.8);
-                      border: 1px solid rgba(255, 255, 255, 0.08);
-                      color: var(--text);
-                      border-radius: 12px;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      gap: 6px;
-                      font-size: 13px;
-                      font-weight: 600;
-                      cursor: pointer;
-                      transition: all 0.15s ease;
-                  }
-
-                  .btn-pill:active {
-                      transform: scale(0.96);
-                  }
-
-                  .btn-power {
-                      flex: 1.2;
-                      background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.4));
-                      border-color: rgba(239, 68, 68, 0.4);
-                      color: #fca5a5;
-                  }
-
-                  .btn-power:active {
-                      background: rgba(239, 68, 68, 0.5);
-                  }
-
-                  .btn-status {
-                      flex: 1.5;
-                      font-size: 12px;
-                      background: rgba(15, 23, 42, 0.75);
-                      border-color: rgba(255, 255, 255, 0.05);
-                  }
-
-                  .status-dot {
-                      width: 8px;
-                      height: 8px;
-                      border-radius: 50%;
-                      background: #eab308;
-                      box-shadow: 0 0 8px #eab308;
-                  }
-
-                  .status-dot.connected {
-                      background: var(--green);
-                      box-shadow: 0 0 10px var(--green);
-                  }
-
-                  .btn-bt {
-                      flex: 0.8;
-                  }
-
-                  /* GYRO ÇUBUĞU */
-                  .gyro-bar {
-                      display: flex;
-                      align-items: center;
-                      gap: 8px;
-                      width: 100%;
-                  }
-
-                  .gyro-toggle {
-                      flex: 3;
-                      height: 40px;
-                      background: rgba(30, 41, 59, 0.6);
-                      border: 1px solid rgba(56, 189, 248, 0.25);
-                      border-radius: 12px;
-                      color: var(--text);
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      gap: 8px;
-                      font-size: 13px;
-                      font-weight: 600;
-                      cursor: pointer;
-                  }
-
-                  .gyro-toggle.active {
-                      background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(14, 165, 233, 0.45));
-                      border-color: var(--accent);
-                      box-shadow: 0 0 16px var(--accent-glow);
-                      color: #e0f2fe;
-                  }
-
-                  .speed-btn {
-                      flex: 1;
-                      height: 40px;
-                      background: rgba(30, 41, 59, 0.8);
-                      border: 1px solid rgba(255, 255, 255, 0.1);
-                      border-radius: 12px;
-                      color: var(--text-muted);
-                      font-size: 12px;
-                      font-weight: 700;
-                      cursor: pointer;
-                  }
-
-                  /* D-PAD ÇEMBERİ */
-                  .dpad-container {
-                      position: relative;
-                      width: 230px;
-                      height: 230px;
-                      border-radius: 50%;
-                      background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
-                      border: 2px solid rgba(56, 189, 248, 0.25);
-                      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), inset 0 2px 6px rgba(255, 255, 255, 0.05);
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      margin: 6px 0;
-                  }
-
-                  .dpad-btn {
-                      position: absolute;
-                      background: transparent;
-                      border: none;
-                      color: #cbd5e1;
-                      cursor: pointer;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      font-size: 18px;
-                      transition: all 0.1s;
-                  }
-
-                  .dpad-btn:active {
-                      color: var(--accent);
-                      transform: scale(0.92);
-                  }
-
-                  .dpad-up { top: 12px; left: 50%; transform: translateX(-50%); width: 75px; height: 55px; }
-                  .dpad-down { bottom: 12px; left: 50%; transform: translateX(-50%); width: 75px; height: 55px; }
-                  .dpad-left { left: 12px; top: 50%; transform: translateY(-50%); width: 55px; height: 75px; }
-                  .dpad-right { right: 12px; top: 50%; transform: translateY(-50%); width: 55px; height: 75px; }
-
-                  .dpad-ok {
-                      width: 82px;
-                      height: 82px;
-                      border-radius: 50%;
-                      background: linear-gradient(135deg, #1e293b, #0f172a);
-                      border: 2px solid rgba(56, 189, 248, 0.35);
-                      color: #f8fafc;
-                      font-weight: 800;
-                      font-size: 17px;
-                      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-                      cursor: pointer;
-                      z-index: 2;
-                  }
-
-                  .dpad-ok:active {
-                      background: var(--accent);
-                      color: #040810;
-                      box-shadow: 0 0 18px var(--accent-glow);
-                      transform: scale(0.94);
-                  }
-
-                  /* ALT TUŞ SATIRLARI */
-                  .nav-grid {
-                      display: grid;
-                      grid-template-columns: repeat(3, 1fr);
-                      gap: 10px;
-                      width: 100%;
-                  }
-
-                  .nav-btn {
-                      height: 48px;
-                      background: rgba(30, 41, 59, 0.6);
-                      border: 1px solid rgba(255, 255, 255, 0.08);
-                      border-radius: 14px;
-                      color: var(--text);
-                      display: flex;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                      gap: 3px;
-                      font-size: 11px;
-                      font-weight: 600;
-                      cursor: pointer;
-                      transition: all 0.12s;
-                  }
-
-                  .nav-btn:active {
-                      background: rgba(56, 189, 248, 0.2);
-                      border-color: var(--accent);
-                      transform: scale(0.95);
-                  }
-
-                  /* TOUCHPAD ALANI */
-                  .touchpad-box {
-                      width: 100%;
-                      height: 380px;
-                      background: rgba(18, 24, 38, 0.6);
-                      border: 1px dashed rgba(56, 189, 248, 0.3);
-                      border-radius: 20px;
-                      position: relative;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      touch-action: none;
-                  }
-
-                  .touchpad-label {
-                      font-size: 13px;
-                      color: var(--text-muted);
-                      letter-spacing: 1px;
-                      pointer-events: none;
-                      text-align: center;
-                  }
-
-                  .touchpad-actions {
-                      display: grid;
-                      grid-template-columns: 1fr 1fr;
-                      gap: 10px;
-                      width: 100%;
-                  }
-
-                  /* ALT MOD SEÇİCİ */
-                  .tab-bar {
-                      display: flex;
-                      background: rgba(15, 23, 42, 0.85);
-                      border: 1px solid rgba(255, 255, 255, 0.08);
-                      border-radius: 18px;
-                      padding: 4px;
-                      max-width: 420px;
-                      width: 100%;
-                      margin: 0 auto;
-                  }
-
-                  .tab-btn {
-                      flex: 1;
-                      padding: 10px;
-                      border: none;
-                      background: transparent;
-                      color: var(--text-muted);
-                      font-weight: 700;
-                      font-size: 13px;
-                      border-radius: 14px;
-                      cursor: pointer;
-                      transition: all 0.2s;
-                  }
-
-                  .tab-btn.active {
-                      background: var(--accent);
-                      color: #040810;
-                      box-shadow: 0 0 14px var(--accent-glow);
-                  }
-
-                  /* BLUETOOTH MODAL */
-                  .modal-overlay {
-                      display: none;
-                      position: fixed;
-                      top: 0; left: 0; right: 0; bottom: 0;
-                      background: rgba(0, 0, 0, 0.75);
-                      backdrop-filter: blur(6px);
-                      z-index: 100;
-                      align-items: center;
-                      justify-content: center;
-                      padding: 20px;
-                  }
-
-                  .modal-overlay.active {
-                      display: flex;
-                  }
-
-                  .modal-card {
-                      background: #0f172a;
-                      border: 1px solid var(--border);
-                      border-radius: 20px;
-                      padding: 20px;
-                      width: 100%;
-                      max-width: 380px;
-                      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-                  }
-
-                  .modal-title {
-                      font-size: 16px;
-                      font-weight: 700;
-                      margin-bottom: 14px;
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                  }
-
-                  .device-list {
-                      max-height: 220px;
-                      overflow-y: auto;
-                      display: flex;
-                      flex-direction: column;
-                      gap: 8px;
-                      margin-bottom: 14px;
-                  }
-
-                  .device-item {
-                      background: rgba(30, 41, 59, 0.6);
-                      padding: 10px 12px;
-                      border-radius: 10px;
-                      font-size: 13px;
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      border: 1px solid rgba(255, 255, 255, 0.05);
-                      cursor: pointer;
-                  }
-
-                  .device-item:active {
-                      background: rgba(56, 189, 248, 0.2);
-                  }
-
-                  .modal-close-btn {
-                      width: 100%;
-                      padding: 10px;
-                      background: #1e293b;
-                      border: none;
-                      border-radius: 10px;
-                      color: #fff;
-                      font-weight: 600;
-                      cursor: pointer;
-                  }
-
-                  svg {
-                      width: 18px;
-                      height: 18px;
-                      fill: currentColor;
-                  }
-              </style>
+            /* BLUETOOTH TARAMA MODAL */
+            .modal-backdrop {
+              position: fixed;
+              inset: 0;
+              background: rgba(5, 8, 14, 0.86);
+              backdrop-filter: blur(4px);
+              display: none;
+              align-items: center;
+              justify-content: center;
+              padding: 14px;
+              z-index: 100;
+            }
+            .modal-backdrop.open { display: flex; }
+            .modal {
+              width: 100%;
+              max-width: 380px;
+              background: #141c2b;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              border-radius: 20px;
+              padding: 16px;
+              max-height: 88vh;
+              display: flex;
+              flex-direction: column;
+            }
+            .modal-head {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+            }
+            .modal-title { font-size: 15px; font-weight: 700; color: #f8fafc; }
+            .close-x {
+              width: 30px;
+              height: 30px;
+              border-radius: 8px;
+              border: none;
+              background: rgba(255,255,255,0.07);
+              color: #cbd5e1;
+              font-size: 15px;
+              cursor: pointer;
+            }
+            .scan-info {
+              font-size: 12px;
+              color: #93c5fd;
+              margin-bottom: 14px;
+              line-height: 1.4;
+            }
+            .dev-list {
+              flex: 1;
+              overflow-y: auto;
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+              min-height: 110px;
+              margin-bottom: 8px;
+            }
+            .dev-card {
+              background: rgba(15, 23, 42, 0.8);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              border-radius: 11px;
+              padding: 9px 11px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              cursor: pointer;
+            }
+            .dev-title { font-size: 12px; font-weight: 600; color: #f1f5f9; }
+            .dev-mac { font-size: 11px; color: #64748b; margin-top: 2px; }
+            .dev-tag {
+              font-size: 10px;
+              padding: 4px 7px;
+              border-radius: 6px;
+              background: rgba(56, 189, 248, 0.12);
+              color: #38bdf8;
+              font-weight: 700;
+            }
+          </style>
           </head>
           <body>
 
-              <!-- EN ÜST: SADECE BAŞLIK (BUTON YOK) -->
-              <div class="brand-zone">
-                  <div class="brand-logo-text">KUMANDARUS</div>
-                  <div class="brand-tagline">Akıllı Projeksiyon & TV</div>
-              </div>
+            <!-- EN ÜST: SADECE BAŞLIK (BUTON YOK) -->
+            <div class="brand-zone">
+              <span class="brand-title">KUMANDARUS</span>
+              <span class="brand-sub">Akıllı Projeksiyon & TV</span>
+            </div>
 
-              <div class="view-container">
+            <!-- ORTA ALAN -->
+            <div class="main-stage">
 
-                  <!-- KUMANDA PANELİ -->
-                  <div class="panel active" id="remotePanel">
+              <!-- KUMANDA MODU -->
+              <div id="panelRemote" class="stage-panel active">
 
-                      <!-- YÖN TUŞLARININ HEMEN ÜSTÜNDEKİ KONTROL KÜMESİ -->
-                      <div class="control-cluster">
-                          <div class="cluster-row">
-                              <button class="btn-pill btn-power" onclick="powerClick()" title="Açma/Kapatma (IR)">
-                                  <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A7.92 7.92 0 0 1 20 12c0 4.42-3.58 8-8 8s-8-3.58-8-8c0-2.47 1.13-4.68 2.91-6.15L5.49 4.43A9.95 9.95 0 0 0 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10c0-2.88-1.22-5.48-3.17-7.83z"/></svg>
-                                  <span>Güç</span>
-                              </button>
+                <!-- AŞAĞI, YÖN TUŞLARININ HEMEN ÜSTÜNE İNDİRİLEN ÜST BUTONLAR -->
+                <div class="header-cluster">
+                  <button class="icon-pill power" onclick="triggerHybridPower()" title="Güç (IR)">
+                    <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+                  </button>
 
-                              <button class="btn-pill btn-status" onclick="fastConnect()" title="Hızlı Yeniden Bağlan">
-                                  <span class="status-dot" id="statusDot"></span>
-                                  <span id="statusTxt">Bağlan</span>
-                              </button>
-
-                              <button class="btn-pill btn-bt" onclick="openBtModal()" title="Cihaz Seç">
-                                  <svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
-                              </button>
-                          </div>
-
-                          <!-- Sihirli İmleç Satırı -->
-                          <div class="gyro-bar">
-                              <button class="gyro-toggle" id="gyroToggle" onclick="toggleGyro()">
-                                  <span>✨</span>
-                                  <span id="gyroTxt">Sihirli İmleç: Kapalı</span>
-                              </button>
-                              <button class="speed-btn" id="speedBtn" onclick="cycleSpeed()">Hız: 1x</button>
-                          </div>
-                      </div>
-
-                      <!-- D-PAD YÖN TUŞLARI (OK tuşu tek atımlıktır, oto-odaklama başlatmaz) -->
-                      <div class="dpad-container">
-                          <button class="dpad-btn dpad-up" onpointerdown="navDown(82)" onpointerup="navUp()">▲</button>
-                          <button class="dpad-btn dpad-left" onpointerdown="navDown(80)" onpointerup="navUp()">◀</button>
-                          <button class="dpad-ok" onclick="tapOk(event)">OK</button>
-                          <button class="dpad-btn dpad-right" onpointerdown="navDown(79)" onpointerup="navUp()">▶</button>
-                          <button class="dpad-btn dpad-down" onpointerdown="navDown(81)" onpointerup="navUp()">▼</button>
-                      </div>
-
-                      <!-- ALT GEZİNME VE SES SATIRLARI -->
-                      <div class="nav-grid">
-                          <button class="nav-btn" onclick="sendCons(0x0224)">
-                              <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                              <span>Geri</span>
-                          </button>
-                          <button class="nav-btn" onclick="sendCons(0x0223)">
-                              <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                              <span>Ana Sayfa</span>
-                          </button>
-                          <button class="nav-btn" onclick="sendKey(0, 101)">
-                              <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-                              <span>Menü</span>
-                          </button>
-                      </div>
-
-                      <div class="nav-grid">
-                          <button class="nav-btn" onclick="sendCons(0x00EA)">
-                              <svg viewBox="0 0 24 24"><path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/></svg>
-                              <span>Ses -</span>
-                          </button>
-                          <button class="nav-btn" onclick="sendCons(0x00E2)">
-                              <svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
-                              <span>Sessiz</span>
-                          </button>
-                          <button class="nav-btn" onclick="sendCons(0x00E9)">
-                              <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-                              <span>Ses +</span>
-                          </button>
-                      </div>
-
+                  <div class="status-pill" onclick="reconnectOrScan()">
+                    <div id="statusDot" class="dot"></div>
+                    <span id="statusText">Bağlı Değil</span>
                   </div>
 
-                  <!-- TOUCHPAD PANELİ -->
-                  <div class="panel" id="touchPanel">
-                      <div class="touchpad-box" id="touchpad">
-                          <div class="touchpad-label">
-                              <span>İmleç Dokunmatik Alanı</span><br>
-                              <small style="opacity: 0.6;">Kenarlara sürükleyerek LG Magic gibi kademeli kaydırın</small>
-                          </div>
-                      </div>
-                      <div class="touchpad-actions">
-                          <button class="nav-btn" onclick="sendMouseClick(1)">Sol Tık</button>
-                          <button class="nav-btn" onclick="sendMouseClick(2)">Sağ Tık</button>
-                      </div>
+                  <button class="icon-pill" onclick="openScanner()" title="Bluetooth Cihazlar">
+                    <svg viewBox="0 0 24 24"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/></svg>
+                  </button>
+                </div>
+
+                <!-- SİHİRLİ İMLEÇ (JİROSKOP) ÇUBUĞU -->
+                <div class="gyro-bar">
+                  <button id="gyroBtn" class="gyro-btn" onclick="toggleGyroMouse()">
+                    <svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+                    <span id="gyroText">Sihirli İmleç (Jiroskop): Kapalı</span>
+                  </button>
+                  <button id="sensBtn" class="sens-pill" onclick="cycleSensitivity()">Hız: Orta</button>
+                </div>
+
+                <!-- D-PAD YÖN TUŞLARI -->
+                <div id="dpadRing" class="dpad-ring">
+                  <button class="d-btn d-up" data-hold-key="82">
+                    <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+                  </button>
+                  <button class="d-btn d-left" data-hold-key="80">
+                    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <button id="okButton" class="d-btn d-ok">
+                    <span id="okMainLabel">OK</span>
+                    <small id="okSubLabel"></small>
+                  </button>
+                  <button class="d-btn d-right" data-hold-key="79">
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                  <button class="d-btn d-down" data-hold-key="81">
+                    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                </div>
+
+                <!-- ALT KONTROL TUŞLARI -->
+                <div class="control-rows">
+                  <div class="btn-row">
+                    <button class="soft-btn" onclick="tapBack()">
+                      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Geri
+                    </button>
+                    <button class="soft-btn" onclick="tapConsumer(547)">
+                      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Home
+                    </button>
+                    <button class="soft-btn" onclick="tapMenu()">
+                      <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg> Menü
+                    </button>
                   </div>
-
-              </div>
-
-              <!-- MOD SEÇİCİ ALT TAB -->
-              <div class="tab-bar">
-                  <button class="tab-btn active" id="tabRemote" onclick="switchTab('remote')">Kumanda</button>
-                  <button class="tab-btn" id="tabTouch" onclick="switchTab('touch')">Touchpad</button>
-              </div>
-
-              <!-- BLUETOOTH CİHAZ LİSTESİ MODAL -->
-              <div class="modal-overlay" id="btModal">
-                  <div class="modal-card">
-                      <div class="modal-title">
-                          <span>Eşleşmiş Cihazlar</span>
-                          <span style="cursor:pointer;" onclick="closeBtModal()">✕</span>
-                      </div>
-                      <div class="device-list" id="deviceList">
-                          <div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Cihazlar yükleniyor...</div>
-                      </div>
-                      <button class="modal-close-btn" onclick="closeBtModal()">Kapat</button>
+                  <div class="btn-row">
+                    <button class="soft-btn" data-hold-consumer="234">
+                      <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="16" y1="12" x2="22" y2="12"/></svg> Ses -
+                    </button>
+                    <button class="soft-btn" onclick="tapConsumer(226)">
+                      <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg> Sessiz
+                    </button>
+                    <button class="soft-btn" data-hold-consumer="233">
+                      <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="19" y1="9" x2="19" y2="15"/><line x1="16" y1="12" x2="22" y2="12"/></svg> Ses +
+                    </button>
                   </div>
+                </div>
               </div>
 
-              <script>
-                  let gyroActive = false;
-                  let currentSpeed = 1.0;
-                  const speeds = [1.0, 1.5, 2.0];
-                  let speedIndex = 0;
+              <!-- TOUCHPAD MODU -->
+              <div id="panelTouch" class="stage-panel">
+                <div class="touchpad-wrap">
+                  <div id="touchSurface" class="touch-surface">
+                    <svg viewBox="0 0 24 24" style="width:28px;height:28px;opacity:0.45;"><rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="7" x2="12" y2="11"/></svg>
+                    <span>Kaydırarak imleci yönetin<br>Tıklamak için dokunun</span>
+                  </div>
+                  <div id="scrollStrip" class="scroll-bar">
+                    <span>▲</span>
+                    <span>KAYDIR</span>
+                    <span>▼</span>
+                  </div>
+                </div>
+                <div class="mouse-row">
+                  <button class="soft-btn" onclick="clickMouse(1)">Sol Tık</button>
+                  <button class="soft-btn" onclick="clickMouse(2)">Sağ Tık (Geri)</button>
+                </div>
+              </div>
 
-                  function vib(ms = 12) {
-                      if (window.AndroidBridge && AndroidBridge.vibrate) {
-                          AndroidBridge.vibrate(ms);
-                      }
+            </div>
+
+            <!-- Kumanda | Mikrofon (Sesli Yazma) | Touchpad -->
+            <div class="mode-dock">
+              <button id="tabRemote" class="dock-tab active" onclick="switchMode('remote')">
+                <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><circle cx="12" cy="9" r="2"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+                Kumanda
+              </button>
+
+              <button class="mic-center-btn" onclick="startVoice()" title="Sesli Arama">
+                <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+
+              <button id="tabTouch" class="dock-tab" onclick="switchMode('touch')">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="15" x2="12" y2="20"/></svg>
+                Touchpad
+              </button>
+            </div>
+
+            <!-- ALT KLAVYE ÇUBUĞU -->
+            <div class="keyboard-bar">
+              <input id="manualText" class="kb-input" type="text" placeholder="Metin yazın veya mikrofona dokunun..." />
+              <button class="kb-btn" onclick="tapKey(42)" title="Sil">⌫</button>
+              <button class="kb-btn send" onclick="sendManualText()">Gönder</button>
+            </div>
+
+            <!-- BLUETOOTH TARAMA MODAL -->
+            <div id="scanModal" class="modal-backdrop">
+              <div class="modal">
+                <div class="modal-head">
+                  <span class="modal-title">Bluetooth Cihaz Seçin</span>
+                  <button class="close-x" onclick="closeScanner()">✕</button>
+                </div>
+                <div id="scanStatus" class="scan-info" style="margin-bottom:8px;">Cihazlar aranıyor...</div>
+                <div id="deviceList" class="dev-list"></div>
+                <button class="soft-btn" onclick="rescan()">Yeniden Tara</button>
+              </div>
+            </div>
+
+          <script>
+            const foundDevices = {};
+            let isConnected = false;
+            let gyroEnabled = false;
+
+            const sensLevels = [
+              { label: 'Yavaş', val: 14 },
+              { label: 'Orta', val: 22 },
+              { label: 'Hızlı', val: 32 }
+            ];
+            let sensIndex = 1;
+
+            function vibrate(ms = 14) {
+              if (navigator.vibrate) navigator.vibrate(ms);
+            }
+
+            function switchMode(mode) {
+              vibrate(14);
+              document.getElementById('tabRemote').classList.toggle('active', mode === 'remote');
+              document.getElementById('tabTouch').classList.toggle('active', mode === 'touch');
+              document.getElementById('panelRemote').classList.toggle('active', mode === 'remote');
+              document.getElementById('panelTouch').classList.toggle('active', mode === 'touch');
+
+              if (mode === 'remote') {
+                if (gyroEnabled) {
+                  gyroEnabled = false;
+                  updateGyroUi();
+                }
+                if (window.AndroidBridge) {
+                  window.AndroidBridge.recoverDpadFocus();
+                }
+              } else {
+                if (window.AndroidBridge) {
+                  window.AndroidBridge.releaseAllHid();
+                }
+              }
+            }
+
+            function triggerHybridPower() {
+              vibrate(30);
+              if (window.AndroidBridge) {
+                window.AndroidBridge.triggerPowerWithIr(0x80, 0x7F, 0x12);
+              }
+            }
+
+            function tapBack() {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendBackKey();
+            }
+
+            function tapMenu() {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendMenuKey();
+            }
+
+            function toggleGyroMouse() {
+              gyroEnabled = !gyroEnabled;
+              vibrate(22);
+              updateGyroUi();
+              if (window.AndroidBridge) {
+                window.AndroidBridge.setGyroEnabled(gyroEnabled);
+              }
+            }
+
+            function updateGyroUi() {
+              const btn = document.getElementById('gyroBtn');
+              const txt = document.getElementById('gyroText');
+              const ring = document.getElementById('dpadRing');
+              const sub = document.getElementById('okSubLabel');
+              btn.classList.toggle('active', gyroEnabled);
+              ring.classList.toggle('gyro-on', gyroEnabled);
+              txt.textContent = gyroEnabled
+                ? 'Sihirli İmleç: Açık (Hareket Ettirin)'
+                : 'Sihirli İmleç (Jiroskop): Kapalı';
+              sub.textContent = gyroEnabled ? 'SOL TIK' : '';
+            }
+
+            function cycleSensitivity() {
+              sensIndex = (sensIndex + 1) % sensLevels.length;
+              const item = sensLevels[sensIndex];
+              vibrate(15);
+              document.getElementById('sensBtn').textContent = 'Hız: ' + item.label;
+              if (window.AndroidBridge) {
+                window.AndroidBridge.setGyroSensitivity(item.val);
+              }
+            }
+
+            function tapKey(code) {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendKey(code);
+            }
+
+            function tapConsumer(usage) {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendConsumer(usage);
+            }
+
+            function clickMouse(btn) {
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.clickMouse(btn);
+            }
+
+            function startVoice() {
+              vibrate(25);
+              if (window.AndroidBridge) window.AndroidBridge.startVoice();
+            }
+
+            function reconnectOrScan() {
+              vibrate();
+              if (!isConnected && window.AndroidBridge) {
+                window.AndroidBridge.reconnectLast();
+              } else {
+                openScanner();
+              }
+            }
+
+            function sendManualText() {
+              const input = document.getElementById('manualText');
+              const val = input.value;
+              if (!val) {
+                tapKey(40);
+                return;
+              }
+              vibrate();
+              if (window.AndroidBridge) window.AndroidBridge.sendText(val);
+              input.value = '';
+            }
+
+            (function initHoldButtons() {
+              document.querySelectorAll('[data-hold-key]').forEach((btn) => {
+                const keyCode = parseInt(btn.getAttribute('data-hold-key'), 10);
+                let active = false;
+
+                const startHold = (e) => {
+                  e.preventDefault();
+                  if (active) return;
+                  active = true;
+                  btn.classList.add('pressed');
+                  vibrate(14);
+                  if (gyroEnabled) {
+                    gyroEnabled = false;
+                    updateGyroUi();
+                    if (window.AndroidBridge) window.AndroidBridge.setGyroEnabled(false);
                   }
+                  if (window.AndroidBridge) window.AndroidBridge.keyDown(keyCode);
+                };
 
-                  function switchTab(type) {
-                      vib(10);
-                      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                const endHold = () => {
+                  if (!active) return;
+                  active = false;
+                  btn.classList.remove('pressed');
+                  if (window.AndroidBridge) window.AndroidBridge.keyUp(keyCode);
+                };
 
-                      if (type === 'remote') {
-                          document.getElementById('remotePanel').classList.add('active');
-                          document.getElementById('tabRemote').classList.add('active');
-                      } else {
-                          document.getElementById('touchPanel').classList.add('active');
-                          document.getElementById('tabTouch').classList.add('active');
-                      }
-                  }
+                btn.addEventListener('touchstart', startHold, { passive: false });
+                btn.addEventListener('touchend', endHold);
+                btn.addEventListener('touchcancel', endHold);
+                btn.addEventListener('mousedown', startHold);
+                btn.addEventListener('mouseup', endHold);
+                btn.addEventListener('mouseleave', endHold);
+              });
 
-                  // GÜÇ TUŞU: SADECE BURADA IR ÇALIŞIR
-                  function powerClick() {
-                      vib(25);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.triggerHybridPower();
-                      }
-                  }
+              // OK TUŞU: PROJEKSİYONDA OTO-ODAK TETİKLEMESİNİ ÖNLEMEK İÇİN TEK SEFERLİK TEMİZ VURUŞ
+              const okBtn = document.getElementById('okButton');
+              let okActive = false;
+              const startOk = (e) => {
+                e.preventDefault();
+                if (okActive) return;
+                okActive = true;
+                okBtn.classList.add('pressed');
+                vibrate(16);
+                if (gyroEnabled) {
+                  clickMouse(1);
+                } else if (window.AndroidBridge) {
+                  window.AndroidBridge.sendKey(40); // Asla tekrar döngüsüne girmez, oto-odaklama başlatmaz!
+                }
+              };
+              const endOk = () => {
+                if (!okActive) return;
+                okActive = false;
+                okBtn.classList.remove('pressed');
+              };
+              okBtn.addEventListener('touchstart', startOk, { passive: false });
+              okBtn.addEventListener('touchend', endOk);
+              okBtn.addEventListener('touchcancel', endOk);
+              okBtn.addEventListener('mousedown', startOk);
+              okBtn.addEventListener('mouseup', endOk);
 
-                  // OK TUŞU: TEK SEFERLİK DİSKRET SİNYAL (OTOMATİK ODAKLAMA BAŞLATMAZ)
-                  function tapOk(e) {
-                      if (e) e.preventDefault();
-                      vib(18);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.tapOkKey();
-                      }
-                  }
+              document.querySelectorAll('[data-hold-consumer]').forEach((btn) => {
+                const usage = parseInt(btn.getAttribute('data-hold-consumer'), 10);
+                let timer = null;
 
-                  function navDown(code) {
-                      vib(10);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.sendKeyboardKey(0, code);
-                      }
-                  }
-                  function navUp() {}
+                const startRepeat = (e) => {
+                  e.preventDefault();
+                  btn.classList.add('pressed');
+                  tapConsumer(usage);
+                  clearInterval(timer);
+                  timer = setInterval(() => tapConsumer(usage), 140);
+                };
 
-                  function sendCons(code) {
-                      vib(12);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.sendConsumerKey(code);
-                      }
-                  }
+                const stopRepeat = () => {
+                  btn.classList.remove('pressed');
+                  clearInterval(timer);
+                  timer = null;
+                };
 
-                  function sendKey(mod, code) {
-                      vib(12);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.sendKeyboardKey(mod, code);
-                      }
-                  }
+                btn.addEventListener('touchstart', startRepeat, { passive: false });
+                btn.addEventListener('touchend', stopRepeat);
+                btn.addEventListener('touchcancel', stopRepeat);
+              });
+            })();
 
-                  function toggleGyro() {
-                      vib(15);
-                      gyroActive = !gyroActive;
-                      const btn = document.getElementById('gyroToggle');
-                      const txt = document.getElementById('gyroTxt');
-                      if (gyroActive) {
-                          btn.classList.add('active');
-                          txt.innerText = 'Sihirli İmleç: Açık';
-                      } else {
-                          btn.classList.remove('active');
-                          txt.innerText = 'Sihirli İmleç: Kapalı';
-                      }
-                      if (window.AndroidBridge) {
-                          AndroidBridge.setGyroActive(gyroActive);
-                      }
-                  }
+            (function initTouchpad() {
+              const surface = document.getElementById('touchSurface');
+              const strip = document.getElementById('scrollStrip');
+              let lastX = 0, lastY = 0, startX = 0, startY = 0, startTime = 0;
+              let accX = 0, accY = 0, timer = null;
 
-                  function cycleSpeed() {
-                      vib(10);
-                      speedIndex = (speedIndex + 1) % speeds.length;
-                      currentSpeed = speeds[speedIndex];
-                      document.getElementById('speedBtn').innerText = 'Hız: ' + currentSpeed + 'x';
-                      if (window.AndroidBridge) {
-                          AndroidBridge.setSpeedMultiplier(currentSpeed);
-                      }
-                  }
+              surface.addEventListener('touchstart', (e) => {
+                const t = e.touches[0];
+                lastX = startX = t.clientX;
+                lastY = startY = t.clientY;
+                startTime = Date.now();
+              }, { passive: true });
 
-                  function fastConnect() {
-                      vib(15);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.fastReconnect();
-                      }
-                  }
+              surface.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const t = e.touches[0];
+                accX += (t.clientX - lastX) * 1.75;
+                accY += (t.clientY - lastY) * 1.75;
+                lastX = t.clientX;
+                lastY = t.clientY;
 
-                  window.updateBtStatus = function(connected, name) {
-                      const dot = document.getElementById('statusDot');
-                      const txt = document.getElementById('statusTxt');
-                      if (connected) {
-                          dot.classList.add('connected');
-                          txt.innerText = name ? (name.length > 9 ? name.substring(0,9) : name) : 'Bağlı';
-                      } else {
-                          dot.classList.remove('connected');
-                          txt.innerText = 'Bağlan';
-                      }
-                  };
+                if (!timer) {
+                  timer = setTimeout(() => {
+                    const dx = Math.round(accX);
+                    const dy = Math.round(accY);
+                    accX = 0; accY = 0; timer = null;
+                    if ((dx !== 0 || dy !== 0) && window.AndroidBridge) {
+                      window.AndroidBridge.moveMouse(dx, dy, 0);
+                    }
+                  }, 14);
+                }
+              }, { passive: false });
 
-                  function openBtModal() {
-                      vib(10);
-                      document.getElementById('btModal').classList.add('active');
-                      if (window.AndroidBridge) {
-                          AndroidBridge.requestBondedDevices();
-                      }
-                  }
+              surface.addEventListener('touchend', () => {
+                const dist = Math.hypot(lastX - startX, lastY - startY);
+                if (Date.now() - startTime < 220 && dist < 10) {
+                  clickMouse(1);
+                }
+              });
 
-                  function closeBtModal() {
-                      document.getElementById('btModal').classList.remove('active');
-                  }
+              let lastScrollY = 0;
+              strip.addEventListener('touchstart', (e) => {
+                lastScrollY = e.touches[0].clientY;
+              }, { passive: true });
 
-                  window.renderDeviceList = function(devices) {
-                      const list = document.getElementById('deviceList');
-                      list.innerHTML = '';
-                      if (!devices || devices.length === 0) {
-                          list.innerHTML = '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:10px;">Eşleşmiş cihaz bulunamadı.</div>';
-                          return;
-                      }
-                      devices.forEach(d => {
-                          const item = document.createElement('div');
-                          item.className = 'device-item';
-                          item.innerHTML = `<span><b>${d.name}</b><br><small style="opacity:0.6">${d.address}</small></span><span>Bağlan</span>`;
-                          item.onclick = function() {
-                              vib(15);
-                              if (window.AndroidBridge) {
-                                  AndroidBridge.connectToAddress(d.address);
-                              }
-                              closeBtModal();
-                          };
-                          list.appendChild(item);
-                      });
-                  };
+              strip.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const y = e.touches[0].clientY;
+                const diff = lastScrollY - y;
+                if (Math.abs(diff) > 14) {
+                  const wheel = diff > 0 ? -1 : 1;
+                  lastScrollY = y;
+                  if (window.AndroidBridge) window.AndroidBridge.moveMouse(0, 0, wheel);
+                }
+              }, { passive: false });
+            })();
 
-                  // TOUCHPAD - KENARA ÇARPINCA KADEMELİ KAYDIRMA
-                  const tp = document.getElementById('touchpad');
-                  let lastX = 0, lastY = 0;
-                  let tracking = false;
-                  let edgeScrollTimer = null;
+            function openScanner() {
+              vibrate();
+              document.getElementById('scanModal').classList.add('open');
+              rescan();
+            }
 
-                  tp.addEventListener('pointerdown', (e) => {
-                      tp.setPointerCapture(e.pointerId);
-                      tracking = true;
-                      lastX = e.clientX;
-                      lastY = e.clientY;
-                  });
+            function closeScanner() {
+              document.getElementById('scanModal').classList.remove('open');
+              if (window.AndroidBridge) window.AndroidBridge.stopScan();
+            }
 
-                  tp.addEventListener('pointermove', (e) => {
-                      if (!tracking) return;
-                      const dx = (e.clientX - lastX) * currentSpeed;
-                      const dy = (e.clientY - lastY) * currentSpeed;
-                      lastX = e.clientX;
-                      lastY = e.clientY;
+            function rescan() {
+              for (const k in foundDevices) delete foundDevices[k];
+              renderDeviceList();
+              document.getElementById('scanStatus').textContent = 'Eşleşmiş ve çevredeki açık cihazlar aranıyor...';
+              if (window.AndroidBridge) window.AndroidBridge.startScan();
+            }
 
-                      if (window.AndroidBridge) {
-                          AndroidBridge.sendMouseMove(Math.round(dx), Math.round(dy));
-                      }
+            function renderDeviceList() {
+              const container = document.getElementById('deviceList');
+              const keys = Object.keys(foundDevices);
+              if (keys.length === 0) {
+                container.innerHTML = '<div style="color:#64748b;font-size:12px;text-align:center;margin-top:34px;">Çevredeki açık Bluetooth cihazlar aranıyor...</div>';
+                return;
+              }
+              container.innerHTML = '';
+              keys.forEach((addr) => {
+                const d = foundDevices[addr];
+                const item = document.createElement('div');
+                item.className = 'dev-card';
+                item.onclick = () => {
+                  vibrate(20);
+                  document.getElementById('scanStatus').textContent = d.name + ' bağlanıyor...';
+                  if (window.AndroidBridge) window.AndroidBridge.connectDevice(d.address);
+                };
+                item.innerHTML = `
+                  <div>
+                    <div class="dev-title">${d.name}</div>
+                    <div class="dev-mac">${d.address}</div>
+                  </div>
+                  <div class="dev-tag">${d.isPaired ? 'Kayıtlı' : 'Yeni'}</div>
+                `;
+                container.appendChild(item);
+              });
+            }
 
-                      const rect = tp.getBoundingClientRect();
-                      const relX = e.clientX - rect.left;
-                      const relY = e.clientY - rect.top;
-                      const threshold = 28;
+            window.onDeviceFound = function(address, name, rssi, isPaired) {
+              foundDevices[address] = { address, name, rssi, isPaired };
+              renderDeviceList();
+            };
 
-                      let scrollY = 0;
-                      let scrollX = 0;
+            window.onScanFinished = function() {
+              const count = Object.keys(foundDevices).length;
+              document.getElementById('scanStatus').textContent = count > 0
+                ? `${count} cihaz listelendi. Bağlanmak için dokunun.`
+                : 'Cihaz bulunamadı. Tekrar tarayabilirsiniz.';
+            };
 
-                      if (relY < threshold) scrollY = 1;
-                      else if (relY > rect.height - threshold) scrollY = -1;
+            window.onBluetoothStateChanged = function(state, name) {
+              const dot = document.getElementById('statusDot');
+              const txt = document.getElementById('statusText');
+              dot.classList.remove('connected', 'connecting');
+              if (state === 'CONNECTED') {
+                isConnected = true;
+                dot.classList.add('connected');
+                txt.textContent = name;
+                closeScanner();
+              } else if (state === 'CONNECTING') {
+                isConnected = false;
+                dot.classList.add('connecting');
+                txt.textContent = 'Bağlanıyor: ' + name;
+              } else {
+                isConnected = false;
+                txt.textContent = name ? (name + ' (Dokun)') : 'Bağlı Değil';
+              }
+            };
 
-                      if (relX < threshold) scrollX = 1;
-                      else if (relX > rect.width - threshold) scrollX = -1;
-
-                      if ((scrollY !== 0 || scrollX !== 0) && !edgeScrollTimer) {
-                          edgeScrollTimer = setInterval(() => {
-                              if (window.AndroidBridge) {
-                                  if (scrollY !== 0) AndroidBridge.sendMouseScroll(scrollY);
-                              }
-                          }, 160);
-                      } else if (scrollY === 0 && scrollX === 0 && edgeScrollTimer) {
-                          clearInterval(edgeScrollTimer);
-                          edgeScrollTimer = null;
-                      }
-                  });
-
-                  function stopTouch(e) {
-                      tracking = false;
-                      if (edgeScrollTimer) {
-                          clearInterval(edgeScrollTimer);
-                          edgeScrollTimer = null;
-                      }
-                  }
-
-                  tp.addEventListener('pointerup', stopTouch);
-                  tp.addEventListener('pointercancel', stopTouch);
-
-                  function sendMouseClick(btn) {
-                      vib(12);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.sendMouseClick(btn);
-                      }
-                  }
-              </script>
+            window.onNativeSpeechResult = function(text) {
+              document.getElementById('manualText').value = text;
+            };
+          </script>
           </body>
           </html>
           EOF
@@ -967,247 +1212,171 @@ jobs:
           cat << 'EOF' > app/src/main/java/com/kumandarus/app/MainActivity.kt
           package com.kumandarus.app
 
+          import android.Manifest
           import android.annotation.SuppressLint
           import android.app.Activity
           import android.bluetooth.*
-          import android.content.Context
-          import android.content.SharedPreferences
+          import android.content.*
+          import android.content.pm.PackageManager
           import android.hardware.ConsumerIrManager
           import android.hardware.Sensor
           import android.hardware.SensorEvent
           import android.hardware.SensorEventListener
           import android.hardware.SensorManager
-          import android.os.*
-          import android.util.Log
-          import android.webkit.JavascriptInterface
-          import android.webkit.WebSettings
-          import android.webkit.WebView
-          import org.json.JSONArray
-          import org.json.JSONObject
+          import android.location.LocationManager
+          import android.os.Build
+          import android.os.Bundle
+          import android.os.Handler
+          import android.os.Looper
+          import android.speech.RecognizerIntent
+          import android.webkit.*
+          import android.widget.Toast
           import java.util.concurrent.Executors
+          import java.util.concurrent.ScheduledFuture
+          import java.util.concurrent.TimeUnit
           import kotlin.math.abs
+          import kotlin.math.max
+          import kotlin.math.min
+          import kotlin.math.roundToInt
 
+          @SuppressLint("MissingPermission", "SetJavaScriptEnabled")
           class MainActivity : Activity(), SensorEventListener {
 
               private lateinit var webView: WebView
               private lateinit var prefs: SharedPreferences
               private var btAdapter: BluetoothAdapter? = null
               private var hidDevice: BluetoothHidDevice? = null
-              private var currentDevice: BluetoothDevice? = null
+              private var connectedDevice: BluetoothDevice? = null
+              private var pendingDevice: BluetoothDevice? = null
               private var irManager: ConsumerIrManager? = null
-              private var vibrator: Vibrator? = null
 
-              private lateinit var sensorManager: SensorManager
+              private var sensorManager: SensorManager? = null
               private var gyroSensor: Sensor? = null
+              private var isGyroActive = false
+              private var gyroSensitivity = 22.0f
+              private var remX = 0f
+              private var remY = 0f
 
-              private val executor = Executors.newSingleThreadExecutor()
+              private var lastInputWasMouse = false
+              private val executor = Executors.newSingleThreadScheduledExecutor()
+              private var holdRepeatTask: ScheduledFuture<*>? = null
               private val mainHandler = Handler(Looper.getMainLooper())
+              private var isAppInForeground = false
 
-              private var gyroActive = false
-              private var speedMultiplier = 1.0f
+              private val REQ_SPEECH = 1001
+              private val REQ_PERMS = 1002
+              private val REQ_ENABLE_BT = 1003
 
-              companion object {
-                  private const val PREF_LAST_DEVICE = "last_addr"
+              private val HID_DESCRIPTOR = intArrayOf(
+                  0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x85, 0x01,
+                  0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00,
+                  0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02,
+                  0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x95, 0x06,
+                  0x75, 0x08, 0x15, 0x00, 0x25, 0x65, 0x05, 0x07,
+                  0x19, 0x00, 0x29, 0x65, 0x81, 0x00, 0xC0,
+                  0x05, 0x0C, 0x09, 0x01, 0xA1, 0x01, 0x85, 0x02,
+                  0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
+                  0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
+                  0xC0,
+                  0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x85, 0x03,
+                  0x09, 0x01, 0xA1, 0x00, 0x05, 0x09, 0x19, 0x01,
+                  0x29, 0x03, 0x15, 0x00, 0x25, 0x01, 0x95, 0x03,
+                  0x75, 0x01, 0x81, 0x02, 0x95, 0x01, 0x75, 0x05,
+                  0x81, 0x01, 0x05, 0x01, 0x09, 0x30, 0x09, 0x31,
+                  0x09, 0x38, 0x15, 0x81, 0x25, 0x7F, 0x75, 0x08,
+                  0x95, 0x03, 0x81, 0x06, 0xC0, 0xC0
+              ).map { it.toByte() }.toByteArray()
 
-                  // Standart USB HID Rapor Tanımlayıcısı
-                  private val HID_DESCRIPTOR = intArrayOf(
-                      0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x85, 0x01, // Klavye (Rapor ID 1)
-                      0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00,
-                      0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02,
-                      0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x95, 0x06,
-                      0x75, 0x08, 0x15, 0x00, 0x25, 0x65, 0x05, 0x07,
-                      0x19, 0x00, 0x29, 0x65, 0x81, 0x00, 0xC0,
-                      0x05, 0x0C, 0x09, 0x01, 0xA1, 0x01, 0x85, 0x02, // Tüketici Denetimleri (Rapor ID 2)
-                      0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
-                      0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
-                      0xC0,
-                      0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x85, 0x03, // Fare (Rapor ID 3)
-                      0x09, 0x01, 0xA1, 0x00, 0x05, 0x09, 0x19, 0x01,
-                      0x29, 0x03, 0x15, 0x00, 0x25, 0x01, 0x95, 0x03,
-                      0x75, 0x01, 0x81, 0x02, 0x95, 0x01, 0x75, 0x05,
-                      0x81, 0x01, 0x05, 0x01, 0x09, 0x30, 0x09, 0x31,
-                      0x09, 0x38, 0x15, 0x81, 0x25, 0x7F, 0x75, 0x08,
-                      0x95, 0x03, 0x81, 0x06, 0xC0, 0xC0
-                  ).map { it.toByte() }.toByteArray()
+              private val btReceiver = object : BroadcastReceiver() {
+                  override fun onReceive(context: Context?, intent: Intent?) {
+                      when (intent?.action) {
+                          BluetoothDevice.ACTION_FOUND -> {
+                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE).toInt()
+                              val name = device?.name ?: intent.getStringExtra(BluetoothDevice.EXTRA_NAME)
+                              if (device != null && !name.isNullOrBlank()) {
+                                  sendDeviceToWeb(device.address, name, rssi, device.bondState == BluetoothDevice.BOND_BONDED)
+                              }
+                          }
+                          BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
+                              runOnUiThread {
+                                  webView.evaluateJavascript("if(window.onScanFinished) window.onScanFinished();", null)
+                              }
+                          }
+                          BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
+                              val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                              val state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR)
+                              if (device != null && device.address == pendingDevice?.address && state == BluetoothDevice.BOND_BONDED) {
+                                  pendingDevice = null
+                                  saveLastDevice(device)
+                                  hidDevice?.connect(device)
+                              }
+                          }
+                      }
+                  }
               }
 
-              @SuppressLint("SetJavaScriptEnabled")
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   prefs = getSharedPreferences("kumandarus_prefs", Context.MODE_PRIVATE)
+                  webView = WebView(this)
+                  setContentView(webView)
 
                   val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
                   btAdapter = btManager?.adapter
                   irManager = getSystemService(Context.CONSUMER_IR_SERVICE) as? ConsumerIrManager
-                  vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
 
-                  sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-                  gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+                  sensorManager = getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+                  gyroSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
-                  initBluetoothHid()
+                  val filter = IntentFilter().apply {
+                      addAction(BluetoothDevice.ACTION_FOUND)
+                      addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+                      addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+                  }
+                  registerReceiver(btReceiver, filter)
 
-                  webView = WebView(this)
-                  setContentView(webView)
-
-                  with(webView.settings) {
+                  webView.clearCache(true)
+                  webView.settings.apply {
                       javaScriptEnabled = true
                       domStorageEnabled = true
                       cacheMode = WebSettings.LOAD_NO_CACHE
                   }
-
                   webView.addJavascriptInterface(AndroidBridge(), "AndroidBridge")
+                  webView.webViewClient = object : WebViewClient() {
+                      override fun onPageFinished(view: WebView?, url: String?) {
+                          super.onPageFinished(view, url)
+                          syncUiConnectionState()
+                      }
+                  }
                   webView.loadUrl("file:///android_asset/kumandarus.html")
+
+                  requestNeededPermissions()
               }
 
               override fun onResume() {
                   super.onResume()
-                  gyroSensor?.let {
-                      sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
-                  }
-                  fastReconnectDevice()
+                  isAppInForeground = true
+                  if (isGyroActive) registerGyroscope(true)
+                  if (hasRequiredPermissions()) ensureHidAndAutoConnect()
               }
 
               override fun onPause() {
                   super.onPause()
-                  sensorManager.unregisterListener(this)
+                  isAppInForeground = false
+                  releaseAllHidChannels()
+                  registerGyroscope(false)
               }
 
               override fun onDestroy() {
                   super.onDestroy()
-                  try {
-                      hidDevice?.let { btAdapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, it) }
-                  } catch (_: Exception) {}
+                  releaseAllHidChannels()
+                  registerGyroscope(false)
+                  try { unregisterReceiver(btReceiver) } catch (_: Exception) {}
+                  btAdapter?.cancelDiscovery()
               }
 
-              private fun initBluetoothHid() {
-                  btAdapter?.getProfileProxy(this, object : BluetoothProfile.ServiceListener {
-                      override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
-                          if (profile == BluetoothProfile.HID_DEVICE) {
-                              hidDevice = proxy as BluetoothHidDevice
-
-                              val sdp = BluetoothHidDeviceAppSdpSettings(
-                                  "Kumandarus", "Kumandarus Projector Remote", "Google",
-                                  BluetoothHidDevice.SUBCLASS1_COMBO, HID_DESCRIPTOR
-                              )
-
-                              hidDevice?.registerApp(sdp, null, null, executor, object : BluetoothHidDevice.Callback() {
-                                  override fun onAppStatusChanged(pluggedDevice: BluetoothDevice?, registered: Boolean) {
-                                      if (registered) {
-                                          fastReconnectDevice()
-                                      }
-                                  }
-
-                                  override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
-                                      val isConn = (state == BluetoothProfile.STATE_CONNECTED)
-                                      currentDevice = if (isConn) device else null
-
-                                      if (isConn && device != null) {
-                                          prefs.edit().putString(PREF_LAST_DEVICE, device.address).apply()
-                                      }
-
-                                      mainHandler.post {
-                                          val name = device?.name ?: "Projeksiyon"
-                                          webView.evaluateJavascript("window.updateBtStatus($isConn, '$name')", null)
-                                      }
-                                  }
-                              })
-                          }
-                      }
-
-                      override fun onServiceDisconnected(profile: Int) {
-                          if (profile == BluetoothProfile.HID_DEVICE) {
-                              hidDevice = null
-                          }
-                      }
-                  }, BluetoothProfile.HID_DEVICE)
-              }
-
-              private fun fastReconnectDevice() {
-                  executor.execute {
-                      val adapter = btAdapter ?: return@execute
-                      if (!adapter.isEnabled) return@execute
-                      val hid = hidDevice ?: return@execute
-
-                      if (adapter.isDiscovering) {
-                          try { adapter.cancelDiscovery() } catch (_: Exception) {}
-                      }
-
-                      val connected = try { hid.connectedDevices } catch (_: Exception) { emptyList() }
-                      if (connected.isNotEmpty()) {
-                          val dev = connected[0]
-                          currentDevice = dev
-                          mainHandler.post {
-                              webView.evaluateJavascript("window.updateBtStatus(true, '${dev.name ?: "Bağlı"}')", null)
-                          }
-                          return@execute
-                      }
-
-                      val lastAddr = prefs.getString(PREF_LAST_DEVICE, null)
-                      val bonded = adapter.bondedDevices ?: emptySet()
-                      val target = if (!lastAddr.isNullOrBlank()) {
-                          bonded.firstOrNull { it.address.equals(lastAddr, ignoreCase = true) }
-                              ?: try { adapter.getRemoteDevice(lastAddr) } catch (_: Exception) { null }
-                      } else {
-                          bonded.firstOrNull()
-                      }
-
-                      target?.let {
-                          try {
-                              hid.connect(it)
-                          } catch (e: Exception) {
-                              Log.e("Kumandarus", "Fast connect error: ${e.message}")
-                          }
-                      }
-                  }
-              }
-
-              override fun onSensorChanged(event: SensorEvent) {
-                  if (!gyroActive || currentDevice == null || event.sensor.type != Sensor.TYPE_GYROSCOPE) return
-
-                  val rotX = event.values[0]
-                  val rotZ = event.values[2]
-
-                  val deadzone = 0.035f
-                  val cleanZ = if (abs(rotZ) < deadzone) 0f else rotZ
-                  val cleanX = if (abs(rotX) < deadzone) 0f else rotX
-                  if (cleanZ == 0f && cleanX == 0f) return
-
-                  val dx = (-cleanZ * 24f * speedMultiplier).toInt().coerceIn(-127, 127)
-                  val dy = (-cleanX * 24f * speedMultiplier).toInt().coerceIn(-127, 127)
-
-                  if (dx != 0 || dy != 0) {
-                      sendMouseReport(0, dx.toByte(), dy.toByte(), 0)
-                  }
-              }
-
-              override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-
-              private fun sendMouseReport(buttons: Byte, dx: Byte, dy: Byte, wheel: Byte) {
-                  val dev = currentDevice ?: return
-                  val report = byteArrayOf(buttons, dx, dy, wheel)
-                  hidDevice?.sendReport(dev, 3, report)
-              }
-
-              private fun sendKeyboardReport(modifier: Byte, keyCode: Byte) {
-                  val dev = currentDevice ?: return
-                  val report = byteArrayOf(modifier, 0, keyCode, 0, 0, 0, 0, 0)
-                  hidDevice?.sendReport(dev, 1, report)
-              }
-
-              private fun sendConsumerReport(code: Int) {
-                  val dev = currentDevice ?: return
-                  val report = byteArrayOf((code and 0xFF).toByte(), ((code shr 8) and 0xFF).toByte())
-                  hidDevice?.sendReport(dev, 2, report)
-                  mainHandler.postDelayed({
-                      hidDevice?.sendReport(dev, 2, byteArrayOf(0, 0))
-                  }, 40)
-              }
-
-              // KIZILÖTESİ (IR) SİNYALİ - SADECE GÜÇ TUŞUNDA TETİKLENİR
-              private fun transmitNec(b0: Int, b1: Int, cmd: Int) {
-                  val ir = irManager ?: return
-                  if (!ir.hasIrEmitter()) return
-
+              private fun buildRedmiSafeNecPattern(b0: Int, b1: Int, cmd: Int): IntArray {
                   val invCmd = (cmd.inv()) and 0xFF
                   val pattern = IntArray(68)
                   pattern[0] = 9000
@@ -1222,142 +1391,567 @@ jobs:
                   }
                   pattern[66] = 560
                   pattern[67] = 20000
+                  return pattern
+              }
 
-                  try {
-                      ir.transmit(38000, pattern)
-                  } catch (e: Exception) {
-                      Log.e("Kumandarus", "IR transmit failed: ${e.message}")
+              private fun transmitNec(b0: Int, b1: Int, cmd: Int) {
+                  val ir = irManager
+                  if (ir == null || !ir.hasIrEmitter()) return
+                  executor.execute {
+                      try {
+                          val pattern = buildRedmiSafeNecPattern(b0, b1, cmd)
+                          ir.transmit(38000, pattern)
+                          Thread.sleep(95)
+                          ir.transmit(38000, pattern)
+                      } catch (e: Exception) {
+                          e.printStackTrace()
+                      }
+                  }
+              }
+
+              private fun registerGyroscope(enable: Boolean) {
+                  val sm = sensorManager ?: return
+                  val sensor = gyroSensor ?: return
+                  if (enable) {
+                      remX = 0f
+                      remY = 0f
+                      sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME)
+                  } else {
+                      sm.unregisterListener(this)
+                      releaseAllHidChannels()
+                  }
+              }
+
+              override fun onSensorChanged(event: SensorEvent?) {
+                  if (!isGyroActive || event?.sensor?.type != Sensor.TYPE_GYROSCOPE) return
+                  if (connectedDevice == null) return
+
+                  val rotX = event.values[0]
+                  val rotZ = event.values[2]
+
+                  val deadzone = 0.035f
+                  val cleanZ = if (abs(rotZ) < deadzone) 0f else rotZ
+                  val cleanX = if (abs(rotX) < deadzone) 0f else rotX
+                  if (cleanZ == 0f && cleanX == 0f) return
+
+                  val rawDx = (-cleanZ * gyroSensitivity) + remX
+                  val rawDy = (-cleanX * gyroSensitivity) + remY
+
+                  val dx = rawDx.roundToInt()
+                  val dy = rawDy.roundToInt()
+
+                  remX = rawDx - dx
+                  remY = rawDy - dy
+
+                  if (dx != 0 || dy != 0) {
+                      sendMouseReport(0, dx, dy, 0)
+                  }
+              }
+
+              override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+              private fun getRequiredPermissions(): List<String> {
+                  val list = mutableListOf(
+                      Manifest.permission.ACCESS_FINE_LOCATION,
+                      Manifest.permission.ACCESS_COARSE_LOCATION,
+                      Manifest.permission.RECORD_AUDIO
+                  )
+                  if (Build.VERSION.SDK_INT >= 31) {
+                      list.add(Manifest.permission.BLUETOOTH_SCAN)
+                      list.add(Manifest.permission.BLUETOOTH_CONNECT)
+                      list.add(Manifest.permission.BLUETOOTH_ADVERTISE)
+                  }
+                  return list
+              }
+
+              private fun hasRequiredPermissions(): Boolean {
+                  return getRequiredPermissions().all {
+                      checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+                  }
+              }
+
+              private fun requestNeededPermissions(): Boolean {
+                  val missing = getRequiredPermissions().filter {
+                      checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+                  }
+                  return if (missing.isNotEmpty()) {
+                      requestPermissions(missing.toTypedArray(), REQ_PERMS)
+                      false
+                  } else {
+                      ensureHidAndAutoConnect()
+                      true
+                  }
+              }
+
+              override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+                  super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+                  ensureHidAndAutoConnect()
+              }
+
+              private fun saveLastDevice(device: BluetoothDevice) {
+                  prefs.edit()
+                      .putString("last_addr", device.address)
+                      .putString("last_name", device.name ?: "Cihaz")
+                      .apply()
+              }
+
+              private fun ensureHidAndAutoConnect() {
+                  val adapter = btAdapter ?: return
+                  if (!adapter.isEnabled) return
+
+                  val proxy = hidDevice
+                  if (proxy != null) {
+                      val alreadyConnected = try { proxy.connectedDevices.firstOrNull() } catch (_: Exception) { null }
+                      if (alreadyConnected != null) {
+                          connectedDevice = alreadyConnected
+                          notifyWebStatus("CONNECTED", alreadyConnected.name ?: "Cihaz")
+                          return
+                      }
+                      autoReconnectToSaved()
+                      return
+                  }
+
+                  adapter.getProfileProxy(this, object : BluetoothProfile.ServiceListener {
+                      override fun onServiceConnected(profile: Int, proxyObj: BluetoothProfile?) {
+                          if (profile == BluetoothProfile.HID_DEVICE) {
+                              hidDevice = proxyObj as BluetoothHidDevice
+                              registerHidApp()
+                          }
+                      }
+                      override fun onServiceDisconnected(profile: Int) {
+                          if (profile == BluetoothProfile.HID_DEVICE) {
+                              hidDevice = null
+                              connectedDevice = null
+                              if (isAppInForeground) {
+                                  mainHandler.postDelayed({ ensureHidAndAutoConnect() }, 600)
+                              }
+                          }
+                      }
+                  }, BluetoothProfile.HID_DEVICE)
+              }
+
+              private fun registerHidApp() {
+                  val sdp = BluetoothHidDeviceAppSdpSettings(
+                      "kumandarus",
+                      "Smart TV ve Projeksiyon Kumandasi",
+                      "Android",
+                      BluetoothHidDevice.SUBCLASS1_COMBO,
+                      HID_DESCRIPTOR
+                  )
+                  hidDevice?.registerApp(sdp, null, null, executor, object : BluetoothHidDevice.Callback() {
+                      override fun onAppStatusChanged(pluggedDevice: BluetoothDevice?, registered: Boolean) {
+                          if (registered) {
+                              autoReconnectToSaved(pluggedDevice)
+                          } else {
+                              hidDevice = null
+                              if (isAppInForeground) {
+                                  mainHandler.postDelayed({ ensureHidAndAutoConnect() }, 800)
+                              }
+                          }
+                      }
+
+                      override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
+                          when (state) {
+                              BluetoothProfile.STATE_CONNECTED -> {
+                                  connectedDevice = device
+                                  if (device != null) saveLastDevice(device)
+                                  notifyWebStatus("CONNECTED", device?.name ?: "Cihaz")
+                              }
+                              BluetoothProfile.STATE_CONNECTING -> {
+                                  notifyWebStatus("CONNECTING", device?.name ?: "Cihaz")
+                              }
+                              BluetoothProfile.STATE_DISCONNECTED -> {
+                                  if (connectedDevice?.address == device?.address) {
+                                      connectedDevice = null
+                                  }
+                                  val lastName = prefs.getString("last_name", "") ?: ""
+                                  notifyWebStatus("DISCONNECTED", lastName)
+                              }
+                          }
+                      }
+                  })
+              }
+
+              // MAKSİMUM HIZDA YENİDEN BAĞLANMA
+              private fun autoReconnectToSaved(pluggedDevice: BluetoothDevice? = null) {
+                  val adapter = btAdapter ?: return
+                  val proxy = hidDevice ?: return
+
+                  // RF bant genişliğini harcayan taramayı anında kes
+                  if (adapter.isDiscovering) {
+                      try { adapter.cancelDiscovery() } catch (_: Exception) {}
+                  }
+
+                  val current = try { proxy.connectedDevices.firstOrNull() } catch (_: Exception) { null }
+                  if (current != null) {
+                      connectedDevice = current
+                      notifyWebStatus("CONNECTED", current.name ?: "Cihaz")
+                      return
+                  }
+
+                  val savedAddr = prefs.getString("last_addr", null)
+                  val target: BluetoothDevice? = when {
+                      !savedAddr.isNullOrBlank() -> adapter.bondedDevices?.firstOrNull { it.address == savedAddr } ?: try { adapter.getRemoteDevice(savedAddr) } catch (_: Exception) { null }
+                      pluggedDevice != null && pluggedDevice.bondState == BluetoothDevice.BOND_BONDED -> pluggedDevice
+                      else -> adapter.bondedDevices?.firstOrNull()
+                  }
+
+                  if (target != null) {
+                      notifyWebStatus("CONNECTING", target.name ?: "Cihaz")
+                      proxy.connect(target)
+                  } else {
+                      syncUiConnectionState()
+                  }
+              }
+
+              private fun syncUiConnectionState() {
+                  val dev = connectedDevice
+                  if (dev != null) {
+                      notifyWebStatus("CONNECTED", dev.name ?: "Cihaz")
+                  } else {
+                      val lastName = prefs.getString("last_name", "") ?: ""
+                      notifyWebStatus("DISCONNECTED", lastName)
+                  }
+              }
+
+              private fun notifyWebStatus(state: String, name: String) {
+                  val safeName = name.replace("'", "\\'")
+                  runOnUiThread {
+                      webView.evaluateJavascript(
+                          "if(window.onBluetoothStateChanged) window.onBluetoothStateChanged('$state', '$safeName');",
+                          null
+                      )
+                  }
+              }
+
+              private fun sendDeviceToWeb(address: String, name: String, rssi: Int, isPaired: Boolean) {
+                  val safeName = name.replace("'", "\\'")
+                  runOnUiThread {
+                      webView.evaluateJavascript(
+                          "if(window.onDeviceFound) window.onDeviceFound('$address', '$safeName', $rssi, $isPaired);",
+                          null
+                      )
+                  }
+              }
+
+              private fun startLiveDiscovery() {
+                  runOnUiThread {
+                      if (!requestNeededPermissions()) return@runOnUiThread
+                      val adapter = btAdapter ?: return@runOnUiThread
+                      if (!adapter.isEnabled) {
+                          startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), REQ_ENABLE_BT)
+                          return@runOnUiThread
+                      }
+
+                      adapter.bondedDevices?.forEach { d ->
+                          val n = d.name
+                          if (!n.isNullOrBlank()) {
+                              sendDeviceToWeb(d.address, n, -50, true)
+                          }
+                      }
+
+                      if (Build.VERSION.SDK_INT < 31) {
+                          val lm = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+                          val gpsOn = lm?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true ||
+                                      lm?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+                          if (!gpsOn) {
+                              Toast.makeText(this, "Yeni cihaz taramasi icin Konum (GPS) acik olmalidir", Toast.LENGTH_LONG).show()
+                          }
+                      }
+
+                      if (adapter.isDiscovering) adapter.cancelDiscovery()
+                      adapter.startDiscovery()
+                  }
+              }
+
+              private fun connectToAddress(address: String) {
+                  runOnUiThread {
+                      val adapter = btAdapter ?: return@runOnUiThread
+                      adapter.cancelDiscovery()
+                      val device = adapter.getRemoteDevice(address) ?: return@runOnUiThread
+                      saveLastDevice(device)
+
+                      if (hidDevice == null) {
+                          ensureHidAndAutoConnect()
+                          return@runOnUiThread
+                      }
+
+                      if (device.bondState != BluetoothDevice.BOND_BONDED) {
+                          pendingDevice = device
+                          device.createBond()
+                          notifyWebStatus("CONNECTING", device.name ?: "Cihaz")
+                      } else {
+                          notifyWebStatus("CONNECTING", device.name ?: "Cihaz")
+                          hidDevice?.connect(device)
+                      }
+                  }
+              }
+
+              private fun startNativeVoiceInput() {
+                  runOnUiThread {
+                      try {
+                          val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                              putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                              putExtra(RecognizerIntent.EXTRA_LANGUAGE, "tr-TR")
+                              putExtra(RecognizerIntent.EXTRA_PROMPT, "Konusun...")
+                          }
+                          startActivityForResult(intent, REQ_SPEECH)
+                      } catch (e: Exception) {
+                          Toast.makeText(this, "Sesli yazma desteklenmiyor", Toast.LENGTH_SHORT).show()
+                      }
+                  }
+              }
+
+              override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+                  super.onActivityResult(requestCode, resultCode, data)
+                  if (requestCode == REQ_SPEECH && resultCode == RESULT_OK) {
+                      val spoken = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull() ?: return
+                      executor.execute {
+                          if (connectedDevice == null) {
+                              runOnUiThread { ensureHidAndAutoConnect() }
+                              Thread.sleep(450)
+                          }
+                          sendTextViaHid(spoken)
+                      }
+                      val safe = spoken.replace("'", "\\'")
+                      webView.evaluateJavascript("if(window.onNativeSpeechResult) window.onNativeSpeechResult('$safe');", null)
+                  } else if (requestCode == REQ_ENABLE_BT && resultCode == RESULT_OK) {
+                      ensureHidAndAutoConnect()
+                  }
+              }
+
+              private fun releaseAllHidChannels() {
+                  holdRepeatTask?.cancel(true)
+                  holdRepeatTask = null
+                  val dev = connectedDevice ?: return
+                  executor.execute {
+                      hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                      Thread.sleep(10)
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+                      Thread.sleep(10)
+                      hidDevice?.sendReport(dev, 2, byteArrayOf(0, 0))
+                  }
+              }
+
+              private fun wakeUpDpadFocusFromMouse() {
+                  holdRepeatTask?.cancel(true)
+                  holdRepeatTask = null
+                  val dev = connectedDevice ?: return
+                  executor.execute {
+                      hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                      Thread.sleep(15)
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 82, 0, 0, 0, 0, 0))
+                      Thread.sleep(18)
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+                      lastInputWasMouse = false
+                  }
+              }
+
+              private fun startHoldKey(keyCode: Int) {
+                  holdRepeatTask?.cancel(true)
+                  holdRepeatTask = null
+                  val dev = connectedDevice
+                  if (dev == null) {
+                      ensureHidAndAutoConnect()
+                      return
+                  }
+                  executor.execute {
+                      if (lastInputWasMouse) {
+                          hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                          Thread.sleep(15)
+                          lastInputWasMouse = false
+                      }
+                  }
+                  val report = byteArrayOf(0, 0, keyCode.toByte(), 0, 0, 0, 0, 0)
+                  holdRepeatTask = executor.scheduleWithFixedDelay({
+                      val activeDev = connectedDevice ?: return@scheduleWithFixedDelay
+                      hidDevice?.sendReport(activeDev, 1, report)
+                  }, 15, 70, TimeUnit.MILLISECONDS)
+              }
+
+              private fun stopHoldKey() {
+                  holdRepeatTask?.cancel(true)
+                  holdRepeatTask = null
+                  val dev = connectedDevice ?: return
+                  executor.execute {
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+                  }
+              }
+
+              private fun sendKeyboardKey(modifier: Int, keyCode: Int) {
+                  val dev = connectedDevice
+                  if (dev == null) {
+                      ensureHidAndAutoConnect()
+                      return
+                  }
+                  executor.execute {
+                      if (lastInputWasMouse) {
+                          hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                          Thread.sleep(12)
+                          lastInputWasMouse = false
+                      }
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(modifier.toByte(), 0, keyCode.toByte(), 0, 0, 0, 0, 0))
+                      Thread.sleep(22)
+                      hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+                      Thread.sleep(16)
+                  }
+              }
+
+              private fun sendConsumerUsage(usage: Int) {
+                  val dev = connectedDevice
+                  if (dev == null) {
+                      ensureHidAndAutoConnect()
+                      return
+                  }
+                  executor.execute {
+                      if (lastInputWasMouse) {
+                          hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                          Thread.sleep(12)
+                          lastInputWasMouse = false
+                      }
+                      val low = (usage and 0xFF).toByte()
+                      val high = ((usage shr 8) and 0xFF).toByte()
+                      hidDevice?.sendReport(dev, 2, byteArrayOf(low, high))
+                      Thread.sleep(25)
+                      hidDevice?.sendReport(dev, 2, byteArrayOf(0, 0))
+                  }
+              }
+
+              private fun sendMouseReport(buttons: Int, dx: Int, dy: Int, wheel: Int) {
+                  val dev = connectedDevice ?: return
+                  lastInputWasMouse = true
+                  executor.execute {
+                      val cx = max(-127, min(127, dx)).toByte()
+                      val cy = max(-127, min(127, dy)).toByte()
+                      val cw = max(-127, min(127, wheel)).toByte()
+                      hidDevice?.sendReport(dev, 3, byteArrayOf(buttons.toByte(), cx, cy, cw))
+                      if (buttons != 0) {
+                          Thread.sleep(24)
+                          hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0, 0, 0))
+                      }
+                  }
+              }
+
+              private fun sendTextViaHid(rawText: String) {
+                  val trMap = mapOf(
+                      'ç' to 'c', 'Ç' to 'C', 'ğ' to 'g', 'Ğ' to 'G',
+                      'ı' to 'i', 'İ' to 'I', 'ö' to 'o', 'Ö' to 'O',
+                      'ş' to 's', 'Ş' to 'S', 'ü' to 'u', 'Ü' to 'U'
+                  )
+                  val normalized = rawText.map { trMap[it] ?: it }.joinToString("")
+                  for (ch in normalized) {
+                      val pair = charToHid(ch)
+                      if (pair != null) {
+                          sendKeyboardKey(pair.first, pair.second)
+                      }
+                  }
+              }
+
+              private fun charToHid(c: Char): Pair<Int, Int>? {
+                  return when (c) {
+                      in 'a'..'z' -> Pair(0, (c - 'a') + 4)
+                      in 'A'..'Z' -> Pair(2, (c - 'A') + 4)
+                      in '1'..'9' -> Pair(0, (c - '1') + 30)
+                      '0' -> Pair(0, 39)
+                      ' ' -> Pair(0, 44)
+                      '\n' -> Pair(0, 40)
+                      '.' -> Pair(0, 55)
+                      ',' -> Pair(0, 54)
+                      '-' -> Pair(0, 45)
+                      '?' -> Pair(2, 56)
+                      '!' -> Pair(2, 30)
+                      else -> null
                   }
               }
 
               inner class AndroidBridge {
+                  @JavascriptInterface
+                  fun startScan() = startLiveDiscovery()
 
                   @JavascriptInterface
-                  fun vibrate(ms: Long) {
-                      vibrator?.let {
-                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                              it.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE))
-                          } else {
-                              @Suppress("DEPRECATION")
-                              it.vibrate(ms)
-                          }
-                      }
+                  fun stopScan() {
+                      btAdapter?.cancelDiscovery()
                   }
 
-                  // 1. KESİNLİKLE SADECE BURADA IR ÇALIŞIR
                   @JavascriptInterface
-                  fun triggerHybridPower() {
-                      // Projeksiyon IR Güç Kodu: 0x80, 0x7F, 0x12
+                  fun connectDevice(address: String) = connectToAddress(address)
+
+                  @JavascriptInterface
+                  fun reconnectLast() = runOnUiThread { ensureHidAndAutoConnect() }
+
+                  // SADECE GÜÇ TUŞUNDA IR ÇALIŞIR
+                  @JavascriptInterface
+                  fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
                       transmitNec(0x80, 0x7F, 0x12)
-                      // Yedek olarak Bluetooth Güç Sinyali
-                      sendConsumerReport(0x0030)
-                  }
-
-                  // 2. OK TUŞU: TEK SEFERLİK DİSKRET SİNYAL (OTOMATİK ODAKLAMA BAŞLATMAZ)
-                  @JavascriptInterface
-                  fun tapOkKey() {
-                      // 40 = Return (Enter). Anlık 30ms sinyal gönderip bırakır.
-                      mainHandler.post {
-                          sendKeyboardReport(0, 40)
-                          mainHandler.postDelayed({
-                              sendKeyboardReport(0, 0)
-                          }, 30)
+                      if (connectedDevice != null) {
+                          sendConsumerUsage(48)
+                      } else {
+                          runOnUiThread { ensureHidAndAutoConnect() }
                       }
                   }
 
                   @JavascriptInterface
-                  fun sendKeyboardKey(mod: Int, code: Int) {
-                      mainHandler.post {
-                          sendKeyboardReport(mod.toByte(), code.toByte())
-                          mainHandler.postDelayed({
-                              sendKeyboardReport(0, 0)
-                          }, 35)
-                      }
+                  fun releaseAllHid() = releaseAllHidChannels()
+
+                  @JavascriptInterface
+                  fun recoverDpadFocus() = wakeUpDpadFocusFromMouse()
+
+                  @JavascriptInterface
+                  fun sendBackKey() {
+                      sendConsumerUsage(548)
                   }
 
                   @JavascriptInterface
-                  fun sendConsumerKey(code: Int) {
-                      sendConsumerReport(code)
+                  fun sendMenuKey() {
+                      sendConsumerUsage(64)
+                      sendKeyboardKey(0, 101)
                   }
 
                   @JavascriptInterface
-                  fun sendMouseMove(dx: Int, dy: Int) {
-                      sendMouseReport(0, dx.coerceIn(-127, 127).toByte(), dy.coerceIn(-127, 127).toByte(), 0)
+                  fun setGyroEnabled(enabled: Boolean) {
+                      isGyroActive = enabled
+                      runOnUiThread { registerGyroscope(enabled) }
                   }
 
                   @JavascriptInterface
-                  fun sendMouseScroll(wheel: Int) {
-                      sendMouseReport(0, 0, 0, wheel.coerceIn(-127, 127).toByte())
+                  fun setGyroSensitivity(sens: Float) {
+                      gyroSensitivity = sens
                   }
 
                   @JavascriptInterface
-                  fun sendMouseClick(button: Int) {
-                      val b = if (button == 1) 0x01.toByte() else 0x02.toByte()
-                      sendMouseReport(b, 0, 0, 0)
-                      mainHandler.postDelayed({
-                          sendMouseReport(0, 0, 0, 0)
-                      }, 40)
-                  }
+                  fun startVoice() = startNativeVoiceInput()
 
                   @JavascriptInterface
-                  fun setGyroActive(active: Boolean) {
-                      gyroActive = active
-                  }
+                  fun sendText(text: String) = sendTextViaHid(text)
 
                   @JavascriptInterface
-                  fun setSpeedMultiplier(speed: Float) {
-                      speedMultiplier = speed
-                  }
+                  fun sendKey(keyCode: Int) = sendKeyboardKey(0, keyCode)
 
                   @JavascriptInterface
-                  fun fastReconnect() {
-                      fastReconnectDevice()
-                  }
+                  fun keyDown(keyCode: Int) = startHoldKey(keyCode)
 
                   @JavascriptInterface
-                  fun requestBondedDevices() {
-                      executor.execute {
-                          val bonded = btAdapter?.bondedDevices ?: emptySet()
-                          val jsonArray = JSONArray()
-                          for (d in bonded) {
-                              val obj = JSONObject()
-                              obj.put("name", d.name ?: "Bilinmeyen Cihaz")
-                              obj.put("address", d.address)
-                              jsonArray.put(obj)
-                          }
-                          mainHandler.post {
-                              webView.evaluateJavascript("window.renderDeviceList($jsonArray)", null)
-                          }
-                      }
-                  }
+                  fun keyUp(keyCode: Int) = stopHoldKey()
 
                   @JavascriptInterface
-                  fun connectToAddress(addr: String) {
-                      executor.execute {
-                          try {
-                              val target = btAdapter?.getRemoteDevice(addr)
-                              if (target != null) {
-                                  hidDevice?.connect(target)
-                              }
-                          } catch (e: Exception) {
-                              Log.e("Kumandarus", "Connect error: ${e.message}")
-                          }
-                      }
-                  }
+                  fun sendConsumer(usage: Int) = sendConsumerUsage(usage)
+
+                  @JavascriptInterface
+                  fun moveMouse(dx: Int, dy: Int, wheel: Int) = sendMouseReport(0, dx, dy, wheel)
+
+                  @JavascriptInterface
+                  fun clickMouse(button: Int) = sendMouseReport(button, 0, 0, 0)
               }
           }
           EOF
-
-          chmod +x ./gradlew || true
 
       - name: APK Derle ve Isimlendir
         run: |
           gradle assembleDebug --no-daemon
           cp app/build/outputs/apk/debug/app-debug.apk kumandarus.apk
 
-      - name: APK Yayinla
+      - name: APK Dosyasini Yukle
         uses: actions/upload-artifact@v4
         with:
-          name: kumandarus-v21-apk
+          name: kumandarus-v23-apk
           path: kumandarus.apk
-          retention-days: 14
