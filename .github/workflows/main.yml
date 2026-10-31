@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 15
-                  versionName "15.0"
+                  versionCode 17
+                  versionName "17.0"
               }
 
               compileOptions {
@@ -255,6 +255,7 @@ jobs:
               pointer-events: none;
             }
 
+            /* Üst Bar */
             .header {
               display: flex;
               align-items: center;
@@ -262,8 +263,8 @@ jobs:
               gap: 6px;
             }
             .icon-pill {
-              width: 40px;
-              height: 40px;
+              width: 38px;
+              height: 38px;
               border-radius: 12px;
               background: rgba(30, 41, 59, 0.65);
               border: 1px solid rgba(255, 255, 255, 0.07);
@@ -282,22 +283,23 @@ jobs:
             }
             .icon-pill.power {
               color: #f87171;
-              border-color: rgba(248, 113, 113, 0.35);
+              border-color: rgba(248, 113, 113, 0.4);
             }
-            .icon-pill.keystone-top {
+            .icon-pill.keystone-btn {
               color: #38bdf8;
-              border-color: rgba(56, 189, 248, 0.35);
+              border-color: rgba(56, 189, 248, 0.45);
+              background: rgba(14, 165, 233, 0.14);
             }
             .icon-pill.adjust-btn {
               color: #e2e8f0;
               width: auto;
-              padding: 0 9px;
+              padding: 0 8px;
               gap: 4px;
               font-size: 11px;
             }
             .status-pill {
               flex: 1;
-              height: 40px;
+              height: 38px;
               border-radius: 12px;
               background: rgba(30, 41, 59, 0.65);
               border: 1px solid rgba(255, 255, 255, 0.07);
@@ -333,15 +335,44 @@ jobs:
               text-overflow: ellipsis;
             }
 
+            /* Şekilli Kumandarus Logosu (Üst Boşluk Alanı) */
+            .brand-zone {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              padding: 8px 0 2px;
+            }
+            .brand-title {
+              font-size: 26px;
+              font-weight: 900;
+              letter-spacing: 5px;
+              text-transform: lowercase;
+              background: linear-gradient(135deg, #e0f2fe 0%, #38bdf8 50%, #818cf8 100%);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.4));
+              line-height: 1.1;
+            }
+            .brand-subtitle {
+              font-size: 9px;
+              font-weight: 700;
+              letter-spacing: 3px;
+              text-transform: uppercase;
+              color: #64748b;
+              margin-top: 2px;
+            }
+
+            /* Sihirli Kumanda Çubuğu */
             .gyro-bar {
               display: flex;
               align-items: center;
               gap: 8px;
-              margin-top: 5px;
+              margin: 4px 0 6px;
             }
             .gyro-btn {
               flex: 1;
-              height: 35px;
+              height: 34px;
               border-radius: 11px;
               background: rgba(30, 41, 59, 0.6);
               border: 1px solid rgba(56, 189, 248, 0.2);
@@ -359,7 +390,7 @@ jobs:
               color: #38bdf8;
             }
             .sens-pill {
-              height: 35px;
+              height: 34px;
               padding: 0 10px;
               border-radius: 11px;
               background: rgba(30, 41, 59, 0.6);
@@ -369,22 +400,23 @@ jobs:
               font-weight: 700;
             }
 
+            /* Aşağı Hizalanmış Ergonomik Kumanda Alanı */
             .main-stage {
               flex: 1;
               display: flex;
               flex-direction: column;
-              justify-content: center;
+              justify-content: flex-end;
               align-items: center;
               min-height: 0;
-              margin: 3px 0;
+              margin-bottom: 6px;
             }
             .stage-panel {
               display: none;
               width: 100%;
-              height: 100%;
               flex-direction: column;
-              justify-content: space-evenly;
+              justify-content: flex-end;
               align-items: center;
+              gap: 12px;
             }
             .stage-panel.active {
               display: flex;
@@ -393,8 +425,8 @@ jobs:
             /* DPAD Kumanda */
             .dpad-ring {
               position: relative;
-              width: 196px;
-              height: 196px;
+              width: 194px;
+              height: 194px;
               border-radius: 50%;
               background: linear-gradient(145deg, #161e2e, #0f1420);
               border: 1px solid rgba(255, 255, 255, 0.08);
@@ -428,14 +460,14 @@ jobs:
               background: rgba(56, 189, 248, 0.2);
               border-color: rgba(56, 189, 248, 0.5);
             }
-            .d-up { top: 4px; left: 56px; width: 84px; height: 54px; border-radius: 42px 42px 12px 12px; }
-            .d-down { bottom: 4px; left: 56px; width: 84px; height: 54px; border-radius: 12px 12px 42px 42px; }
-            .d-left { left: 4px; top: 56px; width: 54px; height: 84px; border-radius: 42px 12px 12px 42px; }
-            .d-right { right: 4px; top: 56px; width: 54px; height: 84px; border-radius: 12px 42px 42px 12px; }
+            .d-up { top: 4px; left: 55px; width: 84px; height: 54px; border-radius: 42px 42px 12px 12px; }
+            .d-down { bottom: 4px; left: 55px; width: 84px; height: 54px; border-radius: 12px 12px 42px 42px; }
+            .d-left { left: 4px; top: 55px; width: 54px; height: 84px; border-radius: 42px 12px 12px 42px; }
+            .d-right { right: 4px; top: 55px; width: 54px; height: 84px; border-radius: 12px 42px 42px 12px; }
             .d-ok {
               position: absolute;
-              left: 64px;
-              top: 64px;
+              left: 63px;
+              top: 63px;
               width: 68px;
               height: 68px;
               border-radius: 50%;
@@ -469,20 +501,20 @@ jobs:
               width: 100%;
               display: flex;
               flex-direction: column;
-              gap: 5px;
+              gap: 6px;
             }
             .btn-row {
               display: grid;
               grid-template-columns: repeat(3, 1fr);
-              gap: 6px;
+              gap: 8px;
             }
             .soft-btn {
-              height: 38px;
-              border-radius: 11px;
+              height: 40px;
+              border-radius: 12px;
               background: rgba(30, 41, 59, 0.55);
               border: 1px solid rgba(255, 255, 255, 0.06);
               color: #e2e8f0;
-              font-size: 12px;
+              font-size: 13px;
               font-weight: 600;
               display: flex;
               align-items: center;
@@ -491,12 +523,6 @@ jobs:
               cursor: pointer;
               touch-action: none;
             }
-            .soft-btn.highlight-keystone {
-              background: rgba(14, 165, 233, 0.16);
-              border-color: rgba(56, 189, 248, 0.35);
-              color: #38bdf8;
-              font-weight: 700;
-            }
             .soft-btn.pressed, .soft-btn:active {
               transform: scale(0.95);
               background: rgba(56, 189, 248, 0.22);
@@ -504,14 +530,13 @@ jobs:
               color: #fff;
             }
 
-            /* Touchpad Alanı & LG Kenar Rozeti */
+            /* Touchpad Alanı */
             .touchpad-wrap {
               width: 100%;
               flex: 1;
               display: flex;
               gap: 8px;
-              margin-bottom: 6px;
-              min-height: 140px;
+              min-height: 180px;
             }
             .touch-surface {
               position: relative;
@@ -574,6 +599,7 @@ jobs:
               gap: 8px;
             }
 
+            /* Alt Mod Dock */
             .mode-dock {
               display: grid;
               grid-template-columns: 1fr auto 1fr;
@@ -756,13 +782,13 @@ jobs:
           </head>
           <body>
 
-            <!-- Üst Bar: Güç, Kenar Düzeltme, Filtre, Durum, BT -->
+            <!-- Üst Bar: [Güç] [Manuel Anahtarlık] [Filtre] [Durum] [BT] -->
             <div class="header">
-              <button class="icon-pill power" onclick="triggerHybridPower()" title="Güç Aç/Kapat">
+              <button class="icon-pill power" onclick="triggerHybridPower()" title="Kızılötesi (IR) Güç Aç/Kapat">
                 <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
               </button>
 
-              <button class="icon-pill keystone-top" onclick="triggerKeystone()" title="Projeksiyon Kenar Düzeltme (Keystone)">
+              <button class="icon-pill keystone-btn" onclick="openKeystonePath()" title="Manuel Anahtarlık (Kenar Düzeltme)">
                 <svg viewBox="0 0 24 24"><polygon points="4 5 20 7 18 19 6 17 4 5"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
               </button>
 
@@ -781,7 +807,13 @@ jobs:
               </button>
             </div>
 
-            <!-- Sihirli Kumanda Jiroskop Çubuğu -->
+            <!-- Üst Boşluk Alanı: Şekilli Kumandarus Logosu -->
+            <div class="brand-zone">
+              <div class="brand-title">kumandarus</div>
+              <div class="brand-subtitle">Akıllı Projeksiyon & TV</div>
+            </div>
+
+            <!-- Sihirli Kumanda Çubuğu -->
             <div class="gyro-bar">
               <button id="gyroBtn" class="gyro-btn" onclick="toggleGyroMouse()">
                 <svg viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
@@ -790,7 +822,7 @@ jobs:
               <button id="sensBtn" class="sens-pill" onclick="cycleSensitivity()">Hız: Orta</button>
             </div>
 
-            <!-- Orta Alan -->
+            <!-- Aşağı Hizalanmış Ergonomik Kumanda Alanı -->
             <div class="main-stage">
 
               <!-- KUMANDA MODU -->
@@ -828,20 +860,7 @@ jobs:
                     </button>
                   </div>
 
-                  <!-- 2. Satır: Kenar Düzeltme / Ayarlar / Kaynak -->
-                  <div class="btn-row">
-                    <button class="soft-btn highlight-keystone" onclick="triggerKeystone()" title="Kenar / Köşe Düzeltme Ayarı">
-                      <svg viewBox="0 0 24 24"><polygon points="4 5 20 7 18 19 6 17 4 5"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg> Kenar Düzeltme
-                    </button>
-                    <button class="soft-btn" onclick="tapSettings()" title="Cihaz Ayarları">
-                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Ayarlar
-                    </button>
-                    <button class="soft-btn" onclick="tapSource()" title="Giriş Kaynağı (HDMI/AV)">
-                      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Kaynak
-                    </button>
-                  </div>
-
-                  <!-- 3. Satır: Ses Kontrolleri -->
+                  <!-- 2. Satır: Ses - / Sessiz / Ses + -->
                   <div class="btn-row">
                     <button class="soft-btn" data-hold-consumer="234">
                       <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="16" y1="12" x2="22" y2="12"/></svg> Ses -
@@ -983,19 +1002,24 @@ jobs:
               }
             }
 
-            // Güvenli Güç Açma/Kapama (Keystone 0x12 kodunu göndermez)
+            // Orijinal Kızılötesi (IR 0x80, 0x7F, 0x12) & Bluetooth Hibrit Güç
             function triggerHybridPower() {
               vibrate(30);
               if (window.AndroidBridge) {
-                window.AndroidBridge.triggerPowerSafe();
+                window.AndroidBridge.triggerPowerWithIr(0x80, 0x7F, 0x12);
               }
             }
 
-            // Doğrudan Kenar Düzeltme (Keystone) Ayarını Açan Özel Tuş
-            function triggerKeystone() {
+            // Bluetooth HID Otomasyonu ile Ayarlar > Projeksiyon > Manuel Anahtarlık
+            function openKeystonePath() {
               vibrate(35);
+              const txt = document.getElementById('statusText');
+              const orig = txt.textContent;
+              txt.textContent = 'Manuel Anahtarlık Açılıyor...';
+              setTimeout(() => { txt.textContent = orig; }, 2000);
+
               if (window.AndroidBridge) {
-                window.AndroidBridge.triggerKeystone();
+                window.AndroidBridge.openKeystonePath();
               }
             }
 
@@ -1007,16 +1031,6 @@ jobs:
             function tapMenu() {
               vibrate();
               if (window.AndroidBridge) window.AndroidBridge.sendMenuKey();
-            }
-
-            function tapSettings() {
-              vibrate();
-              if (window.AndroidBridge) window.AndroidBridge.sendSettingsKey();
-            }
-
-            function tapSource() {
-              vibrate();
-              if (window.AndroidBridge) window.AndroidBridge.sendSourceKey();
             }
 
             function toggleGyroMouse() {
@@ -1212,7 +1226,6 @@ jobs:
               surface.addEventListener('touchmove', (e) => {
                 e.preventDefault();
 
-                // Çift parmakla manuel kaydırma
                 if (e.touches.length === 2) {
                   const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                   const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
@@ -1231,7 +1244,6 @@ jobs:
                   return;
                 }
 
-                // Tek parmak: İmleç serbest hareketi
                 if (e.touches.length === 1) {
                   const t = e.touches[0];
                   accX += (t.clientX - lastX) * 1.8;
@@ -1612,7 +1624,7 @@ jobs:
                       try {
                           val pattern = buildRedmiSafeNecPattern(b0, b1, cmd)
                           ir.transmit(38000, pattern)
-                          Thread.sleep(80)
+                          Thread.sleep(95)
                           ir.transmit(38000, pattern)
                       } catch (e: Exception) {
                           e.printStackTrace()
@@ -2031,6 +2043,12 @@ jobs:
                   }
               }
 
+              private fun sendSingleKeySync(dev: BluetoothDevice, keyCode: Int) {
+                  hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, keyCode.toByte(), 0, 0, 0, 0, 0))
+                  Thread.sleep(30)
+                  hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+              }
+
               private fun notifyEdgeScroll(dir: String) {
                   val now = System.currentTimeMillis()
                   if (now - lastEdgeNotifyTime > 160) {
@@ -2205,11 +2223,10 @@ jobs:
                   @JavascriptInterface
                   fun reconnectLast() = runOnUiThread { ensureHidAndAutoConnect() }
 
-                  // Güvenli Projeksiyon Güç Açma/Kapama (Keystone 0x12 kodunu göndermez!)
+                  // Orijinal Kızılötesi (IR 0x80, 0x7F, 0x12) Güç Sinyali
                   @JavascriptInterface
-                  fun triggerPowerSafe() {
-                      transmitNec(0x00, 0xFF, 0x14)
-                      transmitNec(0x80, 0x7F, 0x14)
+                  fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
+                      transmitNec(0x80, 0x7F, 0x12)
                       if (connectedDevice != null) {
                           sendConsumerUsage(48) // Standart HID Power
                       } else {
@@ -2218,17 +2235,50 @@ jobs:
                   }
 
                   @JavascriptInterface
-                  fun triggerPowerWithIr(b0: Int, b1: Int, cmd: Int) {
-                      triggerPowerSafe()
+                  fun triggerPowerSafe() {
+                      triggerPowerWithIr(0x80, 0x7F, 0x12)
                   }
 
-                  // Doğrudan Kenar Düzeltme (Keystone / Calibration) Menüsünü Açma
+                  // Android Ayarları > Projeksiyon Ayarları > Manuel Anahtarlık Otomatik Yolu (Kızılötesiz, saf Bluetooth HID)
                   @JavascriptInterface
-                  fun triggerKeystone() {
-                      transmitNec(0x80, 0x7F, 0x12)
-                      transmitNec(0x00, 0xFF, 0x12)
-                      if (connectedDevice != null) {
-                          sendConsumerUsage(150) // HID Picture/Settings
+                  fun openKeystonePath() {
+                      val dev = connectedDevice
+                      if (dev == null) {
+                          runOnUiThread { ensureHidAndAutoConnect() }
+                          return
+                      }
+                      executor.execute {
+                          try {
+                              // 1) Android Ayarlarını Aç (Evrensel Android Kısayolu: Win + I)
+                              hidDevice?.sendReport(dev, 1, byteArrayOf(0x08, 0, 12, 0, 0, 0, 0, 0))
+                              Thread.sleep(35)
+                              hidDevice?.sendReport(dev, 1, byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0))
+                              Thread.sleep(25)
+                              // Ek güvence olarak Consumer Settings (150)
+                              hidDevice?.sendReport(dev, 2, byteArrayOf(0x96.toByte(), 0))
+                              Thread.sleep(30)
+                              hidDevice?.sendReport(dev, 2, byteArrayOf(0, 0))
+
+                              // Ayarlar penceresinin render olup odak alması için bekleme
+                              Thread.sleep(650)
+
+                              // 2) "Projeksiyon Ayarları"na in (Aşağı Ok: Key 81)
+                              sendSingleKeySync(dev, 81)
+                              Thread.sleep(200)
+
+                              // 3) Projeksiyon Ayarlarına Gir (Enter / OK: Key 40)
+                              sendSingleKeySync(dev, 40)
+                              Thread.sleep(500)
+
+                              // 4) "Manuel Anahtarlık / Keystone" seçeneğine in (Aşağı Ok: Key 81)
+                              sendSingleKeySync(dev, 81)
+                              Thread.sleep(200)
+
+                              // 5) Manuel Anahtarlığı Aç (Enter / OK: Key 40)
+                              sendSingleKeySync(dev, 40)
+                          } catch (e: Exception) {
+                              e.printStackTrace()
+                          }
                       }
                   }
 
@@ -2251,16 +2301,6 @@ jobs:
                   @JavascriptInterface
                   fun sendMenuKey() {
                       sendConsumerUsage(64)
-                  }
-
-                  @JavascriptInterface
-                  fun sendSettingsKey() {
-                      sendConsumerUsage(150) // 0x96: Picture / Settings
-                  }
-
-                  @JavascriptInterface
-                  fun sendSourceKey() {
-                      sendConsumerUsage(551) // Media Select TV / Source
                   }
 
                   @JavascriptInterface
