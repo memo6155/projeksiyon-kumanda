@@ -79,8 +79,8 @@ jobs:
                   applicationId "com.kumandarus.app"
                   minSdk 26
                   targetSdk 34
-                  versionCode 20
-                  versionName "20.0"
+                  versionCode 21
+                  versionName "21.0"
               }
 
               compileOptions {
@@ -197,7 +197,6 @@ jobs:
                       --border: rgba(56, 189, 248, 0.2);
                       --accent: #38bdf8;
                       --accent-glow: rgba(56, 189, 248, 0.45);
-                      --accent-indigo: #818cf8;
                       --red: #ef4444;
                       --green: #22c55e;
                       --text: #f8fafc;
@@ -225,13 +224,13 @@ jobs:
                       padding: 14px 16px env(safe-area-inset-bottom, 16px);
                   }
 
-                  /* ÜST MARKA ALANI - SADECE İSİM, SIFIR BUTON */
+                  /* EN ÜST ALAN: SADECE LOGO & İSİM - SIFIR BUTON */
                   .brand-zone {
                       display: flex;
                       flex-direction: column;
                       align-items: center;
                       justify-content: center;
-                      padding: 24px 0 10px;
+                      padding: 22px 0 8px;
                       pointer-events: none;
                   }
 
@@ -255,13 +254,13 @@ jobs:
                       opacity: 0.8;
                   }
 
-                  /* ANA PANELLER */
+                  /* ANA İÇERİK */
                   .view-container {
                       flex: 1;
                       display: flex;
                       flex-direction: column;
                       justify-content: center;
-                      gap: 14px;
+                      gap: 12px;
                       max-width: 420px;
                       width: 100%;
                       margin: 0 auto;
@@ -272,7 +271,7 @@ jobs:
                       width: 100%;
                       flex-direction: column;
                       align-items: center;
-                      gap: 14px;
+                      gap: 12px;
                   }
 
                   .panel.active {
@@ -297,13 +296,13 @@ jobs:
                       display: flex;
                       justify-content: space-between;
                       align-items: center;
-                      gap: 8px;
+                      gap: 10px;
                       width: 100%;
                   }
 
                   .btn-pill {
                       flex: 1;
-                      height: 42px;
+                      height: 44px;
                       background: rgba(30, 41, 59, 0.8);
                       border: 1px solid rgba(255, 255, 255, 0.08);
                       color: var(--text);
@@ -312,7 +311,7 @@ jobs:
                       align-items: center;
                       justify-content: center;
                       gap: 6px;
-                      font-size: 12px;
+                      font-size: 13px;
                       font-weight: 600;
                       cursor: pointer;
                       transition: all 0.15s ease;
@@ -323,6 +322,7 @@ jobs:
                   }
 
                   .btn-power {
+                      flex: 1.2;
                       background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.4));
                       border-color: rgba(239, 68, 68, 0.4);
                       color: #fca5a5;
@@ -332,15 +332,10 @@ jobs:
                       background: rgba(239, 68, 68, 0.5);
                   }
 
-                  .btn-keystone {
-                      background: linear-gradient(135deg, rgba(129, 140, 248, 0.2), rgba(99, 102, 241, 0.35));
-                      border-color: rgba(129, 140, 248, 0.4);
-                      color: #c7d2fe;
-                  }
-
                   .btn-status {
-                      font-size: 11px;
-                      background: rgba(15, 23, 42, 0.7);
+                      flex: 1.5;
+                      font-size: 12px;
+                      background: rgba(15, 23, 42, 0.75);
                       border-color: rgba(255, 255, 255, 0.05);
                   }
 
@@ -355,6 +350,10 @@ jobs:
                   .status-dot.connected {
                       background: var(--green);
                       box-shadow: 0 0 10px var(--green);
+                  }
+
+                  .btn-bt {
+                      flex: 0.8;
                   }
 
                   /* GYRO ÇUBUĞU */
@@ -519,7 +518,7 @@ jobs:
                       width: 100%;
                   }
 
-                  /* ALT MOD ÇUBUĞU */
+                  /* ALT MOD SEÇİCİ */
                   .tab-bar {
                       display: flex;
                       background: rgba(15, 23, 42, 0.85);
@@ -631,7 +630,7 @@ jobs:
           </head>
           <body>
 
-              <!-- EN ÜST ALAN: SADECE LOGO & BAŞLIK (BUTON YOK) -->
+              <!-- EN ÜST: SADECE BAŞLIK (BUTON YOK) -->
               <div class="brand-zone">
                   <div class="brand-logo-text">KUMANDARUS</div>
                   <div class="brand-tagline">Akıllı Projeksiyon & TV</div>
@@ -644,20 +643,10 @@ jobs:
 
                       <!-- YÖN TUŞLARININ HEMEN ÜSTÜNDEKİ KONTROL KÜMESİ -->
                       <div class="control-cluster">
-                          <!-- Üst Satır: Güç, Anahtarlık, Filtre, Durum, BT -->
                           <div class="cluster-row">
                               <button class="btn-pill btn-power" onclick="powerClick()" title="Açma/Kapatma (IR)">
                                   <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A7.92 7.92 0 0 1 20 12c0 4.42-3.58 8-8 8s-8-3.58-8-8c0-2.47 1.13-4.68 2.91-6.15L5.49 4.43A9.95 9.95 0 0 0 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10c0-2.88-1.22-5.48-3.17-7.83z"/></svg>
                                   <span>Güç</span>
-                              </button>
-
-                              <button class="btn-pill btn-keystone" onclick="keystoneClick()" title="Manuel Anahtarlık / Kenar Düzeltme">
-                                  <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm0 2v12l16-3V9L4 6z"/></svg>
-                                  <span>Anahtarlık</span>
-                              </button>
-
-                              <button class="btn-pill" id="filterBtn" onclick="toggleFilter()" title="Kalman Filtresi Aç/Kapa">
-                                  <span id="filterTxt">Filtre: Açık</span>
                               </button>
 
                               <button class="btn-pill btn-status" onclick="fastConnect()" title="Hızlı Yeniden Bağlan">
@@ -665,7 +654,7 @@ jobs:
                                   <span id="statusTxt">Bağlan</span>
                               </button>
 
-                              <button class="btn-pill" style="flex:0.6;" onclick="openBtModal()" title="Cihaz Seç">
+                              <button class="btn-pill btn-bt" onclick="openBtModal()" title="Cihaz Seç">
                                   <svg viewBox="0 0 24 24"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
                               </button>
                           </div>
@@ -680,7 +669,7 @@ jobs:
                           </div>
                       </div>
 
-                      <!-- D-PAD YÖN TUŞLARI (OK tuşu tek atımlık discrete sinyaldir, oto-odak tetiklemez) -->
+                      <!-- D-PAD YÖN TUŞLARI (OK tuşu tek atımlıktır, oto-odaklama başlatmaz) -->
                       <div class="dpad-container">
                           <button class="dpad-btn dpad-up" onpointerdown="navDown(82)" onpointerup="navUp()">▲</button>
                           <button class="dpad-btn dpad-left" onpointerdown="navDown(80)" onpointerup="navUp()">◀</button>
@@ -752,7 +741,7 @@ jobs:
                           <span style="cursor:pointer;" onclick="closeBtModal()">✕</span>
                       </div>
                       <div class="device-list" id="deviceList">
-                          <div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Cihazlar taranıyor...</div>
+                          <div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Cihazlar yükleniyor...</div>
                       </div>
                       <button class="modal-close-btn" onclick="closeBtModal()">Kapat</button>
                   </div>
@@ -760,7 +749,6 @@ jobs:
 
               <script>
                   let gyroActive = false;
-                  let filterActive = true;
                   let currentSpeed = 1.0;
                   const speeds = [1.0, 1.5, 2.0];
                   let speedIndex = 0;
@@ -771,7 +759,6 @@ jobs:
                       }
                   }
 
-                  // SEKME DEĞİŞİMİ
                   function switchTab(type) {
                       vib(10);
                       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -786,7 +773,7 @@ jobs:
                       }
                   }
 
-                  // GÜÇ TUŞU (KESİNLİKLE SADECE BURADA IR ÇALIŞIR)
+                  // GÜÇ TUŞU: SADECE BURADA IR ÇALIŞIR
                   function powerClick() {
                       vib(25);
                       if (window.AndroidBridge) {
@@ -794,15 +781,7 @@ jobs:
                       }
                   }
 
-                  // MANUEL ANAHTARLIK (BLUETOOTH OTOMASYONU - SIFIR IR)
-                  function keystoneClick() {
-                      vib(18);
-                      if (window.AndroidBridge) {
-                          AndroidBridge.openKeystonePath();
-                      }
-                  }
-
-                  // OK TUŞU: TEK ATIMLIK KESİN SİNYAL (OTOMATİK ODAKLAMA TETİKLEMEZ)
+                  // OK TUŞU: TEK SEFERLİK DİSKRET SİNYAL (OTOMATİK ODAKLAMA BAŞLATMAZ)
                   function tapOk(e) {
                       if (e) e.preventDefault();
                       vib(18);
@@ -811,7 +790,6 @@ jobs:
                       }
                   }
 
-                  // YÖN TUŞLARI
                   function navDown(code) {
                       vib(10);
                       if (window.AndroidBridge) {
@@ -820,7 +798,6 @@ jobs:
                   }
                   function navUp() {}
 
-                  // TÜKETİCİ / NAVİGASYON TUŞLARI
                   function sendCons(code) {
                       vib(12);
                       if (window.AndroidBridge) {
@@ -835,7 +812,6 @@ jobs:
                       }
                   }
 
-                  // SİHİRLİ İMLEÇ (GYRO)
                   function toggleGyro() {
                       vib(15);
                       gyroActive = !gyroActive;
@@ -863,16 +839,6 @@ jobs:
                       }
                   }
 
-                  function toggleFilter() {
-                      vib(10);
-                      filterActive = !filterActive;
-                      document.getElementById('filterTxt').innerText = filterActive ? 'Filtre: Açık' : 'Filtre: Kapalı';
-                      if (window.AndroidBridge) {
-                          AndroidBridge.setFilterActive(filterActive);
-                      }
-                  }
-
-                  // BLUETOOTH BAĞLANTI DURUMU VE YÖNETİMİ
                   function fastConnect() {
                       vib(15);
                       if (window.AndroidBridge) {
@@ -885,7 +851,7 @@ jobs:
                       const txt = document.getElementById('statusTxt');
                       if (connected) {
                           dot.classList.add('connected');
-                          txt.innerText = name ? (name.length > 8 ? name.substring(0,8) : name) : 'Bağlı';
+                          txt.innerText = name ? (name.length > 9 ? name.substring(0,9) : name) : 'Bağlı';
                       } else {
                           dot.classList.remove('connected');
                           txt.innerText = 'Bağlan';
@@ -926,7 +892,7 @@ jobs:
                       });
                   };
 
-                  // TOUCHPAD - KENARA ÇARPINCA LG MAGIC KUMANDA GİBİ OTOMATİK KAYDIRMA
+                  // TOUCHPAD - KENARA ÇARPINCA KADEMELİ KAYDIRMA
                   const tp = document.getElementById('touchpad');
                   let lastX = 0, lastY = 0;
                   let tracking = false;
@@ -950,7 +916,6 @@ jobs:
                           AndroidBridge.sendMouseMove(Math.round(dx), Math.round(dy));
                       }
 
-                      // Kenar Algılama (Virtual Boundary Scroll)
                       const rect = tp.getBoundingClientRect();
                       const relX = e.clientX - rect.left;
                       const relY = e.clientY - rect.top;
@@ -959,11 +924,11 @@ jobs:
                       let scrollY = 0;
                       let scrollX = 0;
 
-                      if (relY < threshold) scrollY = 1; // Yukarı kaydır
-                      else if (relY > rect.height - threshold) scrollY = -1; // Aşağı kaydır
+                      if (relY < threshold) scrollY = 1;
+                      else if (relY > rect.height - threshold) scrollY = -1;
 
-                      if (relX < threshold) scrollX = 1; // Sola kaydır
-                      else if (relX > rect.width - threshold) scrollX = -1; // Sağa kaydır
+                      if (relX < threshold) scrollX = 1;
+                      else if (relX > rect.width - threshold) scrollX = -1;
 
                       if ((scrollY !== 0 || scrollX !== 0) && !edgeScrollTimer) {
                           edgeScrollTimer = setInterval(() => {
@@ -1020,6 +985,7 @@ jobs:
           import org.json.JSONArray
           import org.json.JSONObject
           import java.util.concurrent.Executors
+          import kotlin.math.abs
 
           class MainActivity : Activity(), SensorEventListener {
 
@@ -1039,46 +1005,30 @@ jobs:
 
               private var gyroActive = false
               private var speedMultiplier = 1.0f
-              private var filterActive = true
-
-              // Düşük Geçiren Filtre Değişkenleri
-              private var filteredX = 0f
-              private var filteredY = 0f
 
               companion object {
-                  private const val PREF_LAST_DEVICE = "last_bt_addr"
+                  private const val PREF_LAST_DEVICE = "last_addr"
 
-                  // Standart USB HID Fare, Klavye ve Tüketici Denetimleri Tanımlayıcısı
-                  private val HID_DESCRIPTOR = byteArrayOf(
-                      // Klavye (Rapor ID 1)
-                      0x05.toByte(), 0x01.toByte(), 0x09.toByte(), 0x06.toByte(), 0xA1.toByte(), 0x01.toByte(),
-                      0x85.toByte(), 0x01.toByte(),
-                      0x05.toByte(), 0x07.toByte(), 0x19.toByte(), 0xE0.toByte(), 0x29.toByte(), 0xE7.toByte(),
-                      0x15.toByte(), 0x00.toByte(), 0x25.toByte(), 0x01.toByte(), 0x75.toByte(), 0x01.toByte(),
-                      0x95.toByte(), 0x08.toByte(), 0x81.toByte(), 0x02.toByte(),
-                      0x95.toByte(), 0x01.toByte(), 0x75.toByte(), 0x08.toByte(), 0x81.toByte(), 0x01.toByte(),
-                      0x95.toByte(), 0x06.toByte(), 0x75.toByte(), 0x08.toByte(), 0x15.toByte(), 0x00.toByte(),
-                      0x25.toByte(), 0x65.toByte(), 0x05.toByte(), 0x07.toByte(), 0x19.toByte(), 0x00.toByte(),
-                      0x29.toByte(), 0x65.toByte(), 0x81.toByte(), 0x00.toByte(), 0xC0.toByte(),
-
-                      // Fare (Rapor ID 2)
-                      0x05.toByte(), 0x01.toByte(), 0x09.toByte(), 0x02.toByte(), 0xA1.toByte(), 0x01.toByte(),
-                      0x85.toByte(), 0x02.toByte(), 0x09.toByte(), 0x01.toByte(), 0xA1.toByte(), 0x00.toByte(),
-                      0x05.toByte(), 0x09.toByte(), 0x19.toByte(), 0x01.toByte(), 0x29.toByte(), 0x03.toByte(),
-                      0x15.toByte(), 0x00.toByte(), 0x25.toByte(), 0x01.toByte(), 0x95.toByte(), 0x03.toByte(),
-                      0x75.toByte(), 0x01.toByte(), 0x81.toByte(), 0x02.toByte(), 0x95.toByte(), 0x01.toByte(),
-                      0x75.toByte(), 0x05.toByte(), 0x81.toByte(), 0x01.toByte(), 0x05.toByte(), 0x01.toByte(),
-                      0x09.toByte(), 0x30.toByte(), 0x09.toByte(), 0x31.toByte(), 0x09.toByte(), 0x38.toByte(),
-                      0x15.toByte(), 0x81.toByte(), 0x25.toByte(), 0x7F.toByte(), 0x75.toByte(), 0x08.toByte(),
-                      0x95.toByte(), 0x03.toByte(), 0x81.toByte(), 0x06.toByte(), 0xC0.toByte(), 0xC0.toByte(),
-
-                      // Tüketici Denetimleri (Rapor ID 3 - Home, Back, Ses)
-                      0x05.toByte(), 0x0C.toByte(), 0x09.toByte(), 0x01.toByte(), 0xA1.toByte(), 0x01.toByte(),
-                      0x85.toByte(), 0x03.toByte(), 0x15.toByte(), 0x00.toByte(), 0x26.toByte(), 0xFF.toByte(),
-                      0x03.toByte(), 0x19.toByte(), 0x00.toByte(), 0x2A.toByte(), 0xFF.toByte(), 0x03.toByte(),
-                      0x75.toByte(), 0x10.toByte(), 0x95.toByte(), 0x01.toByte(), 0x81.toByte(), 0x00.toByte(),
-                      0xC0.toByte()
-                  )
+                  // Standart USB HID Rapor Tanımlayıcısı
+                  private val HID_DESCRIPTOR = intArrayOf(
+                      0x05, 0x01, 0x09, 0x06, 0xA1, 0x01, 0x85, 0x01, // Klavye (Rapor ID 1)
+                      0x05, 0x07, 0x19, 0xE0, 0x29, 0xE7, 0x15, 0x00,
+                      0x25, 0x01, 0x75, 0x01, 0x95, 0x08, 0x81, 0x02,
+                      0x95, 0x01, 0x75, 0x08, 0x81, 0x01, 0x95, 0x06,
+                      0x75, 0x08, 0x15, 0x00, 0x25, 0x65, 0x05, 0x07,
+                      0x19, 0x00, 0x29, 0x65, 0x81, 0x00, 0xC0,
+                      0x05, 0x0C, 0x09, 0x01, 0xA1, 0x01, 0x85, 0x02, // Tüketici Denetimleri (Rapor ID 2)
+                      0x19, 0x00, 0x2A, 0x9C, 0x02, 0x15, 0x00, 0x26,
+                      0x9C, 0x02, 0x95, 0x01, 0x75, 0x10, 0x81, 0x00,
+                      0xC0,
+                      0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x85, 0x03, // Fare (Rapor ID 3)
+                      0x09, 0x01, 0xA1, 0x00, 0x05, 0x09, 0x19, 0x01,
+                      0x29, 0x03, 0x15, 0x00, 0x25, 0x01, 0x95, 0x03,
+                      0x75, 0x01, 0x81, 0x02, 0x95, 0x01, 0x75, 0x05,
+                      0x81, 0x01, 0x05, 0x01, 0x09, 0x30, 0x09, 0x31,
+                      0x09, 0x38, 0x15, 0x81, 0x25, 0x7F, 0x75, 0x08,
+                      0x95, 0x03, 0x81, 0x06, 0xC0, 0xC0
+                  ).map { it.toByte() }.toByteArray()
               }
 
               @SuppressLint("SetJavaScriptEnabled")
@@ -1114,7 +1064,6 @@ jobs:
                   gyroSensor?.let {
                       sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
                   }
-                  // Uygulamaya dönüldüğünde en hızlı şekilde yeniden bağlan
                   fastReconnectDevice()
               }
 
@@ -1148,16 +1097,16 @@ jobs:
                                       }
                                   }
 
-                                  override fun onConnectionStateChange(device: BluetoothDevice, state: Int) {
+                                  override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
                                       val isConn = (state == BluetoothProfile.STATE_CONNECTED)
                                       currentDevice = if (isConn) device else null
 
-                                      if (isConn) {
+                                      if (isConn && device != null) {
                                           prefs.edit().putString(PREF_LAST_DEVICE, device.address).apply()
                                       }
 
                                       mainHandler.post {
-                                          val name = device.name ?: "Projeksiyon"
+                                          val name = device?.name ?: "Projeksiyon"
                                           webView.evaluateJavascript("window.updateBtStatus($isConn, '$name')", null)
                                       }
                                   }
@@ -1173,20 +1122,17 @@ jobs:
                   }, BluetoothProfile.HID_DEVICE)
               }
 
-              // BLUETOOTH BAĞLANTISINI HIZLANDIRMA METODU
               private fun fastReconnectDevice() {
                   executor.execute {
                       val adapter = btAdapter ?: return@execute
                       if (!adapter.isEnabled) return@execute
                       val hid = hidDevice ?: return@execute
 
-                      // Taramayı anında kes; Bluetooth discovery RF bant genişliğini tüketir
                       if (adapter.isDiscovering) {
                           try { adapter.cancelDiscovery() } catch (_: Exception) {}
                       }
 
-                      // Zaten bağlı bir cihaz varsa UI'ı hemen güncelle
-                      val connected = hid.getConnectedDevices()
+                      val connected = try { hid.connectedDevices } catch (_: Exception) { emptyList() }
                       if (connected.isNotEmpty()) {
                           val dev = connected[0]
                           currentDevice = dev
@@ -1198,7 +1144,7 @@ jobs:
 
                       val lastAddr = prefs.getString(PREF_LAST_DEVICE, null)
                       val bonded = adapter.bondedDevices ?: emptySet()
-                      val target = if (!lastAddr.isNullOrEmpty()) {
+                      val target = if (!lastAddr.isNullOrBlank()) {
                           bonded.firstOrNull { it.address.equals(lastAddr, ignoreCase = true) }
                               ?: try { adapter.getRemoteDevice(lastAddr) } catch (_: Exception) { null }
                       } else {
@@ -1215,28 +1161,19 @@ jobs:
                   }
               }
 
-              // GYROSCOPE HAREKET İŞLEME (SİHİRLİ İMLEÇ)
               override fun onSensorChanged(event: SensorEvent) {
                   if (!gyroActive || currentDevice == null || event.sensor.type != Sensor.TYPE_GYROSCOPE) return
 
-                  val rawX = -event.values[2] * 28f * speedMultiplier
-                  val rawY = -event.values[0] * 28f * speedMultiplier
+                  val rotX = event.values[0]
+                  val rotZ = event.values[2]
 
-                  val dx: Int
-                  val dy: Int
+                  val deadzone = 0.035f
+                  val cleanZ = if (abs(rotZ) < deadzone) 0f else rotZ
+                  val cleanX = if (abs(rotX) < deadzone) 0f else rotX
+                  if (cleanZ == 0f && cleanX == 0f) return
 
-                  if (filterActive) {
-                      val alpha = 0.35f
-                      filteredX = filteredX + alpha * (rawX - filteredX)
-                      filteredY = filteredY + alpha * (rawY - filteredY)
-                      if (Math.abs(filteredX) < 0.6f && Math.abs(filteredY) < 0.6f) return
-                      dx = filteredX.toInt().coerceIn(-127, 127)
-                      dy = filteredY.toInt().coerceIn(-127, 127)
-                  } else {
-                      if (Math.abs(rawX) < 0.8f && Math.abs(rawY) < 0.8f) return
-                      dx = rawX.toInt().coerceIn(-127, 127)
-                      dy = rawY.toInt().coerceIn(-127, 127)
-                  }
+                  val dx = (-cleanZ * 24f * speedMultiplier).toInt().coerceIn(-127, 127)
+                  val dy = (-cleanX * 24f * speedMultiplier).toInt().coerceIn(-127, 127)
 
                   if (dx != 0 || dy != 0) {
                       sendMouseReport(0, dx.toByte(), dy.toByte(), 0)
@@ -1245,11 +1182,10 @@ jobs:
 
               override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
-              // HID RAPORLARI GÖNDERME
               private fun sendMouseReport(buttons: Byte, dx: Byte, dy: Byte, wheel: Byte) {
                   val dev = currentDevice ?: return
                   val report = byteArrayOf(buttons, dx, dy, wheel)
-                  hidDevice?.sendReport(dev, 2, report)
+                  hidDevice?.sendReport(dev, 3, report)
               }
 
               private fun sendKeyboardReport(modifier: Byte, keyCode: Byte) {
@@ -1261,39 +1197,34 @@ jobs:
               private fun sendConsumerReport(code: Int) {
                   val dev = currentDevice ?: return
                   val report = byteArrayOf((code and 0xFF).toByte(), ((code shr 8) and 0xFF).toByte())
-                  hidDevice?.sendReport(dev, 3, report)
+                  hidDevice?.sendReport(dev, 2, report)
                   mainHandler.postDelayed({
-                      hidDevice?.sendReport(dev, 3, byteArrayOf(0, 0))
+                      hidDevice?.sendReport(dev, 2, byteArrayOf(0, 0))
                   }, 40)
               }
 
-              // KIZILÖTESİ (IR) VERİCİSİ - YALNIZCA GÜÇ TUŞUNDA KULLANILIR
-              private fun transmitNec(address: Int, command: Int) {
+              // KIZILÖTESİ (IR) SİNYALİ - SADECE GÜÇ TUŞUNDA TETİKLENİR
+              private fun transmitNec(b0: Int, b1: Int, cmd: Int) {
                   val ir = irManager ?: return
                   if (!ir.hasIrEmitter()) return
 
-                  val pattern = mutableListOf<Int>()
-                  // NEC Header (9000us High, 4500us Low)
-                  pattern.add(9000); pattern.add(4500)
-
-                  fun sendByte(b: Int) {
-                      for (i in 0 until 8) {
-                          pattern.add(560)
-                          if (((b shr i) and 1) == 1) pattern.add(1690) else pattern.add(560)
+                  val invCmd = (cmd.inv()) and 0xFF
+                  val pattern = IntArray(68)
+                  pattern[0] = 9000
+                  pattern[1] = 4500
+                  var idx = 2
+                  val bytes = intArrayOf(b0 and 0xFF, b1 and 0xFF, cmd and 0xFF, invCmd)
+                  for (b in bytes) {
+                      for (bit in 0 until 8) {
+                          pattern[idx++] = 560
+                          pattern[idx++] = if (((b shr bit) and 1) == 1) 1690 else 560
                       }
                   }
-
-                  val invAddress = address.inv() and 0xFF
-                  val invCommand = command.inv() and 0xFF
-
-                  sendByte(address)
-                  sendByte(invAddress)
-                  sendByte(command)
-                  sendByte(invCommand)
-                  pattern.add(560)
+                  pattern[66] = 560
+                  pattern[67] = 20000
 
                   try {
-                      ir.transmit(38000, pattern.toIntArray())
+                      ir.transmit(38000, pattern)
                   } catch (e: Exception) {
                       Log.e("Kumandarus", "IR transmit failed: ${e.message}")
                   }
@@ -1313,45 +1244,24 @@ jobs:
                       }
                   }
 
-                  // 1. KESİNLİKLE SADECE BURADA IR ÇALIŞIR: GÜÇ TUŞU
+                  // 1. KESİNLİKLE SADECE BURADA IR ÇALIŞIR
                   @JavascriptInterface
                   fun triggerHybridPower() {
-                      // Projeksiyon IR Güç Kodu: 0x80, 0x12
-                      transmitNec(0x80, 0x12)
-                      // Yedek olarak Bluetooth HID Güç Sinyali
+                      // Projeksiyon IR Güç Kodu: 0x80, 0x7F, 0x12
+                      transmitNec(0x80, 0x7F, 0x12)
+                      // Yedek olarak Bluetooth Güç Sinyali
                       sendConsumerReport(0x0030)
                   }
 
-                  // 2. OK TUŞU: TEK SEFERLİK DİSKRET SİNYAL (OTOMATİK ODAKLAMA ASLA TETİKLENMEZ)
+                  // 2. OK TUŞU: TEK SEFERLİK DİSKRET SİNYAL (OTOMATİK ODAKLAMA BAŞLATMAZ)
                   @JavascriptInterface
                   fun tapOkKey() {
-                      // 40 = Return (Enter). Anlık bas ve 30ms sonra bırak. Sıfır IR, basılı tutma yok!
+                      // 40 = Return (Enter). Anlık 30ms sinyal gönderip bırakır.
                       mainHandler.post {
                           sendKeyboardReport(0, 40)
                           mainHandler.postDelayed({
                               sendKeyboardReport(0, 0)
                           }, 30)
-                      }
-                  }
-
-                  // MANUEL ANAHTARLIK BLUETOOTH OTOMASYONU
-                  @JavascriptInterface
-                  fun openKeystonePath() {
-                      executor.execute {
-                          // Windows + I -> Android Ayarlarını Açar (Win tuşu modifier: 0x08, I harfi: 12)
-                          sendKeyboardReport(0x08, 12)
-                          Thread.sleep(60)
-                          sendKeyboardReport(0, 0)
-                          Thread.sleep(800)
-
-                          // Ayarlar Menüsünde Projeksiyon Ayarlarına İlerler
-                          sendKeyboardReport(0, 81); Thread.sleep(50); sendKeyboardReport(0, 0) // Aşağı
-                          Thread.sleep(300)
-                          sendKeyboardReport(0, 40); Thread.sleep(50); sendKeyboardReport(0, 0) // Seç (Enter)
-                          Thread.sleep(500)
-                          sendKeyboardReport(0, 81); Thread.sleep(50); sendKeyboardReport(0, 0) // Manuel Anahtarlık
-                          Thread.sleep(300)
-                          sendKeyboardReport(0, 40); Thread.sleep(50); sendKeyboardReport(0, 0) // Aç (Enter)
                       }
                   }
 
@@ -1361,7 +1271,7 @@ jobs:
                           sendKeyboardReport(mod.toByte(), code.toByte())
                           mainHandler.postDelayed({
                               sendKeyboardReport(0, 0)
-                          }, 40)
+                          }, 35)
                       }
                   }
 
@@ -1386,7 +1296,7 @@ jobs:
                       sendMouseReport(b, 0, 0, 0)
                       mainHandler.postDelayed({
                           sendMouseReport(0, 0, 0, 0)
-                      }, 50)
+                      }, 40)
                   }
 
                   @JavascriptInterface
@@ -1397,11 +1307,6 @@ jobs:
                   @JavascriptInterface
                   fun setSpeedMultiplier(speed: Float) {
                       speedMultiplier = speed
-                  }
-
-                  @JavascriptInterface
-                  fun setFilterActive(active: Boolean) {
-                      filterActive = active
                   }
 
                   @JavascriptInterface
@@ -1445,17 +1350,14 @@ jobs:
 
           chmod +x ./gradlew || true
 
-      - name: APK Derle (Release)
+      - name: APK Derle ve Isimlendir
         run: |
-          gradle assembleRelease --stacktrace
-
-      - name: APK Dosyasini Hazirla
-        run: |
-          cp app/build/outputs/apk/release/app-release-unsigned.apk kumandarus.apk
+          gradle assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk kumandarus.apk
 
       - name: APK Yayinla
         uses: actions/upload-artifact@v4
         with:
-          name: kumandarus-v20-apk
+          name: kumandarus-v21-apk
           path: kumandarus.apk
           retention-days: 14
